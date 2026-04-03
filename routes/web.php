@@ -6,8 +6,8 @@ use App\Livewire\Auth\Register;
 use App\Livewire\Dashboard\Nahkoda;
 use App\Livewire\Dashboard\Pengawas;
 use App\Livewire\Dashboard\Penyedia;
-use App\Livewire\Dashboard\Satgas;
-use App\Livewire\Dashboard\Sounding;
+use App\Livewire\Dashboard\SatgasDashboard;
+use App\Livewire\Dashboard\SoundingDashboard;
 use App\Livewire\Dashboard\SuperAdmin;
 use App\Livewire\Satgas\LaporPengisian;
 use App\Livewire\Satgas\SuratTugasBBM;
@@ -50,12 +50,12 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('role:sounding')->group(function () {
-        Route::get('/dashboard-sounding', Sounding::class)->name('dashboard.sounding');
+        Route::get('/dashboard-sounding', SoundingDashboard::class)->name('dashboard.sounding');
         Route::get('/sounding-bbm', SoundingBBM::class)->name('sounding.sounding-bbm');
     });
 
     Route::middleware('role:satgas')->group(function () {
-        Route::get('/dashboard-satgas', Satgas::class)->name('dashboard.satgas');
+        Route::get('/dashboard-satgas', SatgasDashboard::class)->name('dashboard.satgas');
         Route::get('/laporan-pengisian', LaporPengisian::class)->name('satgas.lapor-pengisian');
         Route::get('/surat-tugas', SuratTugasBBM::class)->name('satgas.surat-tugas');
         Route::get('/data-kapal', DataKapal::class)->name('data-kapal');

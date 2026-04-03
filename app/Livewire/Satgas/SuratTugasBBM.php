@@ -3,38 +3,98 @@
 namespace App\Livewire\Satgas;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\SuratTugas;
 use App\Models\LaporanPengisian;
+use App\Models\Kapal;
 
 class SuratTugasBBM extends Component
 {
-    public $surat_tugas, $laporans;
+    use WithPagination;
+
+    // Properti Form Modal
     public $surat_id, $laporan_bbm_id, $nomor_surat, $waktu_pelaksanaan, $tanggal_dikeluarkan;
     public $isOpen = false;
 
-    public function mount()
-    {
-        // Mengambil semua laporan untuk relasi
-        $this->laporans = LaporanPengisian::with('kapal')->latest()->get();
-    }
+    // Properti Search, Filter & Sort
+    public $search = '';
+    public $sortBy = 'latest';
+    public $filterKapal = '';
+    
+    // Properti Rentang Tanggal
+    public $filterTanggalDari = '';
+    public $filterTanggalSampai = '';
+
+    // Reset pagination ketika filter/search diubah
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingSortBy() { $this->resetPage(); }
+    public function updatingFilterKapal() { $this->resetPage(); }
+    public function updatingFilterTanggalDari() { $this->resetPage(); }
+    public function updatingFilterTanggalSampai() { $this->resetPage(); }
 
     public function render()
     {
-        $this->surat_tugas = SuratTugas::with('laporanBbm.kapal')->latest()->get();
-        return view('livewire.satgas.surat-tugas')->layout('layouts.app');
+        $query = SuratTugas::with(['laporanBbm.kapal']);
+
+        // 1. Fitur Search (Cari Nomor Surat, Nama Kapal, atau Lokasi Laporan)
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('nomor_surat', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('laporanBbm', function($l) {
+                      $l->where('lokasi', 'like', '%' . $this->search . '%')
+                        ->orWhereHas('kapal', function($k) {
+                            $k->where('nama_kapal', 'like', '%' . $this->search . '%');
+                        });
+                  });
+            });
+        }
+
+        // 2. Fitur Filter Kapal
+        if ($this->filterKapal) {
+            $query->whereHas('laporanBbm', function($q) {
+                $q->where('kapal_id', $this->filterKapal);
+            });
+        }
+        
+        // Fitur Filter Rentang Tanggal Dikeluarkan
+        if ($this->filterTanggalDari) {
+            $query->whereDate('tanggal_dikeluarkan', '>=', $this->filterTanggalDari);
+        }
+        if ($this->filterTanggalSampai) {
+            $query->whereDate('tanggal_dikeluarkan', '<=', $this->filterTanggalSampai);
+        }
+
+        // 3. Fitur Sort
+        match($this->sortBy) {
+            'oldest' => $query->orderBy('tanggal_dikeluarkan', 'asc'),
+            default => $query->orderBy('tanggal_dikeluarkan', 'desc'), // 'latest'
+        };
+
+        // Ambil data untuk Paginasi & Dropdown Filter
+        $surat_tugas = $query->paginate(10);
+        $laporans = LaporanPengisian::with('kapal')->latest()->get();
+        $kapals = Kapal::orderBy('nama_kapal', 'asc')->get();
+
+        return view('livewire.satgas.surat-tugas', [
+            'surat_tugas' => $surat_tugas,
+            'laporans' => $laporans,
+            'kapals' => $kapals
+        ])->layout('layouts.app');
     }
 
     public function create()
     {
         $this->resetInputFields();
-        // Set default value
         $this->waktu_pelaksanaan = '08:00 - Selesai';
         $this->tanggal_dikeluarkan = date('Y-m-d');
         $this->openModal();
     }
 
     public function openModal() { $this->isOpen = true; }
-    public function closeModal() { $this->isOpen = false; }
+    public function closeModal() { 
+        $this->isOpen = false; 
+        $this->resetValidation();
+    }
 
     private function resetInputFields()
     {

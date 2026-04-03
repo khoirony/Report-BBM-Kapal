@@ -1,7 +1,7 @@
 <div class="p-4 sm:p-6 lg:px-8 lg:py-6 bg-slate-50 min-h-screen">
     <div class="w-full">
         
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
             <div class="flex items-center space-x-4">
                 <div class="p-3 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-lg shadow-indigo-200">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -14,7 +14,7 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Data Kapal</h1>
-                    <p class="text-sm text-gray-500 mt-1 font-medium">Kelola informasi dan sertifikasi seluruh armada kapal.</p>
+                    <p class="text-sm text-gray-500 mt-1 font-medium">Kelola informasi, foto, dan sertifikasi seluruh armada kapal.</p>
                 </div>
             </div>
             
@@ -30,9 +30,7 @@
             <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-xl shadow-sm animate-fade-in-down">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 bg-emerald-100 p-1 rounded-full">
-                        <svg class="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
+                        <svg class="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                     </div>
                     <div class="ml-3">
                         <p class="text-sm font-semibold text-emerald-800">{{ session('message') }}</p>
@@ -41,13 +39,112 @@
             </div>
         @endif
 
-        <div class="bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-visible w-full">
-            <table class="w-full text-sm text-left text-gray-600 block md:table">
+        <div x-data="{ showFilters: false }" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 space-y-4">
+            
+            <div class="flex flex-col md:flex-row justify-between gap-4">
                 
+                <div class="relative w-full md:w-1/2 lg:w-1/3">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nama kapal atau SKPD..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors shadow-sm">
+                </div>
+
+                <div class="flex flex-row gap-3 w-full md:w-auto">
+                    
+                    <button @click="showFilters = !showFilters" type="button" class="md:hidden flex-1 flex items-center justify-center px-4 py-2.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-semibold rounded-xl hover:bg-indigo-100 transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500">
+                        <svg x-show="!showFilters" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        <svg x-show="showFilters" style="display: none;" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        <span x-text="showFilters ? 'Tutup Filter' : 'Filter'"></span>
+                    </button>
+
+                    <div class="relative flex-1 md:flex-none md:w-48">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
+                        </div>
+                        <select wire:model.live="sortBy" class="pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer shadow-sm hover:bg-slate-100">
+                            <option value="latest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                            <option value="name_asc">Nama (A-Z)</option>
+                            <option value="name_desc">Nama (Z-A)</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 pt-4 border-t border-slate-100 transition-all duration-200">
+                
+                <div class="relative">
+                    <select wire:model.live="filterSkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer hover:bg-slate-50">
+                        <option value="">Semua SKPD/UKPD</option>
+                        @foreach($skpds as $skpd)
+                            <option value="{{ $skpd }}">{{ $skpd }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                </div>
+
+                <div class="relative">
+                    <select wire:model.live="filterJenis" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer hover:bg-slate-50">
+                        <option value="">Semua Jenis</option>
+                        @foreach($jenisList as $jenis)
+                            <option value="{{ $jenis }}">{{ $jenis }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                </div>
+
+                <div class="relative">
+                    <select wire:model.live="filterMaterial" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer hover:bg-slate-50">
+                        <option value="">Semua Material</option>
+                        @foreach($materials as $mat)
+                            <option value="{{ $mat }}">{{ $mat }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                </div>
+
+                <div class="relative">
+                    <select wire:model.live="filterTahun" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer hover:bg-slate-50">
+                        <option value="">Semua Tahun</option>
+                        @foreach($tahunList as $tahun)
+                            <option value="{{ $tahun }}">{{ $tahun }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                </div>
+
+                <div class="relative">
+                    <select wire:model.live="filterTonase" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer hover:bg-slate-50">
+                        <option value="">Semua Tonase (GT)</option>
+                        @foreach($tonaseList as $tonase)
+                            <option value="{{ $tonase }}">{{ $tonase }} GT</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="relative bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-visible w-full">
+            
+            <div wire:loading class="absolute inset-0 bg-white/70 backdrop-blur-sm z-20 flex items-center justify-center rounded-2xl">
+                <div class="flex flex-col items-center">
+                    <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <span class="mt-2 text-sm font-semibold text-indigo-600">Memuat data...</span>
+                </div>
+            </div>
+
+            <table class="w-full text-sm text-left text-gray-600 block md:table">
                 <thead class="hidden md:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
                     <tr>
-                        <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Identitas Kapal</th>
-                        <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Spesifikasi Fisik</th>
+                        <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/3">Identitas & Foto Kapal</th>
+                        <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Spesifikasi Fisik</th>
                         <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6">Performa Mesin</th>
                         <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6 text-center">Operasional & Dokumen</th>
                         <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6 text-right">Aksi</th>
@@ -55,21 +152,26 @@
                 </thead>
                 
                 <tbody class="block md:table-row-group space-y-6 md:space-y-0 md:divide-y md:divide-gray-50">
+                    
                     @forelse($kapals as $kapal)
-                    <tr class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none border border-gray-100 md:border-none hover:bg-slate-50/80 transition-colors duration-150">
+                    <tr wire:key="kapal-{{ $kapal->id }}" class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none border border-gray-100 md:border-none hover:bg-slate-50/80 transition-colors duration-150">
                         
                         <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
-                            <span class="text-xs font-bold text-indigo-500 uppercase md:hidden mb-2">Identitas Kapal</span>
-                            <div class="flex items-start">
-                                <div class="hidden md:flex flex-shrink-0 h-10 w-10 items-center justify-center bg-indigo-50 rounded-lg text-indigo-600 mr-3 mt-1">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="5" r="3"></circle><line x1="12" y1="22" x2="12" y2="8"></line><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
-                                    </svg>
+                            <span class="text-xs font-bold text-indigo-500 uppercase md:hidden mb-3 block border-b border-indigo-50 pb-2">Identitas & Foto Kapal</span>
+                            <div class="flex items-start gap-4">
+                                <div class="flex flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 items-center justify-center bg-indigo-50 rounded-xl text-indigo-600 overflow-hidden border border-slate-200 shadow-sm">
+                                    @if($kapal->foto_kapal)
+                                        <img src="{{ asset('storage/' . $kapal->foto_kapal) }}" alt="Foto {{ $kapal->nama_kapal }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+                                    @else
+                                        <svg class="w-8 h-8 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    @endif
                                 </div>
-                                <div>
-                                    <h3 class="font-bold text-gray-900 text-base">{{ $kapal->nama_kapal ?? '-' }}</h3>
+                                <div class="flex flex-col pt-1">
+                                    <h3 class="font-bold text-gray-900 text-base sm:text-lg">{{ $kapal->nama_kapal ?? '-' }}</h3>
                                     <p class="text-sm text-gray-500 font-medium mt-0.5">{{ $kapal->skpd_ukpd ?? 'Tanpa SKPD' }}</p>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-600 mt-1.5">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-600 mt-2 w-max">
                                         Thn: {{ $kapal->tahun_pembuatan ?? '-' }}
                                     </span>
                                 </div>
@@ -78,7 +180,7 @@
                         
                         <td class="flex flex-col md:table-cell px-4 py-3 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
                             <span class="text-xs font-semibold text-gray-400 uppercase md:hidden mb-1">Spesifikasi Fisik</span>
-                            <div class="space-y-1">
+                            <div class="space-y-1 pt-1">
                                 <p class="text-sm"><span class="text-gray-400 mr-1">Jenis:</span> <span class="font-medium text-gray-800">{{ $kapal->jenis_dan_tipe ?? '-' }}</span></p>
                                 <p class="text-sm"><span class="text-gray-400 mr-1">Bahan:</span> <span class="font-medium text-gray-800">{{ $kapal->material ?? '-' }}</span></p>
                                 <p class="text-sm"><span class="text-gray-400 mr-1">Ukuran:</span> <span class="font-medium text-gray-800">{{ $kapal->ukuran ?? '-' }}</span></p>
@@ -87,15 +189,15 @@
 
                         <td class="flex flex-col md:table-cell px-4 py-3 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
                             <span class="text-xs font-semibold text-gray-400 uppercase md:hidden mb-1">Performa Mesin</span>
-                            <div class="space-y-2 mt-1">
+                            <div class="space-y-2 mt-1 pt-1">
                                 <div class="flex items-center text-sm">
-                                    <div class="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mr-2">
+                                    <div class="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mr-2 shadow-sm">
                                         <span class="text-[10px] font-bold">GT</span>
                                     </div>
                                     <span class="font-bold text-gray-800">{{ $kapal->tonase_kotor_gt ?? '-' }}</span>
                                 </div>
                                 <div class="flex items-center text-sm">
-                                    <div class="w-6 h-6 rounded-md bg-orange-50 text-orange-600 flex items-center justify-center mr-2">
+                                    <div class="w-6 h-6 rounded-md bg-orange-50 text-orange-600 flex items-center justify-center mr-2 shadow-sm">
                                         <span class="text-[10px] font-bold">KW</span>
                                     </div>
                                     <span class="font-bold text-gray-800">{{ $kapal->tenaga_penggerak_kw ?? '-' }}</span>
@@ -104,7 +206,6 @@
                         </td>
 
                         <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-middle md:text-center">
-                            
                             <div class="md:hidden flex flex-col space-y-4 w-full text-left">
                                 <div>
                                     <span class="text-xs font-semibold text-gray-400 uppercase mb-1 block">Daerah Pelayaran</span>
@@ -121,7 +222,6 @@
                             </div>
 
                             <div class="hidden md:flex flex-col justify-center items-center gap-3">
-                                
                                 <div class="relative group inline-block">
                                     <button type="button" class="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors border border-teal-100 cursor-default">
                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -145,7 +245,6 @@
                                         <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                                     </div>
                                 </div>
-
                             </div>
                         </td>
                         
@@ -161,18 +260,17 @@
                                 </button>
                             </div>
                         </td>
-
                     </tr>
                     @empty
                     <tr class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none border border-gray-100 md:border-none">
                         <td colspan="5" class="block md:table-cell px-6 py-16 text-center text-gray-500">
                             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
                                 <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-base font-semibold text-gray-900 mb-1">Tidak ada kapal yang terdaftar</h3>
-                            <p class="text-sm text-gray-500">Mulai kelola armada dengan menambahkan data kapal baru.</p>
+                            <h3 class="text-base font-semibold text-gray-900 mb-1">Data tidak ditemukan</h3>
+                            <p class="text-sm text-gray-500">Coba gunakan kata kunci atau filter yang berbeda.</p>
                         </td>
                     </tr>
                     @endforelse
@@ -180,9 +278,13 @@
             </table>
         </div>
 
+        <div class="mt-6">
+            {{ $kapals->links() }}
+        </div>
+
         @if($isModalOpen)
         <div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-opacity">
-            <div class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl transform transition-all">
+            <div class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl transform transition-all mt-10 mb-10">
                 
                 <div class="flex items-center justify-between p-5 sm:p-6 border-b border-slate-100 rounded-t-2xl bg-slate-50/50">
                     <div class="flex items-center space-x-3">
@@ -201,6 +303,28 @@
                 </div>
 
                 <div class="p-5 sm:p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                    
+                    <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                        <label class="block text-sm font-semibold text-slate-700 mb-3">Foto Kapal <span class="text-xs text-slate-400 font-normal">(Opsional, max: 2MB)</span></label>
+                        <div class="flex items-center space-x-4">
+                            @if ($foto_kapal)
+                                <img src="{{ $foto_kapal->temporaryUrl() }}" class="h-16 w-16 object-cover rounded-lg border border-slate-200 shadow-sm">
+                            @elseif ($old_foto_kapal)
+                                <img src="{{ asset('storage/' . $old_foto_kapal) }}" class="h-16 w-16 object-cover rounded-lg border border-slate-200 shadow-sm">
+                            @else
+                                <div class="h-16 w-16 bg-slate-50 flex items-center justify-center rounded-lg border border-slate-200 border-dashed">
+                                    <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </div>
+                            @endif
+
+                            <div class="flex-1">
+                                <input type="file" wire:model="foto_kapal" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer transition-colors">
+                                <div wire:loading wire:target="foto_kapal" class="text-xs text-indigo-600 mt-1.5 font-medium animate-pulse">Mengunggah gambar...</div>
+                            </div>
+                        </div>
+                        @error('foto_kapal') <span class="text-rose-500 text-xs mt-2 font-medium flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> {{ $message }}</span>@enderror
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                         
                         <div class="space-y-4 sm:space-y-5">
@@ -209,13 +333,13 @@
                                 <div class="relative">
                                     <input type="text" wire:model="nama_kapal" placeholder="Masukkan nama kapal..." class="pl-4 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors">
                                 </div>
-                                @error('nama_kapal') <span class="text-rose-500 text-xs mt-1.5 block font-medium flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> {{ $message }}</span>@enderror
+                                @error('nama_kapal') <span class="text-rose-500 text-xs mt-1.5 font-medium flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> {{ $message }}</span>@enderror
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">SKPD / UKPD <span class="text-rose-500">*</span></label>
                                 <input type="text" wire:model="skpd_ukpd" placeholder="Contoh: Dinas Perhubungan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors">
-                                @error('skpd_ukpd') <span class="text-rose-500 text-xs mt-1.5 block font-medium flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> {{ $message }}</span>@enderror
+                                @error('skpd_ukpd') <span class="text-rose-500 text-xs mt-1.5 font-medium flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> {{ $message }}</span>@enderror
                             </div>
 
                             <div>
@@ -266,7 +390,7 @@
 
                 <div class="flex flex-col-reverse sm:flex-row items-center justify-end p-5 border-t border-slate-100 rounded-b-2xl sm:space-x-3 bg-slate-50/80 gap-3 sm:gap-0">
                     <button wire:click="closeModal()" type="button" class="w-full sm:w-auto inline-flex justify-center items-center text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 font-semibold rounded-xl text-sm px-5 py-2.5 transition-colors shadow-sm">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l-2-2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Batal
                     </button>
                     <button wire:click="store()" type="button" class="w-full sm:w-auto inline-flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-700 font-semibold rounded-xl text-sm px-5 py-2.5 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">

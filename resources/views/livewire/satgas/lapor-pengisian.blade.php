@@ -1,7 +1,7 @@
 <div class="p-4 sm:p-6 lg:px-8 lg:py-6 bg-slate-50 min-h-screen">
     <div class="w-full">
         
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
             <div class="flex items-center space-x-4">
                 <div class="p-3 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-lg shadow-indigo-200">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -41,12 +41,74 @@
             </div>
         @endif
 
-        <div class="bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-hidden w-full">
+        <div x-data="{ showFilters: false }" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 space-y-4">
+            
+            <div class="flex flex-col md:flex-row justify-between gap-4">
+                <div class="relative w-full md:w-1/2 lg:w-1/3">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari kapal, lokasi, atau kegiatan..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
+                </div>
+
+                <div class="flex flex-row gap-3 w-full md:w-auto">
+                    <button @click="showFilters = !showFilters" type="button" class="md:hidden flex-1 flex items-center justify-center px-4 py-2.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-semibold rounded-xl hover:bg-indigo-100 transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500">
+                        <svg x-show="!showFilters" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        <svg x-show="showFilters" style="display: none;" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        <span x-text="showFilters ? 'Tutup Filter' : 'Filter'"></span>
+                    </button>
+
+                    <div class="relative flex-1 md:flex-none md:w-48">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
+                        </div>
+                        <select wire:model.live="sortBy" class="pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer shadow-sm hover:bg-slate-100">
+                            <option value="latest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                    </div>
+                </div>
+            </div>
+
+            <div :class="{'hidden md:flex': !showFilters, 'flex flex-col md:flex-row': showFilters}" class="gap-3 pt-4 border-t border-slate-100 transition-all duration-200 items-center mt-2 md:mt-0">
+                
+                <div class="relative w-full md:w-64 flex-shrink-0">
+                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer hover:bg-slate-50">
+                        <option value="">Semua Armada Kapal</option>
+                        @foreach($kapals as $kapal)
+                            <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                </div>
+
+                <div class="flex flex-row items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
+                    <div class="relative flex-1 md:w-40">
+                        <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-600 z-10">Dari Tgl</label>
+                        <input type="date" wire:model.live="filterTanggalDari" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
+                    </div>
+        
+                    <div class="relative flex-1 md:w-40">
+                        <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-600 z-10">Sampai Tgl</label>
+                        <input type="date" wire:model.live="filterTanggalSampai" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-hidden w-full relative">
+            
+            <div wire:loading.delay.longest class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
+                <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            </div>
+
             <div class="overflow-x-auto w-full">
                 <table class="w-full text-sm text-left text-gray-600 block lg:table">
                     <thead class="hidden lg:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
                         <tr>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Informasi Umum</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Informasi Umum & Kapal</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Detail Penugasan</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Tim Petugas</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Riwayat Sounding</th>
@@ -59,16 +121,33 @@
                         <tr class="block lg:table-row bg-white rounded-2xl lg:rounded-none shadow-sm lg:shadow-none border border-gray-100 lg:border-none hover:bg-slate-50/50 transition-colors duration-150 p-4 lg:p-0">
                             
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
-                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Informasi Umum</span>
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-gray-900 text-base mb-1">{{ $laporan->hari }},</span>
-                                    <span class="text-indigo-600 font-semibold mb-2">
-                                        {{ $laporan->tanggal ? $laporan->tanggal->format('d M Y') : '-' }}
-                                    </span>
-                                    <div class="flex items-start mt-2">
+                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Informasi Umum & Kapal</span>
+                                
+                                <div class="flex flex-col mb-3">
+                                    <div class="flex items-center gap-1 mb-1">
+                                        <span class="font-semibold text-gray-900">
+                                            {{ $laporan->tanggal ? \Carbon\Carbon::parse($laporan->tanggal)->locale('id')->isoFormat('dddd') : '-' }}, 
+                                        </span>
+                                        <span class="text-indigo-600 font-semibold">
+                                            {{ $laporan->tanggal ? $laporan->tanggal->format('d M Y') : '-' }}
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center">
                                         <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                         <span class="text-xs text-gray-600 leading-tight">{{ $laporan->lokasi }}</span>
                                     </div>
+                                </div>
+
+                                <div class="bg-indigo-50/50 border border-indigo-100 rounded-lg p-2.5">
+                                    <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider block mb-1">Kapal Terkait</span>
+                                    <p class="text-sm font-bold text-indigo-900 truncate">{{ $laporan->kapal->nama_kapal ?? 'Kapal Terhapus' }}</p>
+                                    @if($laporan->kapal)
+                                        <div class="flex flex-wrap gap-1 mt-1 text-[10px] text-indigo-600 font-medium">
+                                            <span class="bg-white px-1.5 py-0.5 rounded border border-indigo-50">{{ $laporan->kapal->jenis_dan_tipe ?: '-' }}</span>
+                                            <span class="bg-white px-1.5 py-0.5 rounded border border-indigo-50">{{ $laporan->kapal->tonase_kotor_gt ?: '-' }} GT</span>
+                                            <span class="bg-white px-1.5 py-0.5 rounded border border-indigo-50">{{ $laporan->kapal->tenaga_penggerak_kw ?: '-' }} KW</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </td>
 
@@ -126,9 +205,7 @@
                                 <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Riwayat Sounding</span>
                                 
                                 <div class="flex items-center justify-between mb-3">
-                                    <span class="text-xs font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded truncate max-w-[70%]">
-                                        {{ $laporan->kapal->nama_kapal ?? 'Kapal Terhapus' }}
-                                    </span>
+                                    <span class="text-[10px] font-bold text-gray-500 uppercase">Lampiran:</span>
                                     <span class="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full whitespace-nowrap">
                                         {{ $laporan->soundings->count() }} Titik
                                     </span>
@@ -214,6 +291,11 @@
                     </tbody>
                 </table>
             </div>
+            
+            <div class="px-6 py-4 border-t border-slate-100">
+                {{ $laporans->links() }}
+            </div>
+            
         </div>
 
         @if($isOpen)
@@ -251,12 +333,7 @@
                                     </select>
                                 </div>
 
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Hari <span class="text-rose-500">*</span></label>
-                                    <input type="text" wire:model="hari" placeholder="Misal: Senin" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors" required>
-                                </div>
-
-                                <div>
+                                <div class="col-span-1 md:col-span-2">
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal <span class="text-rose-500">*</span></label>
                                     <input type="date" wire:model.live="tanggal" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors" required>
                                 </div>
@@ -311,7 +388,6 @@
                                                 </label>
                                             @endforeach
                                         </div>
-                                        @error('selected_soundings') <span class="text-xs text-rose-500 font-medium mt-1">{{ $message }}</span> @enderror
                                     @endif
                                 </div>
                             </div>
@@ -379,7 +455,7 @@
                     </form>
                 </div>
 
-                <div class="flex flex-col sm:flex-row items-center justify-end p-4 sm:p-6 border-t border-slate-100 rounded-b-2xl sm:space-x-3 bg-slate-50/80 gap-3 sm:gap-0 mt-auto">
+                <div class="flex flex-col sm:flex-row items-center justify-end p-4 sm:p-6 border-t border-slate-100 rounded-b-2xl bg-slate-50/80 gap-3 sm:gap-0 sm:space-x-3 mt-auto">
                     <button wire:click="closeModal()" type="button" class="w-full sm:w-auto inline-flex justify-center items-center text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 font-semibold rounded-xl text-sm px-5 py-2.5 transition-colors shadow-sm order-2 sm:order-1">
                         <svg class="w-4 h-4 mr-2 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Batal

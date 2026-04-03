@@ -3,63 +3,110 @@
 namespace App\Livewire\Satgas;
 
 use App\Models\Kapal;
-use Livewire\Component;
 use App\Models\LaporanPengisian;
 use App\Models\Sounding;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporPengisian extends Component
 {
-    public $laporans, $kapals;
+    use WithPagination;
+
+    // Properti Form Modal
     public $laporan_id, $kapal_id, $hari, $tanggal, $dasar_hukum, $kegiatan, $tujuan, $lokasi;
     public $petugas_list = []; 
     public $isOpen = false;
 
-    // Properti baru untuk fitur Checklist Sounding
+    // Properti Checklist Sounding
     public $available_soundings = [];
     public $selected_soundings = [];
 
+    // Properti Search, Filter, dan Sort
+    public $search = '';
+    public $sortBy = 'latest';
+    public $filterKapal = '';
+    
+    // Properti Filter Tanggal Baru
+    public $filterTanggalDari = '';
+    public $filterTanggalSampai = '';
+
+    // Reset pagination ketika user melakukan pencarian atau filter
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingSortBy() { $this->resetPage(); }
+    public function updatingFilterKapal() { $this->resetPage(); }
+    public function updatingFilterTanggalDari() { $this->resetPage(); }
+    public function updatingFilterTanggalSampai() { $this->resetPage(); }
+
     public function mount()
     {
-        $this->kapals = Kapal::all(); 
         $this->initPetugas();
     }
 
     public function render()
     {
-        $this->laporans = LaporanPengisian::with(['kapal', 'soundings'])->latest()->get();
-        return view('livewire.satgas.lapor-pengisian')->layout('layouts.app');
+        $query = LaporanPengisian::with(['kapal', 'soundings']);
+
+        // 1. Fitur Search (Cari Lokasi, Kegiatan, atau Nama Kapal)
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('lokasi', 'like', '%' . $this->search . '%')
+                  ->orWhere('kegiatan', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('kapal', function($k) {
+                      $k->where('nama_kapal', 'like', '%' . $this->search . '%');
+                  });
+            });
+        }
+
+        // 2. Fitur Filter Kapal
+        if ($this->filterKapal) {
+            $query->where('kapal_id', $this->filterKapal);
+        }
+        
+        // Fitur Filter Rentang Tanggal
+        if ($this->filterTanggalDari) {
+            $query->whereDate('tanggal', '>=', $this->filterTanggalDari);
+        }
+        if ($this->filterTanggalSampai) {
+            $query->whereDate('tanggal', '<=', $this->filterTanggalSampai);
+        }
+
+        // 3. Fitur Sort
+        match($this->sortBy) {
+            'oldest' => $query->orderBy('tanggal', 'asc'),
+            default => $query->orderBy('tanggal', 'desc'), // 'latest'
+        };
+
+        // Paginasi & Data Relasi untuk Dropdown
+        $laporans = $query->paginate(10);
+        $kapals = Kapal::orderBy('nama_kapal', 'asc')->get();
+
+        return view('livewire.satgas.lapor-pengisian', [
+            'laporans' => $laporans,
+            'kapals' => $kapals,
+        ])->layout('layouts.app');
     }
 
     public function downloadPdf($id)
     {
-        // Ambil data laporan beserta relasinya
         $laporan = LaporanPengisian::with(['kapal', 'soundings' => function($q) {
-            // Urutkan sounding berdasarkan waktu dibuat agar logis dari Awal ke Akhir
             $q->orderBy('created_at', 'asc');
         }])->findOrFail($id);
 
-        // Render view PDF
         $pdf = Pdf::loadView('pdf.laporan-pengisian-bbm', ['laporan' => $laporan]);
-
-        // Atur ukuran kertas ke A4 (Portrait)
         $pdf->setPaper('A4', 'portrait');
 
-        // Nama file saat didownload
         $namaFile = 'Laporan_BBM_' . str_replace(' ', '_', $laporan->kapal->nama_kapal) . '_' . $laporan->tanggal->format('d-m-Y') . '.pdf';
 
-        // Kembalikan response berupa file download
         return response()->streamDownload(fn () => print($pdf->output()), $namaFile);
     }
 
-    // Trigger otomatis saat Kapal atau Tanggal diubah di form
     public function updatedKapalId() { $this->loadAvailableSoundings(); }
     public function updatedTanggal() { $this->loadAvailableSoundings(); }
 
     public function loadAvailableSoundings()
     {
         if ($this->kapal_id && $this->tanggal) {
-            // Cari data sounding milik kapal ini di tanggal yang dipilih
             $this->available_soundings = Sounding::where('kapal_id', $this->kapal_id)
                 ->whereDate('created_at', $this->tanggal)
                 ->get();
@@ -75,7 +122,10 @@ class LaporPengisian extends Component
     }
 
     public function openModal() { $this->isOpen = true; }
-    public function closeModal() { $this->isOpen = false; }
+    public function closeModal() { 
+        $this->isOpen = false; 
+        $this->resetValidation();
+    }
 
     private function resetInputFields()
     {
@@ -119,8 +169,6 @@ class LaporPengisian extends Component
             'lokasi' => $this->lokasi,
         ]);
 
-        // Menyimpan relasi ke tabel pivot (laporan_sounding)
-        // Fungsi sync() akan otomatis menambah/menghapus relasi sesuai array yang dicentang
         $laporan->soundings()->sync($this->selected_soundings);
 
         session()->flash('message', $this->laporan_id ? 'Laporan berhasil diperbarui.' : 'Laporan berhasil dibuat.');
@@ -143,10 +191,7 @@ class LaporPengisian extends Component
         $this->petugas_list = $laporan->petugas_list ?? [];
         while(count($this->petugas_list) < 7) { $this->petugas_list[] = ['nama' => '', 'jabatan' => '']; }
         
-        // Load opsi sounding yang tersedia
         $this->loadAvailableSoundings();
-        
-        // Centang sounding yang sudah tersimpan di database
         $this->selected_soundings = $laporan->soundings->pluck('id')->toArray();
 
         $this->openModal();
@@ -155,7 +200,6 @@ class LaporPengisian extends Component
     public function delete($id)
     {
         $laporan = LaporanPengisian::find($id);
-        // Hapus relasi pivot terlebih dahulu
         $laporan->soundings()->detach(); 
         $laporan->delete();
         

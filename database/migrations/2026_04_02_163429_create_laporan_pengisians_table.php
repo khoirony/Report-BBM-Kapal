@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             // Relasi Laporan langsung ke Kapal
             $table->foreignId('kapal_id')->constrained('kapals')->cascadeOnDelete();
-            
-            $table->string('hari');
             $table->date('tanggal');
             $table->string('dasar_hukum')->nullable();
             $table->json('petugas_list')->nullable(); 

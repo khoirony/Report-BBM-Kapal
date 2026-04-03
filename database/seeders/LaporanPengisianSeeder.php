@@ -28,7 +28,6 @@ class LaporanPengisianSeeder extends Seeder
             $laporan = LaporanPengisian::factory()->create([
                 'kapal_id' => $firstSounding->kapal_id,
                 'tanggal' => $tanggal->format('Y-m-d'),
-                'hari' => $tanggal->translatedFormat('l'), 
             ]);
 
             // Update ID laporan ke semua sounding yang ada di grup ini

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('tenaga_penggerak_kw')->nullable();
             $table->text('daerah_pelayaran')->nullable();
             $table->text('list_sertifikat_kapal')->nullable();
+            $table->string('foto_kapal')->nullable();
             $table->timestamps();
         });
     }
