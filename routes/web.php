@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PdfController;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\Dashboard\Nahkoda;
@@ -8,6 +9,8 @@ use App\Livewire\Dashboard\Penyedia;
 use App\Livewire\Dashboard\Satgas;
 use App\Livewire\Dashboard\Sounding;
 use App\Livewire\Dashboard\SuperAdmin;
+use App\Livewire\Satgas\LaporPengisian;
+use App\Livewire\Satgas\SuratTugasBBM;
 use App\Livewire\Sounding\SoundingBBM;
 use App\Livewire\SuperAdmin\DataKapal;
 use Illuminate\Support\Facades\Route;
@@ -43,7 +46,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::middleware('role:superadmin')->group(function () {
         Route::get('/dashboard-superadmin', SuperAdmin::class)->name('dashboard.superadmin');
-        Route::get('/superadmin/data-kapal', DataKapal::class)->name('superadmin.data-kapal');
+        Route::get('/data-kapal', DataKapal::class)->name('data-kapal');
     });
 
     Route::middleware('role:sounding')->group(function () {
@@ -53,6 +56,9 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:satgas')->group(function () {
         Route::get('/dashboard-satgas', Satgas::class)->name('dashboard.satgas');
+        Route::get('/laporan-pengisian', LaporPengisian::class)->name('satgas.lapor-pengisian');
+        Route::get('/surat-tugas', SuratTugasBBM::class)->name('satgas.surat-tugas');
+        Route::get('/data-kapal', DataKapal::class)->name('data-kapal');
     });
 
     Route::middleware('role:penyedia')->group(function () {
@@ -74,3 +80,6 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('logout');
 });
+
+Route::get('/laporan-bbm/{id}/pdf', [PdfController::class, 'previewLaporan'])->name('laporan.pdf.preview');
+Route::get('/surat-tugas/{id}/pdf', [PdfController::class, 'previewSuratTugas'])->name('surattugas.pdf.preview');

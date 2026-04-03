@@ -34,9 +34,31 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        User::updateOrCreate(
+            ['email' => 'satgas@gmail.com'],
+            [
+                'name' => 'Satgas BBM',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password1234'),
+                'role' => 'satgas',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'penyedia@gmail.com'],
+            [
+                'name' => 'Penyedia BBM',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password1234'),
+                'role' => 'penyedia',
+            ]
+        );
+
         $this->call([
             KapalSeeder::class,
             SoundingSeeder::class,
+            LaporanPengisianSeeder::class,
+            SuratTugasSeeder::class,
         ]);
     }
 }

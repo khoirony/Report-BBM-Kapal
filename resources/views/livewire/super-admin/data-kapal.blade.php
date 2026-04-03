@@ -1,4 +1,4 @@
-<div class="p-4 sm:p-6 lg:p-8 bg-slate-50 min-h-screen">
+<div class="p-4 sm:p-6 lg:px-8 lg:py-6 bg-slate-50 min-h-screen">
     <div class="w-full">
         
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">

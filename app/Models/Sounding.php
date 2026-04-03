@@ -16,4 +16,9 @@ class Sounding extends Model
     {
         return $this->belongsTo(Kapal::class);
     }
+    
+    public function laporanPengisian() 
+    {
+        return $this->belongsToMany(LaporanPengisian::class, 'laporan_sounding', 'sounding_id', 'laporan_bbm_id')->withTimestamps();
+    }
 }
