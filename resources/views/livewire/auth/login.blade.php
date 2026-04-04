@@ -17,8 +17,14 @@
                 Silakan masuk menggunakan kredensial Anda
             </p>
         </div>
+
+        @if (session('status'))
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative text-sm mt-4 text-center" role="alert">
+                <span class="block sm:inline font-medium">{{ session('status') }}</span>
+            </div>
+        @endif
         
-        <form class="mt-8 space-y-6" wire:submit.prevent="login">
+        <form class="mt-8 space-y-4" wire:submit.prevent="login">
             <div class="space-y-5">
                 <div>
                     <label class="text-sm font-medium text-gray-700">Email Address</label>
@@ -42,7 +48,13 @@
                 </div>
             </div>
 
-            <div class="pt-2">
+            <div class="flex justify-end">
+                <a href="/forgot-password" class="text-xs font-semibold text-indigo-600 hover:text-indigo-500 transition duration-200">
+                    Lupa password?
+                </a>
+            </div>
+
+            <div>
                 <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
                     <span wire:loading.remove wire:target="login">Masuk Sekarang</span>
                     <span wire:loading wire:target="login" class="flex items-center">

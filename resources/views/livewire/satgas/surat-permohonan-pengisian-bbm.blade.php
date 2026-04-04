@@ -146,23 +146,26 @@
                                         <span class="font-extrabold text-emerald-800 text-sm">{{ rtrim(rtrim(number_format($jumlahLiter, 2, ',', '.'), '0'), ',') }} L</span>
                                     </div>
                                 </td>
-                                
-                                <td class="flex flex-row md:table-cell px-4 py-4 md:px-6 md:py-5 md:text-right gap-2 md:gap-0 align-middle relative z-10">
-                                    <div class="flex flex-wrap md:flex-col lg:flex-row justify-end gap-2 w-full">
-                                        <a href="#" target="_blank" class="flex-1 lg:flex-none justify-center inline-flex items-center text-emerald-600 hover:text-white font-semibold bg-emerald-50 hover:bg-emerald-600 px-3 py-2 rounded-xl md:rounded-lg transition-all duration-200 border border-emerald-100">
-                                            <svg class="w-4 h-4 md:mr-0 lg:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                                            <span class="md:hidden lg:inline text-xs">Cetak</span>
+
+                                <td class="block lg:table-cell px-2 py-4 lg:px-6 lg:py-5 lg:text-right align-middle">
+                                    <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto">
+                                        
+                                        <a href="#" target="_blank" class="w-full justify-center inline-flex items-center text-slate-700 font-semibold bg-slate-100 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-slate-200 hover:border-slate-800 shadow-sm">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                            <span>PDF</span>
                                         </a>
-
-                                        <button wire:click="edit({{ $item->id }})" class="flex-1 lg:flex-none justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-xl md:rounded-lg transition-all duration-200 border border-indigo-100">
-                                            <svg class="w-4 h-4 md:mr-0 lg:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                            <span class="md:hidden lg:inline text-xs">Edit</span>
-                                        </button>
-
-                                        <button wire:click="delete({{ $item->id }})" wire:confirm="Yakin ingin menghapus surat permohonan ini?" class="flex-1 lg:flex-none justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-xl md:rounded-lg transition-all duration-200 border border-rose-100">
-                                            <svg class="w-4 h-4 md:mr-0 lg:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            <span class="md:hidden lg:inline text-xs">Hapus</span>
-                                        </button>
+    
+                                        <div class="flex gap-2">
+                                            <button wire:click="edit({{ $item->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100">
+                                                <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                <span class="lg:hidden">Edit</span>
+                                            </button>
+                                            
+                                            <button wire:click="delete({{ $item->id }})" onclick="confirm('Yakin ingin menghapus laporan ini?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100">
+                                                <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                <span class="lg:hidden">Hapus</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </td>
 

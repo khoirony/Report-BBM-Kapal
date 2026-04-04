@@ -3,7 +3,7 @@
         
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
             <div class="flex items-center space-x-4">
-                <div class="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg shadow-emerald-200">
+                <div class="p-3 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-lg shadow-indigo-200">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                     </svg>
@@ -14,7 +14,7 @@
                 </div>
             </div>
             
-            <button wire:click="create()" class="inline-flex items-center justify-center bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 w-full sm:w-auto focus:ring-2 focus:ring-offset-2 focus:ring-teal-600">
+            <button wire:click="create()" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 w-full sm:w-auto focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
                 <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
                 Buat Surat Tugas
             </button>
@@ -28,24 +28,24 @@
         @endif
 
         <div x-data="{ showFilters: false }" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 space-y-4">
-            
+    
             <div class="flex flex-col md:flex-row justify-between gap-4">
                 <div class="relative w-full md:w-1/2 lg:w-1/3">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari No. Surat, Kapal, Lokasi..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 block w-full transition-colors shadow-sm">
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari No. Surat, Kapal, Lokasi..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
                 </div>
         
                 <div class="flex flex-row gap-3 w-full md:w-auto">
-                    <button @click="showFilters = !showFilters" type="button" class="md:hidden flex-1 flex items-center justify-center px-4 py-2.5 bg-teal-50 border border-teal-100 text-teal-700 text-sm font-semibold rounded-xl hover:bg-teal-100 transition-colors shadow-sm focus:ring-2 focus:ring-teal-500">
+                    <button @click="showFilters = !showFilters" type="button" class="md:hidden flex-1 flex items-center justify-center px-4 py-2.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-semibold rounded-xl hover:bg-indigo-100 transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500">
                         <svg x-show="!showFilters" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                         <svg x-show="showFilters" style="display: none;" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         <span x-text="showFilters ? 'Tutup Filter' : 'Filter'"></span>
                     </button>
         
                     <div class="relative flex-1 md:flex-none md:w-48">
-                        <select wire:model.live="sortBy" class="pl-4 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-teal-500 block w-full appearance-none shadow-sm hover:bg-slate-100">
+                        <select wire:model.live="sortBy" class="pl-4 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full appearance-none shadow-sm hover:bg-slate-100">
                             <option value="latest">Terbaru</option>
                             <option value="oldest">Terlama</option>
                         </select>
@@ -54,10 +54,10 @@
                 </div>
             </div>
         
-            <div :class="{'hidden md:flex': !showFilters, 'flex flex-col md:flex-row': showFilters}" class="gap-3 pt-4 border-t border-slate-100 transition-all duration-200 items-center mt-2 md:mt-0">
+            <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-100 transition-all duration-200">
                 
-                <div class="relative w-full md:w-64 flex-shrink-0">
-                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-teal-500 block w-full appearance-none hover:bg-slate-50">
+                <div class="relative w-full">
+                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50">
                         <option value="">Semua Armada Kapal</option>
                         @foreach($kapals as $kapal)
                             <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal }}</option>
@@ -66,16 +66,21 @@
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                 </div>
         
-                <div class="flex flex-row items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
-                    <div class="relative flex-1 md:w-40">
-                        <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-teal-600 z-10">Dari Tgl</label>
-                        <input type="date" wire:model.live="filterTanggalDari" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-teal-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
-                    </div>
+                <div class="relative w-full">
+                    <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-600 z-10">Dari Tgl</label>
+                    <input type="date" wire:model.live="filterTanggalDari" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
+                </div>
         
-                    <div class="relative flex-1 md:w-40">
-                        <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-teal-600 z-10">Sampai Tgl</label>
-                        <input type="date" wire:model.live="filterTanggalSampai" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-teal-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
-                    </div>
+                <div class="relative w-full">
+                    <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-600 z-10">Sampai Tgl</label>
+                    <input type="date" wire:model.live="filterTanggalSampai" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
+                </div>
+        
+                <div class="flex items-end w-full">
+                    <button wire:click="resetFilters" class="w-full min-h-[34px] flex justify-center items-center px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold rounded-lg transition-colors border border-rose-100">
+                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Reset Filter
+                    </button>
                 </div>
         
             </div>
@@ -84,7 +89,7 @@
         <div class="bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-hidden w-full relative">
             
             <div wire:loading.delay.longest class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
-                <div class="w-8 h-8 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div>
+                <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
             </div>
 
             <div class="overflow-x-auto w-full">
@@ -102,7 +107,7 @@
                         <tr class="block lg:table-row bg-white rounded-2xl lg:rounded-none shadow-sm lg:shadow-none border border-gray-100 lg:border-none hover:bg-slate-50/50 p-4 lg:p-0 transition-colors">
                             
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 align-top">
-                                <span class="text-xs font-bold text-teal-500 uppercase lg:hidden mb-2 block">Identitas Surat</span>
+                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Identitas Surat</span>
                                 
                                 <div class="mb-3">
                                     <div class="bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 inline-block mb-1">
@@ -115,7 +120,7 @@
                                 
                                 <div>
                                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-1">Waktu Pelaksanaan</span>
-                                    <div class="inline-flex items-center text-teal-700 bg-teal-50 px-2.5 py-1 rounded-md border border-teal-100 font-bold text-xs">
+                                    <div class="inline-flex items-center text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100 font-bold text-xs">
                                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         {{ $surat->waktu_pelaksanaan }}
                                     </div>
@@ -123,15 +128,15 @@
                             </td>
 
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 align-top">
-                                <span class="text-xs font-bold text-teal-500 uppercase lg:hidden mb-2 block">Informasi Umum & Laporan</span>
+                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Informasi Umum & Laporan</span>
                                 
                                 @if($surat->laporanSebelumPengisianBbm)
                                     <div class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm">
                                         
                                         <div class="flex items-center justify-between border-b border-gray-50 pb-2 mb-2">
                                             <div class="flex items-center">
-                                                <div class="w-8 h-8 rounded-full bg-teal-50 flex items-center justify-center mr-3 flex-shrink-0">
-                                                    <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                                <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center mr-3 flex-shrink-0">
+                                                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                                                 </div>
                                                 <div>
                                                     <p class="font-bold text-gray-900 text-sm">{{ $surat->laporanSebelumPengisianBbm->kapal->nama_kapal ?? 'Kapal Tidak Ditemukan' }}</p>
@@ -164,13 +169,13 @@
                             <td class="block lg:table-cell px-2 py-4 lg:px-6 lg:py-5 lg:text-right align-middle">
                                 <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto">
                                     
-                                    <a href="{{ route('surattugas.pdf.preview', $surat->id) }}" target="_blank" class="w-full justify-center inline-flex items-center text-slate-700 font-semibold bg-white hover:bg-slate-800 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-slate-200 hover:border-slate-800 shadow-sm">
+                                    <a href="{{ route('surattugas.pdf.preview', $surat->id) }}" target="_blank" class="w-full justify-center inline-flex items-center text-slate-700 font-semibold bg-slate-100 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-slate-200 hover:border-slate-800 shadow-sm">
                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                        <span>Cetak PDF</span>
+                                        <span>PDF</span>
                                     </a>
 
                                     <div class="flex gap-2">
-                                        <button wire:click="edit({{ $surat->id }})" class="flex-1 justify-center inline-flex items-center text-teal-600 hover:text-white font-semibold bg-teal-50 hover:bg-teal-600 px-3 py-2 rounded-lg transition-all duration-200 border border-teal-100">
+                                        <button wire:click="edit({{ $surat->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         </button>
                                         
@@ -220,7 +225,7 @@
                             
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tautkan Laporan BBM <span class="text-rose-500">*</span></label>
-                                <select wire:model="laporan_pengisian_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-teal-500 focus:border-teal-500" required>
+                                <select wire:model="laporan_pengisian_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                                     <option value="">-- Pilih Laporan BBM --</option>
                                     @foreach($laporans as $lap)
                                         <option value="{{ $lap->id }}">Lap #{{ $lap->id }} - {{ $lap->kapal->nama_kapal ?? 'Kapal' }} (Tgl: {{ \Carbon\Carbon::parse($lap->tanggal)->format('d/m/Y') }})</option>
@@ -235,20 +240,20 @@
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Surat <span class="text-rose-500">*</span></label>
                                     <div class="flex items-center">
-                                        <input type="text" wire:model="nomor_surat" placeholder="001" class="px-4 py-2.5 bg-slate-50 border border-slate-200 border-r-0 text-sm rounded-l-xl w-full focus:ring-2 focus:ring-teal-500 focus:border-teal-500" required>
+                                        <input type="text" wire:model="nomor_surat" placeholder="001" class="px-4 py-2.5 bg-slate-50 border border-slate-200 border-r-0 text-sm rounded-l-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                                         <span class="px-3 py-2.5 bg-gray-100 border border-gray-200 text-sm rounded-r-xl font-bold text-gray-600">/PH.12.00</span>
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Dikeluarkan <span class="text-rose-500">*</span></label>
-                                    <input type="date" wire:model="tanggal_dikeluarkan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-teal-500 focus:border-teal-500" required>
+                                    <input type="date" wire:model="tanggal_dikeluarkan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Waktu Pelaksanaan (Pukul) <span class="text-rose-500">*</span></label>
                                 <div class="flex items-center">
-                                    <input type="text" wire:model="waktu_pelaksanaan" placeholder="Contoh: 08:00 - Selesai" class="px-4 py-2.5 bg-slate-50 border border-slate-200 border-r-0 text-sm rounded-l-xl w-full focus:ring-2 focus:ring-teal-500 focus:border-teal-500" required>
+                                    <input type="text" wire:model="waktu_pelaksanaan" placeholder="Contoh: 08:00 - Selesai" class="px-4 py-2.5 bg-slate-50 border border-slate-200 border-r-0 text-sm rounded-l-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                                     <span class="px-3 py-2.5 bg-gray-100 border border-gray-200 text-sm rounded-r-xl font-bold text-gray-600">WIB</span>
                                 </div>
                             </div>
@@ -259,7 +264,7 @@
 
                 <div class="flex flex-col sm:flex-row items-center justify-end p-4 sm:p-6 border-t border-slate-100 rounded-b-2xl bg-slate-50/80 gap-3">
                     <button wire:click="closeModal()" type="button" class="w-full sm:w-auto px-5 py-2.5 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold shadow-sm transition-colors order-2 sm:order-1">Batal</button>
-                    <button type="submit" form="form-surat" class="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors order-1 sm:order-2">Simpan Surat</button>
+                    <button type="submit" form="form-surat" class="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors order-1 sm:order-2">Simpan Surat</button>
                 </div>
 
             </div>

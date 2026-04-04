@@ -71,9 +71,9 @@
                 </div>
             </div>
 
-            <div :class="{'hidden md:flex': !showFilters, 'flex flex-col md:flex-row': showFilters}" class="gap-3 pt-4 border-t border-slate-100 transition-all duration-200 items-center mt-2 md:mt-0">
+            <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-100 transition-all duration-200">
                 
-                <div class="relative w-full md:w-64 flex-shrink-0">
+                <div class="relative w-full">
                     <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer hover:bg-slate-50">
                         <option value="">Semua Armada Kapal</option>
                         @foreach($kapals as $kapal)
@@ -83,16 +83,21 @@
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                 </div>
 
-                <div class="flex flex-row items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
-                    <div class="relative flex-1 md:w-40">
-                        <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-600 z-10">Dari Tgl</label>
-                        <input type="date" wire:model.live="filterTanggalDari" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
-                    </div>
-        
-                    <div class="relative flex-1 md:w-40">
-                        <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-600 z-10">Sampai Tgl</label>
-                        <input type="date" wire:model.live="filterTanggalSampai" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
-                    </div>
+                <div class="relative w-full">
+                    <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-600 z-10">Dari Tgl</label>
+                    <input type="date" wire:model.live="filterTanggalDari" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
+                </div>
+    
+                <div class="relative w-full">
+                    <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-600 z-10">Sampai Tgl</label>
+                    <input type="date" wire:model.live="filterTanggalSampai" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
+                </div>
+
+                <div class="flex items-end w-full">
+                    <button wire:click="resetFilters" class="w-full min-h-[34px] flex justify-center items-center px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold rounded-lg transition-colors border border-rose-100">
+                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Reset Filter
+                    </button>
                 </div>
 
             </div>

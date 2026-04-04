@@ -32,6 +32,16 @@ class SuratTugasPengisianBBM extends Component
     public function updatingFilterTanggalDari() { $this->resetPage(); }
     public function updatingFilterTanggalSampai() { $this->resetPage(); }
 
+    public function resetFilters()
+    {
+        $this->search = '';
+        $this->filterKapal = '';
+        $this->filterTanggalDari = '';
+        $this->filterTanggalSampai = '';
+        $this->sortBy = 'latest';
+        $this->resetPage();
+    }
+
     public function render()
     {
         $query = SuratTugasPengisian::with(['laporanSebelumPengisianBbm.kapal']);
