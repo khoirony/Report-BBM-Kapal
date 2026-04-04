@@ -3,13 +3,13 @@
 namespace App\Livewire\Satgas;
 
 use App\Models\Kapal;
-use App\Models\LaporanPengisian;
+use App\Models\LaporanSebelumPengisian;
 use App\Models\Sounding;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class LaporPengisian extends Component
+class LaporanBBMSebelumPengisian extends Component
 {
     use WithPagination;
 
@@ -45,7 +45,7 @@ class LaporPengisian extends Component
 
     public function render()
     {
-        $query = LaporanPengisian::with(['kapal', 'soundings']);
+        $query = LaporanSebelumPengisian::with(['kapal', 'soundings']);
 
         // 1. Fitur Search (Cari Lokasi, Kegiatan, atau Nama Kapal)
         if ($this->search) {
@@ -81,7 +81,7 @@ class LaporPengisian extends Component
         $laporans = $query->paginate(10);
         $kapals = Kapal::orderBy('nama_kapal', 'asc')->get();
 
-        return view('livewire.satgas.lapor-pengisian', [
+        return view('livewire.satgas.laporan-bbm-sebelum-pengisian', [
             'laporans' => $laporans,
             'kapals' => $kapals,
         ])->layout('layouts.app');
@@ -89,7 +89,7 @@ class LaporPengisian extends Component
 
     public function downloadPdf($id)
     {
-        $laporan = LaporanPengisian::with(['kapal', 'soundings' => function($q) {
+        $laporan = LaporanSebelumPengisian::with(['kapal', 'soundings' => function($q) {
             $q->orderBy('created_at', 'asc');
         }])->findOrFail($id);
 
@@ -152,15 +152,13 @@ class LaporPengisian extends Component
     {
         $this->validate([
             'kapal_id' => 'required',
-            'hari' => 'required',
             'tanggal' => 'required|date',
             'dasar_hukum' => 'required',
             'lokasi' => 'required',
         ]);
 
-        $laporan = LaporanPengisian::updateOrCreate(['id' => $this->laporan_id], [
+        $laporan = LaporanSebelumPengisian::updateOrCreate(['id' => $this->laporan_id], [
             'kapal_id' => $this->kapal_id,
-            'hari' => $this->hari,
             'tanggal' => $this->tanggal,
             'dasar_hukum' => $this->dasar_hukum,
             'petugas_list' => $this->petugas_list,
@@ -178,7 +176,7 @@ class LaporPengisian extends Component
 
     public function edit($id)
     {
-        $laporan = LaporanPengisian::findOrFail($id);
+        $laporan = LaporanSebelumPengisian::findOrFail($id);
         $this->laporan_id = $id;
         $this->kapal_id = $laporan->kapal_id;
         $this->hari = $laporan->hari;
@@ -199,7 +197,7 @@ class LaporPengisian extends Component
 
     public function delete($id)
     {
-        $laporan = LaporanPengisian::find($id);
+        $laporan = LaporanSebelumPengisian::find($id);
         $laporan->soundings()->detach(); 
         $laporan->delete();
         

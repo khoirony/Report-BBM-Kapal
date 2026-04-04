@@ -3,14 +3,15 @@
 use App\Http\Controllers\PdfController;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
-use App\Livewire\Dashboard\Nahkoda;
-use App\Livewire\Dashboard\Pengawas;
-use App\Livewire\Dashboard\Penyedia;
+use App\Livewire\Dashboard\NahkodaDashboard;
+use App\Livewire\Dashboard\PengawasDashboard;
+use App\Livewire\Dashboard\PenyediaDashboard;
 use App\Livewire\Dashboard\SatgasDashboard;
 use App\Livewire\Dashboard\SoundingDashboard;
-use App\Livewire\Dashboard\SuperAdmin;
-use App\Livewire\Satgas\LaporPengisian;
-use App\Livewire\Satgas\SuratTugasBBM;
+use App\Livewire\Dashboard\SuperAdminDashboard;
+use App\Livewire\Satgas\LaporanBBMSebelumPengisian;
+use App\Livewire\Satgas\SuratPermohonanPengisianBBM;
+use App\Livewire\Satgas\SuratTugasPengisianBBM;
 use App\Livewire\Sounding\SoundingBBM;
 use App\Livewire\SuperAdmin\DataKapal;
 use Illuminate\Support\Facades\Route;
@@ -45,7 +46,7 @@ Route::middleware('guest')->group(function () {
 // Protected Routes (Contoh Dashboard untuk masing-masing role)
 Route::middleware('auth')->group(function () {
     Route::middleware('role:superadmin')->group(function () {
-        Route::get('/dashboard-superadmin', SuperAdmin::class)->name('dashboard.superadmin');
+        Route::get('/dashboard-superadmin', SuperAdminDashboard::class)->name('dashboard.superadmin');
         Route::get('/data-kapal', DataKapal::class)->name('data-kapal');
     });
 
@@ -56,21 +57,22 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:satgas')->group(function () {
         Route::get('/dashboard-satgas', SatgasDashboard::class)->name('dashboard.satgas');
-        Route::get('/laporan-pengisian', LaporPengisian::class)->name('satgas.lapor-pengisian');
-        Route::get('/surat-tugas', SuratTugasBBM::class)->name('satgas.surat-tugas');
+        Route::get('/laporan-pengisian', LaporanBBMSebelumPengisian::class)->name('satgas.lapor-pengisian');
+        Route::get('/surat-tugas', SuratTugasPengisianBBM::class)->name('satgas.surat-tugas');
+        Route::get('/surat-permohonan', SuratPermohonanPengisianBBM::class)->name('satgas.surat-permohonan');
         Route::get('/data-kapal', DataKapal::class)->name('data-kapal');
     });
 
     Route::middleware('role:penyedia')->group(function () {
-        Route::get('/dashboard-penyedia', Penyedia::class)->name('dashboard.penyedia');
+        Route::get('/dashboard-penyedia', PenyediaDashboard::class)->name('dashboard.penyedia');
     });
 
     Route::middleware('role:nahkoda')->group(function () {
-        Route::get('/dashboard-nahkoda', Nahkoda::class)->name('dashboard.nahkoda');
+        Route::get('/dashboard-nahkoda', NahkodaDashboard::class)->name('dashboard.nahkoda');
     });
 
     Route::middleware('role:pengawas')->group(function () {
-        Route::get('/dashboard-pengawas', Pengawas::class)->name('dashboard.pengawas');
+        Route::get('/dashboard-pengawas', PengawasDashboard::class)->name('dashboard.pengawas');
     });
     
     Route::post('/logout', function () {

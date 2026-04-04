@@ -4,16 +4,16 @@ namespace App\Livewire\Satgas;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\SuratTugas;
-use App\Models\LaporanPengisian;
+use App\Models\SuratTugasPengisian;
+use App\Models\LaporanSebelumPengisian;
 use App\Models\Kapal;
 
-class SuratTugasBBM extends Component
+class SuratTugasPengisianBBM extends Component
 {
     use WithPagination;
 
     // Properti Form Modal
-    public $surat_id, $laporan_bbm_id, $nomor_surat, $waktu_pelaksanaan, $tanggal_dikeluarkan;
+    public $surat_id, $laporan_pengisian_id, $nomor_surat, $waktu_pelaksanaan, $tanggal_dikeluarkan;
     public $isOpen = false;
 
     // Properti Search, Filter & Sort
@@ -34,13 +34,13 @@ class SuratTugasBBM extends Component
 
     public function render()
     {
-        $query = SuratTugas::with(['laporanBbm.kapal']);
+        $query = SuratTugasPengisian::with(['laporanSebelumPengisianBbm.kapal']);
 
         // 1. Fitur Search (Cari Nomor Surat, Nama Kapal, atau Lokasi Laporan)
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('laporanBbm', function($l) {
+                  ->orWhereHas('laporanSebelumPengisianBbm', function($l) {
                       $l->where('lokasi', 'like', '%' . $this->search . '%')
                         ->orWhereHas('kapal', function($k) {
                             $k->where('nama_kapal', 'like', '%' . $this->search . '%');
@@ -51,7 +51,7 @@ class SuratTugasBBM extends Component
 
         // 2. Fitur Filter Kapal
         if ($this->filterKapal) {
-            $query->whereHas('laporanBbm', function($q) {
+            $query->whereHas('laporanSebelumPengisianBbm', function($q) {
                 $q->where('kapal_id', $this->filterKapal);
             });
         }
@@ -72,10 +72,10 @@ class SuratTugasBBM extends Component
 
         // Ambil data untuk Paginasi & Dropdown Filter
         $surat_tugas = $query->paginate(10);
-        $laporans = LaporanPengisian::with('kapal')->latest()->get();
+        $laporans = LaporanSebelumPengisian::with('kapal')->latest()->get();
         $kapals = Kapal::orderBy('nama_kapal', 'asc')->get();
 
-        return view('livewire.satgas.surat-tugas', [
+        return view('livewire.satgas.surat-tugas-pengisian-bbm', [
             'surat_tugas' => $surat_tugas,
             'laporans' => $laporans,
             'kapals' => $kapals
@@ -99,7 +99,7 @@ class SuratTugasBBM extends Component
     private function resetInputFields()
     {
         $this->surat_id = '';
-        $this->laporan_bbm_id = '';
+        $this->laporan_pengisian_id = '';
         $this->nomor_surat = '';
         $this->waktu_pelaksanaan = '';
         $this->tanggal_dikeluarkan = '';
@@ -108,14 +108,14 @@ class SuratTugasBBM extends Component
     public function store()
     {
         $this->validate([
-            'laporan_bbm_id' => 'required',
+            'laporan_pengisian_id' => 'required',
             'nomor_surat' => 'required',
             'waktu_pelaksanaan' => 'required',
             'tanggal_dikeluarkan' => 'required|date',
         ]);
 
-        SuratTugas::updateOrCreate(['id' => $this->surat_id], [
-            'laporan_bbm_id' => $this->laporan_bbm_id,
+        SuratTugasPengisian::updateOrCreate(['id' => $this->surat_id], [
+            'laporan_pengisian_id' => $this->laporan_pengisian_id,
             'nomor_surat' => $this->nomor_surat,
             'waktu_pelaksanaan' => $this->waktu_pelaksanaan,
             'tanggal_dikeluarkan' => $this->tanggal_dikeluarkan,
@@ -128,9 +128,9 @@ class SuratTugasBBM extends Component
 
     public function edit($id)
     {
-        $surat = SuratTugas::findOrFail($id);
+        $surat = SuratTugasPengisian::findOrFail($id);
         $this->surat_id = $id;
-        $this->laporan_bbm_id = $surat->laporan_bbm_id;
+        $this->laporan_pengisian_id = $surat->laporan_pengisian_id;
         $this->nomor_surat = $surat->nomor_surat;
         $this->waktu_pelaksanaan = $surat->waktu_pelaksanaan;
         $this->tanggal_dikeluarkan = $surat->tanggal_dikeluarkan->format('Y-m-d');
@@ -140,7 +140,7 @@ class SuratTugasBBM extends Component
 
     public function delete($id)
     {
-        SuratTugas::find($id)->delete();
+        SuratTugasPengisian::find($id)->delete();
         session()->flash('message', 'Surat Tugas dihapus.');
     }
 }

@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SuratTugas extends Model
+class SuratTugasPengisian extends Model
 {
     use HasFactory;
 
     protected $guarded = ['id'];
     protected $casts = ['tanggal_dikeluarkan' => 'date'];
 
-    public function laporanBbm()
+    public function laporanSebelumPengisianBbm()
     {
-        return $this->belongsTo(LaporanPengisian::class, 'laporan_pengisian_id');
+        return $this->belongsTo(LaporanSebelumPengisian::class, 'laporan_pengisian_id');
     }
 }

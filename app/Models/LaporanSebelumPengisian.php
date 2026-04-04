@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LaporanPengisian extends Model
+class LaporanSebelumPengisian extends Model
 {
     /** @use HasFactory<\Database\Factories\LaporanPengisianFactory> */
     use HasFactory;
@@ -27,6 +27,6 @@ class LaporanPengisian extends Model
 
     public function suratTugas()
     {
-        return $this->hasOne(SuratTugas::class, 'laporan_bbm_id');
+        return $this->hasOne(SuratTugasPengisian::class, 'laporan_bbm_id');
     }
 }

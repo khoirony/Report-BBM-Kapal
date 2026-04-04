@@ -57,8 +57,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             KapalSeeder::class,
             SoundingSeeder::class,
-            LaporanPengisianSeeder::class,
-            SuratTugasSeeder::class,
+            LaporanSebelumPengisianSeeder::class,
+            SuratTugasPengisianSeeder::class,
+            SuratPermohonanPengisianSeeder::class,
         ]);
     }
 }

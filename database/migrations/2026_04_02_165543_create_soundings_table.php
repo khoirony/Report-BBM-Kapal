@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('soundings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kapal_id')->constrained('kapals')->cascadeOnDelete();
-            $table->foreignId('laporan_pengisian_id')->nullable()->constrained('laporan_pengisians')->nullOnDelete();
+            $table->foreignId('laporan_pengisian_id')->nullable()->constrained('laporan_sebelum_pengisians')->nullOnDelete();
             $table->string('lokasi')->comment('Contoh: Pom Bensin (Awal), Titik A, Titik B');
             $table->decimal('bbm_awal', 10, 2)->default(0);
             $table->decimal('pengisian', 10, 2)->default(0);

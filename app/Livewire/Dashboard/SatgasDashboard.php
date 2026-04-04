@@ -4,8 +4,8 @@ namespace App\Livewire\Dashboard;
 
 use Livewire\Component;
 use App\Models\Kapal;
-use App\Models\LaporanPengisian;
-use App\Models\SuratTugas;
+use App\Models\LaporanSebelumPengisian;
+use App\Models\SuratTugasPengisian;
 use App\Models\Sounding; // Tambahkan Model Sounding
 
 class SatgasDashboard extends Component
@@ -15,13 +15,13 @@ class SatgasDashboard extends Component
         // 1. Menghitung ringkasan statistik (KPI)
         $stats = [
             'total_kapal'        => Kapal::count(),
-            'total_laporan'      => LaporanPengisian::count(),
-            'total_surat_tugas'  => SuratTugas::count(),
+            'total_laporan'      => LaporanSebelumPengisian::count(),
+            'total_surat_tugas'  => SuratTugasPengisian::count(),
             'sounding' => Sounding::count(),
         ];
 
         // 2. Mengambil 5 Laporan Pengisian terbaru
-        $recent_laporans = LaporanPengisian::with('kapal')
+        $recent_laporans = LaporanSebelumPengisian::with('kapal')
                                            ->orderBy('tanggal', 'desc')
                                            ->take(5)
                                            ->get();
@@ -33,7 +33,7 @@ class SatgasDashboard extends Component
                                     ->get();
 
         // 4. Mengambil 4 Surat Tugas terbaru untuk Widget
-        $recent_surat_tugas = SuratTugas::latest()->take(4)->get();
+        $recent_surat_tugas = SuratTugasPengisian::latest()->take(4)->get();
 
         return view('livewire.dashboard.satgas-dashboard', [
             'stats'              => $stats,

@@ -125,7 +125,7 @@
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 align-top">
                                 <span class="text-xs font-bold text-teal-500 uppercase lg:hidden mb-2 block">Informasi Umum & Laporan</span>
                                 
-                                @if($surat->laporanBbm)
+                                @if($surat->laporanSebelumPengisianBbm)
                                     <div class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm">
                                         
                                         <div class="flex items-center justify-between border-b border-gray-50 pb-2 mb-2">
@@ -134,21 +134,21 @@
                                                     <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                                                 </div>
                                                 <div>
-                                                    <p class="font-bold text-gray-900 text-sm">{{ $surat->laporanBbm->kapal->nama_kapal ?? 'Kapal Tidak Ditemukan' }}</p>
-                                                    <p class="text-[10px] text-gray-500 mt-0.5">Laporan ID: #{{ $surat->laporanBbm->id }}</p>
+                                                    <p class="font-bold text-gray-900 text-sm">{{ $surat->laporanSebelumPengisianBbm->kapal->nama_kapal ?? 'Kapal Tidak Ditemukan' }}</p>
+                                                    <p class="text-[10px] text-gray-500 mt-0.5">Laporan ID: #{{ $surat->laporanSebelumPengisianBbm->id }}</p>
                                                 </div>
                                             </div>
-                                            <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-1 rounded font-bold">{{ $surat->laporanBbm->kapal->jenis_dan_tipe ?? '-' }}</span>
+                                            <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-1 rounded font-bold">{{ $surat->laporanSebelumPengisianBbm->kapal->jenis_dan_tipe ?? '-' }}</span>
                                         </div>
                                         
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                                             <div class="flex items-start">
                                                 <svg class="w-3.5 h-3.5 text-gray-400 mr-1.5 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                                <span class="text-gray-700">{{ $surat->laporanBbm->hari }}, {{ \Carbon\Carbon::parse($surat->laporanBbm->tanggal)->format('d M Y') }}</span>
+                                                <span class="text-gray-700">{{ $surat->laporanSebelumPengisianBbm->hari }}, {{ \Carbon\Carbon::parse($surat->laporanSebelumPengisianBbm->tanggal)->format('d M Y') }}</span>
                                             </div>
                                             <div class="flex items-start">
                                                 <svg class="w-3.5 h-3.5 text-gray-400 mr-1.5 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                                <span class="text-gray-700">{{ $surat->laporanBbm->lokasi }}</span>
+                                                <span class="text-gray-700">{{ $surat->laporanSebelumPengisianBbm->lokasi }}</span>
                                             </div>
                                         </div>
                                         
@@ -220,7 +220,7 @@
                             
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tautkan Laporan BBM <span class="text-rose-500">*</span></label>
-                                <select wire:model="laporan_bbm_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-teal-500 focus:border-teal-500" required>
+                                <select wire:model="laporan_pengisian_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-teal-500 focus:border-teal-500" required>
                                     <option value="">-- Pilih Laporan BBM --</option>
                                     @foreach($laporans as $lap)
                                         <option value="{{ $lap->id }}">Lap #{{ $lap->id }} - {{ $lap->kapal->nama_kapal ?? 'Kapal' }} (Tgl: {{ \Carbon\Carbon::parse($lap->tanggal)->format('d/m/Y') }})</option>

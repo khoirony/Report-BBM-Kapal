@@ -3,13 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\LaporanPengisian;
-use App\Models\Sounding;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<LaporanPengisian>
  */
-class LaporanPengisianFactory extends Factory
+class LaporanSebelumPengisianFactory extends Factory
 {
     public function definition(): array
     {

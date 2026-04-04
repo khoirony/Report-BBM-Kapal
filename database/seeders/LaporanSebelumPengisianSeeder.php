@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\LaporanPengisian;
+use App\Models\LaporanSebelumPengisian;
 use App\Models\Sounding;
 use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class LaporanPengisianSeeder extends Seeder
+class LaporanSebelumPengisianSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -25,7 +24,7 @@ class LaporanPengisianSeeder extends Seeder
             $tanggal = Carbon::parse($firstSounding->created_at);
 
             // Buat 1 Laporan untuk 1 Kapal di Hari yang sama
-            $laporan = LaporanPengisian::factory()->create([
+            $laporan = LaporanSebelumPengisian::factory()->create([
                 'kapal_id' => $firstSounding->kapal_id,
                 'tanggal' => $tanggal->format('Y-m-d'),
             ]);

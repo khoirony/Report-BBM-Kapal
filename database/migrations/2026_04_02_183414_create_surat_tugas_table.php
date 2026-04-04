@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('surat_tugas', function (Blueprint $table) {
+        Schema::create('surat_tugas_pengisians', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('laporan_pengisian_id')->constrained('laporan_pengisians')->cascadeOnDelete();
+            $table->foreignId('laporan_pengisian_id')->constrained('laporan_sebelum_pengisians')->cascadeOnDelete();
             
             $table->string('nomor_surat');
             $table->string('waktu_pelaksanaan')->default('08:00 - Selesai');
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('surat_tugas');
+        Schema::dropIfExists('surat_tugas_pengisians');
     }
 };
