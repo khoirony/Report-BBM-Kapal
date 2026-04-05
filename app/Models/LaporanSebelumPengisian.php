@@ -29,4 +29,9 @@ class LaporanSebelumPengisian extends Model
     {
         return $this->hasOne(SuratTugasPengisian::class, 'laporan_bbm_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

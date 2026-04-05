@@ -171,9 +171,18 @@
                                 <div class="flex flex-col pt-1">
                                     <h3 class="font-bold text-gray-900 text-base sm:text-lg">{{ $kapal->nama_kapal ?? '-' }}</h3>
                                     <p class="text-sm text-gray-500 font-medium mt-0.5">{{ $kapal->skpd_ukpd ?? 'Tanpa SKPD' }}</p>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-600 mt-2 w-max">
-                                        Thn: {{ $kapal->tahun_pembuatan ?? '-' }}
-                                    </span>
+                                    
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-600 w-max">
+                                            Thn: {{ $kapal->tahun_pembuatan ?? '-' }}
+                                        </span>
+                                        @if(auth()->user() && auth()->user()->role === 'superadmin')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700 w-max border border-indigo-100" title="Ditambahkan oleh">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                                {{ $kapal->user->name ?? 'Sistem' }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </td>

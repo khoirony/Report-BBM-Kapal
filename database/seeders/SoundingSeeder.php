@@ -43,7 +43,7 @@ class SoundingSeeder extends Seeder
 
         // Setup hari pencatatan (Kemarin dan Hari Ini)
         $hariPencatatan = [
-            Carbon::now()->subDays(1), // Kemarin
+            Carbon::now()->subDays(3), // Kemarin
             Carbon::now(),             // Hari Ini
         ];
 
@@ -69,6 +69,7 @@ class SoundingSeeder extends Seeder
                     'bbm_akhir' => $akhir1, 
                     'jam_berangkat' => Carbon::createFromTime(8, 0, 0),
                     'jam_kembali' => Carbon::createFromTime(11, 30, 0),
+                    'user_id' => 2,
                     'created_at' => $tanggal,
                     'updated_at' => $tanggal,
                 ]);
@@ -88,6 +89,7 @@ class SoundingSeeder extends Seeder
                     'bbm_akhir' => $akhir2,
                     'jam_berangkat' => Carbon::createFromTime(12, 30, 0),
                     'jam_kembali' => Carbon::createFromTime(15, 0, 0),
+                    'user_id' => 2,
                     'created_at' => $tanggal,
                     'updated_at' => $tanggal,
                 ]);
@@ -107,6 +109,7 @@ class SoundingSeeder extends Seeder
                     'bbm_akhir' => $akhir3,
                     'jam_berangkat' => Carbon::createFromTime(15, 30, 0),
                     'jam_kembali' => Carbon::createFromTime(18, 0, 0),
+                    'user_id' => 2,
                     'created_at' => $tanggal,
                     'updated_at' => $tanggal,
                 ]);

@@ -43,7 +43,8 @@ class KapalSeeder extends Seeder
                 'tonase_kotor_gt'       => trim($data[8] ?? ''),
                 'tenaga_penggerak_kw'   => trim($data[9] ?? ''),
                 'daerah_pelayaran'      => trim($data[10] ?? ''),
-                'list_sertifikat_kapal' => trim($data[11] ?? '')
+                'list_sertifikat_kapal' => trim($data[11] ?? ''),
+                'user_id'               => 1,
             ]);
         }
   

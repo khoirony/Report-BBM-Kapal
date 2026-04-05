@@ -20,6 +20,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'tanggal_surat'  => '2026-04-04',
                 'klasifikasi'    => 'Biasa',
                 'lampiran'       => '1 (satu) berkas',
+                'user_id'        => 3,
             ]);
         }
     }

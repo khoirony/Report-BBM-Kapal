@@ -27,6 +27,7 @@ class LaporanSebelumPengisianSeeder extends Seeder
             $laporan = LaporanSebelumPengisian::factory()->create([
                 'kapal_id' => $firstSounding->kapal_id,
                 'tanggal' => $tanggal->format('Y-m-d'),
+                'user_id' => 3,
             ]);
 
             // Update ID laporan ke semua sounding yang ada di grup ini

@@ -21,4 +21,9 @@ class Sounding extends Model
     {
         return $this->belongsToMany(LaporanSebelumPengisian::class, 'laporan_sounding', 'sounding_id', 'laporan_bbm_id')->withTimestamps();
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

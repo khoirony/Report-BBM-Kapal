@@ -38,6 +38,7 @@ class SuratTugasPengisianSeeder extends Seeder
                 'nomor_surat' => $nomorSurat,
                 'waktu_pelaksanaan' => '08:00 - Selesai',
                 'tanggal_dikeluarkan' => $tanggalDikeluarkan->format('Y-m-d'),
+                'user_id' => 3,
             ]);
 
             $nomorUrut++;

@@ -6,6 +6,7 @@ use App\Models\Kapal;
 use App\Models\Sounding;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth;
 
 class SoundingBBM extends Component
 {
@@ -51,7 +52,12 @@ class SoundingBBM extends Component
 
     public function render()
     {
-        $query = Sounding::with('kapal');
+        $query = Sounding::with(['kapal', 'user']);
+
+        // Pengecualian filter user_id untuk superadmin
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
 
         // 1. Fitur Search (Mencari Lokasi atau Nama Kapal)
         if ($this->search) {
@@ -150,7 +156,7 @@ class SoundingBBM extends Component
 
         $bbm_akhir_calc = (float)$this->bbm_awal + (float)$this->pengisian - (float)$this->pemakaian;
 
-        Sounding::updateOrCreate(['id' => $this->sounding_id], [
+        $data = [
             'kapal_id' => $this->kapal_id,
             'lokasi' => $this->lokasi,
             'bbm_awal' => $this->bbm_awal,
@@ -159,7 +165,13 @@ class SoundingBBM extends Component
             'bbm_akhir' => $bbm_akhir_calc,
             'jam_berangkat' => $this->jam_berangkat,
             'jam_kembali' => $this->jam_kembali,
-        ]);
+        ];
+
+        if (!$this->sounding_id) {
+            $data['user_id'] = auth()->id();
+        }
+
+        Sounding::updateOrCreate(['id' => $this->sounding_id], $data);
 
         session()->flash('message', $this->sounding_id ? 'Pencatatan berhasil diperbarui.' : 'Pencatatan Sounding berhasil ditambahkan.');
 
@@ -169,7 +181,14 @@ class SoundingBBM extends Component
 
     public function edit($id)
     {
-        $sounding = Sounding::findOrFail($id);
+        $query = Sounding::query();
+        
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+        
+        $sounding = $query->findOrFail($id);
+        
         $this->sounding_id = $id;
         $this->kapal_id = $sounding->kapal_id;
         $this->lokasi = $sounding->lokasi;
@@ -185,7 +204,15 @@ class SoundingBBM extends Component
 
     public function delete($id)
     {
-        Sounding::find($id)->delete();
+        $query = Sounding::query();
+        
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+        
+        $sounding = $query->findOrFail($id);
+        $sounding->delete();
+        
         session()->flash('message', 'Data pencatatan berhasil dihapus.');
     }
 }

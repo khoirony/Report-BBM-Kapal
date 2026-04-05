@@ -20,7 +20,7 @@
         </div>
         
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
-            <p class="text-sm font-medium text-slate-500 mb-1">Kapal Aktif</p>
+            <p class="text-sm font-medium text-slate-500 mb-1">Total Kapal</p>
             <h3 class="text-2xl font-bold text-slate-800">{{ number_format($stats['kapal_aktif']) }}</h3>
             <p class="text-xs text-slate-400 mt-2">Kapal dengan riwayat BBM</p>
         </div>

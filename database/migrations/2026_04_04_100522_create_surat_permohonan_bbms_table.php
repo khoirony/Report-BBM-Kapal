@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('tanggal_surat');
             $table->string('klasifikasi')->nullable();
             $table->string('lampiran')->default('1 (satu) berkas');
+            $table->integer('user_id')->nullable();
             $table->timestamps();
         });
     }

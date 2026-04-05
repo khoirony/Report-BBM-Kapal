@@ -15,4 +15,9 @@ class SuratPermohonanPengisian extends Model
     {
         return $this->belongsTo(SuratTugasPengisian::class, 'surat_tugas_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

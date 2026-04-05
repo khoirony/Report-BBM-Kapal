@@ -141,6 +141,15 @@
                                         <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                         <span class="text-xs text-gray-600 leading-tight">{{ $laporan->lokasi }}</span>
                                     </div>
+                                    
+                                    @if(auth()->user() && auth()->user()->role === 'superadmin')
+                                        <div class="mt-2.5">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-100" title="Ditambahkan oleh">
+                                                <svg class="w-3 h-3 text-indigo-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                                {{ $laporan->user->name ?? 'Sistem / Terhapus' }}
+                                            </span>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="bg-indigo-50/50 border border-indigo-100 rounded-lg p-2.5">

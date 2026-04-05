@@ -10,18 +10,18 @@ class SoundingDashboard extends Component
 {
     public function render()
     {
-        // Ambil 5 data sounding (transaksi BBM) terbaru beserta relasi kapalnya
+        $userId = auth()->id(); 
         $recent_soundings = Sounding::with('kapal')
+                                    ->where('user_id', $userId)
                                     ->latest()
                                     ->take(5)
                                     ->get();
 
-        // Hitung ringkasan statistik (KPI) untuk Dashboard
         $stats = [
-            'total_transaksi' => Sounding::count(),
-            'total_pengisian' => Sounding::sum('pengisian'),
-            'total_pemakaian' => Sounding::sum('pemakaian'),
-            'kapal_aktif'     => Sounding::distinct('kapal_id')->count('kapal_id'),
+            'total_transaksi' => Sounding::where('user_id', $userId)->count(),
+            'total_pengisian' => Sounding::where('user_id', $userId)->sum('pengisian'),
+            'total_pemakaian' => Sounding::where('user_id', $userId)->sum('pemakaian'),
+            'kapal_aktif'     => Sounding::where('user_id', $userId)->distinct('kapal_id')->count('kapal_id'),
         ];
 
         return view('livewire.dashboard.sounding-dashboard', [

@@ -54,6 +54,46 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        User::updateOrCreate(
+            ['email' => 'nahkoda@gmail.com'],
+            [
+                'name' => 'Nahkoda',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password1234'),
+                'role' => 'nahkoda',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'pengawas@gmail.com'],
+            [
+                'name' => 'Pengawas',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password1234'),
+                'role' => 'pengawas',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'sounding02@gmail.com'],
+            [
+                'name' => 'Sounding Man V2',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password1234'),
+                'role' => 'sounding',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'satgas02@gmail.com'],
+            [
+                'name' => 'Satgas BBM V2',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password1234'),
+                'role' => 'satgas',
+            ]
+        );
+
         $this->call([
             KapalSeeder::class,
             SoundingSeeder::class,

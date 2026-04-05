@@ -6,7 +6,8 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\SuratPermohonanPengisian;
 use App\Models\SuratTugasPengisian;
-use App\Models\Kapal; // Pastikan model Kapal di-import
+use App\Models\Kapal; 
+use Illuminate\Support\Facades\Auth;
 
 class SuratPermohonanPengisianBBM extends Component
 {
@@ -25,8 +26,14 @@ class SuratPermohonanPengisianBBM extends Component
 
     public function mount()
     {
-        $this->surat_tugas_list = SuratTugasPengisian::with('laporanSebelumPengisianBbm.kapal')->get();
-        $this->kapals = Kapal::orderBy('nama_kapal')->get(); // Untuk dropdown filter
+        $queryTugas = SuratTugasPengisian::with('laporanSebelumPengisianBbm.kapal', 'user');
+        
+        if (auth()->user()->role !== 'superadmin') {
+            $queryTugas->where('user_id', auth()->id());
+        }
+        
+        $this->surat_tugas_list = $queryTugas->get();
+        $this->kapals = Kapal::orderBy('nama_kapal')->get();
     }
 
     // Reset pagination ketika melakukan pencarian atau filter
@@ -52,6 +59,10 @@ class SuratPermohonanPengisianBBM extends Component
             'suratTugas.laporanSebelumPengisianBbm.kapal',
             'suratTugas.laporanSebelumPengisianBbm.soundings'
         ]);
+
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
 
         // Pencarian (Nomor Surat atau Nama Kapal)
         if (!empty($this->search)) {
@@ -126,13 +137,19 @@ class SuratPermohonanPengisianBBM extends Component
             'tanggal_surat' => 'required|date',
         ]);
 
-        SuratPermohonanPengisian::updateOrCreate(['id' => $this->permohonan_id], [
+        $data = [
             'surat_tugas_id' => $this->surat_tugas_id,
             'nomor_surat' => $this->nomor_surat,
             'tanggal_surat' => $this->tanggal_surat,
             'klasifikasi' => $this->klasifikasi,
             'lampiran' => $this->lampiran,
-        ]);
+        ];
+
+        if (!$this->permohonan_id) {
+            $data['user_id'] = auth()->id();
+        }
+
+        SuratPermohonanPengisian::updateOrCreate(['id' => $this->permohonan_id], $data);
 
         session()->flash('message', $this->permohonan_id ? 'Surat Permohonan Berhasil Diperbarui.' : 'Surat Permohonan Berhasil Dibuat.');
         $this->closeModal();
@@ -141,7 +158,14 @@ class SuratPermohonanPengisianBBM extends Component
 
     public function edit($id)
     {
-        $permohonan = SuratPermohonanPengisian::findOrFail($id);
+        $query = SuratPermohonanPengisian::query();
+        
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+        
+        $permohonan = $query->findOrFail($id);
+        
         $this->permohonan_id = $id;
         $this->surat_tugas_id = $permohonan->surat_tugas_id;
         $this->nomor_surat = $permohonan->nomor_surat;
@@ -154,7 +178,14 @@ class SuratPermohonanPengisianBBM extends Component
 
     public function delete($id)
     {
-        SuratPermohonanPengisian::find($id)->delete();
+        $query = SuratPermohonanPengisian::query();
+        
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+        
+        $query->findOrFail($id)->delete();
+        
         session()->flash('message', 'Surat Permohonan Berhasil Dihapus.');
     }
 }

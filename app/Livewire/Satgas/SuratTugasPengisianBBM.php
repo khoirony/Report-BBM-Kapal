@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\SuratTugasPengisian;
 use App\Models\LaporanSebelumPengisian;
 use App\Models\Kapal;
+use Illuminate\Support\Facades\Auth;
 
 class SuratTugasPengisianBBM extends Component
 {
@@ -44,7 +45,12 @@ class SuratTugasPengisianBBM extends Component
 
     public function render()
     {
-        $query = SuratTugasPengisian::with(['laporanSebelumPengisianBbm.kapal']);
+        $query = SuratTugasPengisian::with(['laporanSebelumPengisianBbm.kapal', 'user']);
+
+        // Pengecualian filter user_id untuk superadmin pada tabel utama
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
 
         // 1. Fitur Search (Cari Nomor Surat, Nama Kapal, atau Lokasi Laporan)
         if ($this->search) {
@@ -82,8 +88,14 @@ class SuratTugasPengisianBBM extends Component
 
         // Ambil data untuk Paginasi & Dropdown Filter
         $surat_tugas = $query->paginate(10);
-        $laporans = LaporanSebelumPengisian::with('kapal')->latest()->get();
-        $kapals = Kapal::orderBy('nama_kapal', 'asc')->get();
+        $kapals = Kapal::orderBy('nama_kapal', 'asc')->get(); // Kapal tidak difilter
+        
+        // Filter Laporan untuk Dropdown Form (User biasa hanya melihat laporannya sendiri)
+        $queryLaporan = LaporanSebelumPengisian::with('kapal')->latest();
+        if (auth()->user()->role !== 'superadmin') {
+            $queryLaporan->where('user_id', auth()->id());
+        }
+        $laporans = $queryLaporan->get();
 
         return view('livewire.satgas.surat-tugas-pengisian-bbm', [
             'surat_tugas' => $surat_tugas,
@@ -124,12 +136,19 @@ class SuratTugasPengisianBBM extends Component
             'tanggal_dikeluarkan' => 'required|date',
         ]);
 
-        SuratTugasPengisian::updateOrCreate(['id' => $this->surat_id], [
+        $data = [
             'laporan_pengisian_id' => $this->laporan_pengisian_id,
             'nomor_surat' => $this->nomor_surat,
             'waktu_pelaksanaan' => $this->waktu_pelaksanaan,
             'tanggal_dikeluarkan' => $this->tanggal_dikeluarkan,
-        ]);
+        ];
+
+        // Assign user_id jika data baru
+        if (!$this->surat_id) {
+            $data['user_id'] = auth()->id();
+        }
+
+        SuratTugasPengisian::updateOrCreate(['id' => $this->surat_id], $data);
 
         session()->flash('message', $this->surat_id ? 'Surat Tugas diperbarui.' : 'Surat Tugas dibuat.');
         $this->closeModal();
@@ -138,7 +157,15 @@ class SuratTugasPengisianBBM extends Component
 
     public function edit($id)
     {
-        $surat = SuratTugasPengisian::findOrFail($id);
+        $query = SuratTugasPengisian::query();
+        
+        // Proteksi edit, superadmin bisa edit semua, user lain cuma miliknya
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+
+        $surat = $query->findOrFail($id);
+        
         $this->surat_id = $id;
         $this->laporan_pengisian_id = $surat->laporan_pengisian_id;
         $this->nomor_surat = $surat->nomor_surat;
@@ -150,7 +177,15 @@ class SuratTugasPengisianBBM extends Component
 
     public function delete($id)
     {
-        SuratTugasPengisian::find($id)->delete();
+        $query = SuratTugasPengisian::query();
+        
+        // Proteksi hapus
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+
+        $query->findOrFail($id)->delete();
+        
         session()->flash('message', 'Surat Tugas dihapus.');
     }
 }

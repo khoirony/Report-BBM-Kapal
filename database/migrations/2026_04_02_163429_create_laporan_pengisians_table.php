@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('laporan_sebelum_pengisians', function (Blueprint $table) {
             $table->id();
-            // Relasi Laporan langsung ke Kapal
             $table->foreignId('kapal_id')->constrained('kapals')->cascadeOnDelete();
             $table->date('tanggal');
             $table->string('dasar_hukum')->nullable();
@@ -21,6 +20,7 @@ return new class extends Migration
             $table->string('kegiatan')->default('Pengisian BBM Kapal di Pelabuhan Sunda Kelapa');
             $table->text('tujuan')->nullable();
             $table->string('lokasi')->nullable();
+            $table->integer('user_id')->nullable();
             $table->timestamps();
         });
     }

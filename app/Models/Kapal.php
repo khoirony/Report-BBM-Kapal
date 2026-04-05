@@ -11,4 +11,9 @@ class Kapal extends Model
 
     // Mengizinkan semua kolom untuk diisi secara massal
     protected $guarded = ['id'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

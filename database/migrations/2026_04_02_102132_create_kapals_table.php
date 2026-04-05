@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('daerah_pelayaran')->nullable();
             $table->text('list_sertifikat_kapal')->nullable();
             $table->string('foto_kapal')->nullable();
+            $table->integer('user_id')->nullable();
             $table->timestamps();
         });
     }

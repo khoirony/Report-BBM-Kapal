@@ -113,21 +113,31 @@
                             
                             <tr class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none hover:bg-slate-50/50 transition-colors duration-150 border border-gray-100 md:border-none">
                                 
-                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10">
+                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Nomor & Tanggal</span>
                                     <h3 class="font-bold text-gray-900 text-base mb-1">{{ $item->nomor_surat ?? '-' }}</h3>
-                                    <div class="flex items-center text-xs text-gray-500">
+                                    <div class="flex items-center text-xs text-gray-500 mb-2">
                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                         {{ \Carbon\Carbon::parse($item->tanggal_surat)->translatedFormat('d M Y') }}
                                     </div>
-                                    @if($item->klasifikasi)
-                                        <span class="inline-block mt-2 text-[10px] bg-slate-100 px-2 py-0.5 rounded font-semibold text-slate-600">{{ $item->klasifikasi }}</span>
-                                    @endif
+                                    
+                                    <div class="flex flex-wrap gap-2 mt-1">
+                                        @if($item->klasifikasi)
+                                            <span class="inline-block text-[10px] bg-slate-100 px-2 py-0.5 rounded font-semibold text-slate-600">{{ $item->klasifikasi }}</span>
+                                        @endif
+                                        
+                                        @if(auth()->user() && auth()->user()->role === 'superadmin')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-100" title="Ditambahkan oleh">
+                                                <svg class="w-3 h-3 text-indigo-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                                {{ $item->user->name ?? 'Sistem / Terhapus' }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
 
-                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10">
+                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Informasi Kapal</span>
-                                    <div class="flex items-center">
+                                    <div class="flex items-center mt-1">
                                         <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600 mr-3 hidden md:block">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>
                                         </div>
@@ -138,9 +148,9 @@
                                     </div>
                                 </td>
                                 
-                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10">
+                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Rincian Volume BBM</span>
-                                    <div class="inline-flex items-center px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-100">
+                                    <div class="inline-flex items-center px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-100 mt-1">
                                         <span class="font-bold text-emerald-700 text-sm mr-1">{{ $jenisBbm }}</span>
                                         <span class="text-emerald-500 mx-1">|</span>
                                         <span class="font-extrabold text-emerald-800 text-sm">{{ rtrim(rtrim(number_format($jumlahLiter, 2, ',', '.'), '0'), ',') }} L</span>

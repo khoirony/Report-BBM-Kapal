@@ -48,12 +48,12 @@
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-slate-500">Total Sounding</p>
-                <h3 class="text-2xl font-bold text-violet-600 mt-1">{{ number_format($stats['sounding']) }}</h3>
+                <p class="text-sm font-medium text-slate-500">Total Permohonan</p>
+                <h3 class="text-2xl font-bold text-violet-600 mt-1">{{ number_format($stats['total_permohonan']) }}</h3>
             </div>
             <div class="p-3 bg-violet-50 rounded-xl">
                 <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v14h12V8h2a2 2 0 012 2v3a2 2 0 01-2 2h-2M10 10h4m-4 3h4"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
             </div>
         </div>
@@ -108,41 +108,45 @@
 
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="text-lg font-bold text-slate-800">Catatan Sounding BBM Terakhir</h3>
+                    <h3 class="text-lg font-bold text-slate-800">Surat Permohonan Terbaru</h3>
+                    <a href="{{ route('satgas.surat-permohonan') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">Lihat Detail &rarr;</a>
                 </div>
                 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-                                <th class="px-6 py-4 font-semibold">Waktu Pencatatan</th>
-                                <th class="px-6 py-4 font-semibold">Nama Kapal & Lokasi</th>
-                                <th class="px-6 py-4 font-semibold text-right">Pemakaian</th>
-                                <th class="px-6 py-4 font-semibold text-right">BBM Akhir</th>
+                                <th class="px-6 py-4 font-semibold">Tanggal Surat</th>
+                                <th class="px-6 py-4 font-semibold">Nomor Surat</th>
+                                <th class="px-6 py-4 font-semibold">Kapal Terkait</th>
+                                <th class="px-6 py-4 font-semibold text-right">Klasifikasi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            @forelse($recent_soundings as $sounding)
+                            @forelse($recent_permohonans as $permohonan)
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     <td class="px-6 py-4">
-                                        <div class="text-sm font-medium text-slate-800">{{ $sounding->created_at->format('d M Y') }}</div>
-                                        <div class="text-xs text-slate-500 mt-0.5">{{ $sounding->jam_berangkat ?? '-' }} s/d {{ $sounding->jam_kembali ?? '-' }}</div>
+                                        <div class="text-sm font-medium text-slate-800">{{ \Carbon\Carbon::parse($permohonan->tanggal_surat)->format('d M Y') }}</div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-sm font-bold text-violet-700">{{ $sounding->kapal->nama_kapal ?? 'Kapal Tidak Diketahui' }}</div>
-                                        <div class="text-xs text-slate-500 mt-0.5">{{ $sounding->lokasi }}</div>
+                                        <div class="text-sm font-bold text-violet-700">{{ $permohonan->nomor_surat }}</div>
+                                        <div class="text-xs text-slate-500 mt-0.5">Lampiran: {{ $permohonan->lampiran ?? '-' }}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm font-medium text-slate-800">
+                                            {{ $permohonan->suratTugas->laporanSebelumPengisianBbm->kapal->nama_kapal ?? 'Tidak Diketahui' }}
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <span class="text-sm font-medium text-orange-500">-{{ number_format($sounding->pemakaian, 0, ',', '.') }} L</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <span class="text-sm font-bold text-slate-800">{{ number_format($sounding->bbm_akhir, 0, ',', '.') }} L</span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                                            {{ $permohonan->klasifikasi ?? '-' }}
+                                        </span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="4" class="px-6 py-8 text-center text-slate-400 text-sm">
-                                        Belum ada data sounding yang dicatat.
+                                        Belum ada surat permohonan yang dicatat.
                                     </td>
                                 </tr>
                             @endforelse

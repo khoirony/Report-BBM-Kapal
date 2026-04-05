@@ -55,7 +55,11 @@ class LaporanBBMSebelumPengisian extends Component
 
     public function render()
     {
-        $query = LaporanSebelumPengisian::with(['kapal', 'soundings']);
+        $query = LaporanSebelumPengisian::with(['kapal', 'soundings', 'user']);
+
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
 
         // 1. Fitur Search (Cari Lokasi, Kegiatan, atau Nama Kapal)
         if ($this->search) {
@@ -99,9 +103,15 @@ class LaporanBBMSebelumPengisian extends Component
 
     public function downloadPdf($id)
     {
-        $laporan = LaporanSebelumPengisian::with(['kapal', 'soundings' => function($q) {
+        $query = LaporanSebelumPengisian::with(['kapal', 'soundings' => function($q) {
             $q->orderBy('created_at', 'asc');
-        }])->findOrFail($id);
+        }]);
+
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+
+        $laporan = $query->findOrFail($id);
 
         $pdf = Pdf::loadView('pdf.laporan-pengisian-bbm', ['laporan' => $laporan]);
         $pdf->setPaper('A4', 'portrait');
@@ -117,9 +127,14 @@ class LaporanBBMSebelumPengisian extends Component
     public function loadAvailableSoundings()
     {
         if ($this->kapal_id && $this->tanggal) {
-            $this->available_soundings = Sounding::where('kapal_id', $this->kapal_id)
-                ->whereDate('created_at', $this->tanggal)
-                ->get();
+            $query = Sounding::where('kapal_id', $this->kapal_id)
+                ->whereDate('created_at', $this->tanggal);
+                
+            if (auth()->user()->role !== 'superadmin') {
+                $query->where('user_id', auth()->id());
+            }
+
+            $this->available_soundings = $query->get();
         } else {
             $this->available_soundings = [];
         }
@@ -167,7 +182,7 @@ class LaporanBBMSebelumPengisian extends Component
             'lokasi' => 'required',
         ]);
 
-        $laporan = LaporanSebelumPengisian::updateOrCreate(['id' => $this->laporan_id], [
+        $data = [
             'kapal_id' => $this->kapal_id,
             'tanggal' => $this->tanggal,
             'dasar_hukum' => $this->dasar_hukum,
@@ -175,7 +190,13 @@ class LaporanBBMSebelumPengisian extends Component
             'kegiatan' => $this->kegiatan,
             'tujuan' => $this->tujuan,
             'lokasi' => $this->lokasi,
-        ]);
+        ];
+
+        if (!$this->laporan_id) {
+            $data['user_id'] = auth()->id();
+        }
+
+        $laporan = LaporanSebelumPengisian::updateOrCreate(['id' => $this->laporan_id], $data);
 
         $laporan->soundings()->sync($this->selected_soundings);
 
@@ -186,7 +207,14 @@ class LaporanBBMSebelumPengisian extends Component
 
     public function edit($id)
     {
-        $laporan = LaporanSebelumPengisian::findOrFail($id);
+        $query = LaporanSebelumPengisian::query();
+        
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+        
+        $laporan = $query->findOrFail($id);
+        
         $this->laporan_id = $id;
         $this->kapal_id = $laporan->kapal_id;
         $this->hari = $laporan->hari;
@@ -207,7 +235,14 @@ class LaporanBBMSebelumPengisian extends Component
 
     public function delete($id)
     {
-        $laporan = LaporanSebelumPengisian::find($id);
+        $query = LaporanSebelumPengisian::query();
+        
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+        
+        $laporan = $query->findOrFail($id);
+        
         $laporan->soundings()->detach(); 
         $laporan->delete();
         

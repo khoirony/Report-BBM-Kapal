@@ -24,6 +24,13 @@ class Register extends Component
 
     public function register()
     {
+        // batasi pendaftaran maksimal 50 pengguna per hari untuk mencegah bot spam
+        $todayRegistrations = User::whereDate('created_at', now()->toDateString())->count();
+        if ($todayRegistrations >= 50) {
+            $this->addError('email', 'Mohon maaf, batas maksimal pendaftaran (50 pengguna/hari) telah tercapai. Silakan coba lagi besok.');
+            return;
+        }
+
         $this->validate();
 
         $user = User::create([

@@ -120,9 +120,18 @@
                                 
                                 <div>
                                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-1">Waktu Pelaksanaan</span>
-                                    <div class="inline-flex items-center text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100 font-bold text-xs">
-                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        {{ $surat->waktu_pelaksanaan }}
+                                    <div class="flex flex-wrap gap-2">
+                                        <div class="inline-flex items-center text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100 font-bold text-xs">
+                                            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            {{ $surat->waktu_pelaksanaan }}
+                                        </div>
+                                        
+                                        @if(auth()->user() && auth()->user()->role === 'superadmin')
+                                            <div class="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-100" title="Ditambahkan oleh">
+                                                <svg class="w-3 h-3 text-indigo-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                                {{ $surat->user->name ?? 'Sistem / Terhapus' }}
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </td>

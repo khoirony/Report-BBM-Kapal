@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('bbm_akhir', 10, 2)->default(0);
             $table->time('jam_berangkat')->nullable();
             $table->time('jam_kembali')->nullable();
+            $table->integer('user_id')->nullable();
             $table->timestamps();
         });
     }

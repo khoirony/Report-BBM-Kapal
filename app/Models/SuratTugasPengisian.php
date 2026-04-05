@@ -16,4 +16,9 @@ class SuratTugasPengisian extends Model
     {
         return $this->belongsTo(LaporanSebelumPengisian::class, 'laporan_pengisian_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

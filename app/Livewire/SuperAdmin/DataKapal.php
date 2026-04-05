@@ -42,7 +42,7 @@ class DataKapal extends Component
 
     public function render()
     {
-        $query = Kapal::query();
+        $query = Kapal::with('user');
 
         if ($this->search) {
             $query->where(function($q) {
