@@ -11,8 +11,8 @@ use App\Livewire\Dashboard\PenyediaDashboard;
 use App\Livewire\Dashboard\SatgasDashboard;
 use App\Livewire\Dashboard\SoundingDashboard;
 use App\Livewire\Dashboard\SuperAdminDashboard;
-use App\Livewire\Penyedia\KelolaPermohonan;
 use App\Livewire\Satgas\LaporanBBMSebelumPengisian;
+use App\Livewire\Satgas\LaporanSisaBBM;
 use App\Livewire\Satgas\SuratPermohonanPengisianBBM;
 use App\Livewire\Satgas\SuratTugasPengisianBBM;
 use App\Livewire\Sounding\SoundingBBM;
@@ -93,6 +93,7 @@ Route::middleware('auth')->group(function () {
         // --- FITUR SATGAS & SUPERADMIN ---
         Route::middleware('role:superadmin,satgas')->group(function () {
             Route::get('/data-kapal', DataKapal::class)->name('data-kapal');
+            Route::get('/laporan-sisa-bbm', LaporanSisaBBM::class)->name('satgas.laporan-sisa-bbm');
             Route::get('/laporan-pengisian', LaporanBBMSebelumPengisian::class)->name('satgas.lapor-pengisian');
             Route::get('/surat-tugas', SuratTugasPengisianBBM::class)->name('satgas.surat-tugas');
             Route::get('/surat-permohonan', SuratPermohonanPengisianBBM::class)->name('satgas.surat-permohonan');
@@ -106,6 +107,6 @@ Route::middleware('auth')->group(function () {
         // --- CETAK PDF (Dilindungi Auth agar tidak bocor) ---
         Route::get('/laporan-bbm/{id}/pdf', [PdfController::class, 'previewLaporan'])->name('laporan.pdf.preview');
         Route::get('/surat-tugas/{id}/pdf', [PdfController::class, 'previewSuratTugas'])->name('surattugas.pdf.preview');
-        
+        Route::get('/laporan-sisa-bbm/{id}/pdf', [PdfController::class, 'previewLaporanSisaBbm'])->name('laporan-sisa-bbm.pdf.preview');
     });
 });

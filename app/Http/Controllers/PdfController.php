@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\LaporanSebelumPengisian;
+use App\Models\LaporanSisaBbm;
 use App\Models\SuratTugasPengisian;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -37,6 +38,25 @@ class PdfController extends Controller
 
         $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $surat->laporanBbm->kapal->nama_kapal ?? 'Kapal') . '.pdf';
 
+        return $pdf->stream($namaFile);
+    }
+
+    public function previewLaporanSisaBbm($id)
+    {
+        // Ambil data laporan sisa BBM beserta relasinya
+        $laporan = LaporanSisaBbm::with(['sounding'])->findOrFail($id);
+
+        // Render view PDF (pastikan file blade pdf.laporan-sisa-bbm tersedia)
+        $pdf = Pdf::loadView('pdf.laporan-sisa-bbm', ['laporan' => $laporan]);
+
+        // Atur ukuran kertas ke A4 (Portrait)
+        $pdf->setPaper('A4', 'portrait');
+
+        // Nama file saat di-download/preview (ubah garis miring pada nomor surat menjadi underscore agar valid)
+        $safeNomor = str_replace(['/', '\\'], '_', $laporan->nomor);
+        $namaFile = 'Laporan_Sisa_BBM_' . $safeNomor . '.pdf';
+
+        // Gunakan stream() untuk menampilkan preview di browser
         return $pdf->stream($namaFile);
     }
 }
