@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('klasifikasi')->nullable();
             $table->string('lampiran')->default('1 (satu) berkas');
             $table->integer('user_id')->nullable();
+            $table->enum('progress', ['not started', 'on progress', 'done'])->default('not started');
             $table->timestamps();
         });
     }

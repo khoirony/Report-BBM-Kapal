@@ -145,7 +145,11 @@
                                         <div class="flex items-center justify-between border-b border-gray-50 pb-2 mb-2">
                                             <div class="flex items-center">
                                                 <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center mr-3 flex-shrink-0">
-                                                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <circle cx="12" cy="5" r="3"></circle>
+                                                        <line x1="12" y1="8" x2="12" y2="22"></line>
+                                                        <path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
+                                                    </svg>
                                                 </div>
                                                 <div>
                                                     <p class="font-bold text-gray-900 text-sm">{{ $surat->laporanSebelumPengisianBbm->kapal->nama_kapal ?? 'Kapal Tidak Ditemukan' }}</p>

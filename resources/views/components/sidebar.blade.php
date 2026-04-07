@@ -68,5 +68,13 @@
             </a>
         @endif
 
+        @if(in_array($role, ['penyedia']))
+            <a href="{{ route('penyedia.surat-permohonan') }}" 
+               class="{{ $baseClass }} {{ request()->routeIs('penyedia.surat-permohonan') ? $activeClass : $inactiveClass }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Surat Permohonan
+            </a>
+        @endif
+
     </nav>
 </aside>

@@ -20,4 +20,9 @@ class SuratPermohonanPengisian extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function files()
+    {
+        return $this->hasMany(FileSuratPermohonan::class, 'surat_permohonan_id');
+    }
 }

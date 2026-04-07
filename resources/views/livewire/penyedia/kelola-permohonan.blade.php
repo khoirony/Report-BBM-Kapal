@@ -22,9 +22,7 @@
 
         @if (session()->has('message'))
             <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-xl shadow-sm animate-fade-in-down flex items-center">
-                <div class="flex-shrink-0 bg-emerald-100 p-1 rounded-full mr-3">
-                    <svg class="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                </div>
+                <div class="flex-shrink-0 bg-emerald-100 p-1 rounded-full mr-3"><svg class="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg></div>
                 <p class="text-sm font-semibold text-emerald-800">{{ session('message') }}</p>
             </div>
         @endif
@@ -59,6 +57,7 @@
             </div>
 
             <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-slate-100 transition-all duration-200">
+                
                 <div class="relative">
                     <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50">
                         <option value="">Semua Armada Kapal</option>
@@ -89,7 +88,7 @@
         </div>
 
         <div class="bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-hidden w-full relative">
-            <div wire:loading class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
+            <div wire:loading.delay.longest class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
                 <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
             </div>
 
@@ -97,7 +96,7 @@
                 <table class="w-full text-sm text-left text-gray-600 block md:table">
                     <thead class="hidden md:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
                         <tr>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Nomor & Progress</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Nomor & Tanggal</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Informasi Kapal</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Rincian Volume BBM</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider text-right w-1/4">Aksi</th>
@@ -110,32 +109,19 @@
                                 $soundings = $item->suratTugas->laporanSebelumPengisianBbm->soundings ?? collect();
                                 $jumlahLiter = $soundings->sum('pengisian');
                                 $jenisBbm = $soundings->first()->jenis_bbm ?? 'Dexlite';
-
-                                // Logika Warna Progress
-                                $progressColor = match($item->progress) {
-                                    'not started' => 'bg-rose-100 text-rose-700 border-rose-200',
-                                    'on progress' => 'bg-amber-100 text-amber-700 border-amber-200',
-                                    'done'        => 'bg-emerald-100 text-emerald-700 border-emerald-200',
-                                    default       => 'bg-slate-100 text-slate-700 border-slate-200'
-                                };
                             @endphp
                             
                             <tr class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none hover:bg-slate-50/50 transition-colors duration-150 border border-gray-100 md:border-none">
                                 
                                 <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
-                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Nomor & Progress</span>
+                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Nomor & Tanggal</span>
                                     <h3 class="font-bold text-gray-900 text-base mb-1">{{ $item->nomor_surat ?? '-' }}</h3>
-                                    
                                     <div class="flex items-center text-xs text-gray-500 mb-2">
                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                         {{ \Carbon\Carbon::parse($item->tanggal_surat)->translatedFormat('d M Y') }}
                                     </div>
                                     
-                                    <div class="flex flex-wrap gap-2 mt-2 items-center">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border {{ $progressColor }} uppercase tracking-wider">
-                                            {{ $item->progress ?? 'not started' }}
-                                        </span>
-
+                                    <div class="flex flex-wrap gap-2 mt-1">
                                         @if($item->klasifikasi)
                                             <span class="inline-block text-[10px] bg-slate-100 px-2 py-0.5 rounded font-semibold text-slate-600">{{ $item->klasifikasi }}</span>
                                         @endif
@@ -153,11 +139,7 @@
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Informasi Kapal</span>
                                     <div class="flex items-center mt-1">
                                         <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600 mr-3 hidden md:block">
-                                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <circle cx="12" cy="5" r="3"></circle>
-                                                <line x1="12" y1="8" x2="12" y2="22"></line>
-                                                <path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
-                                            </svg>
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>
                                         </div>
                                         <div>
                                             <span class="font-bold text-gray-800 block">{{ $item->suratTugas->laporanSebelumPengisianBbm->kapal->nama_kapal ?? 'Tidak ada data kapal' }}</span>
@@ -178,40 +160,22 @@
                                 <td class="block lg:table-cell px-2 py-4 lg:px-6 lg:py-5 lg:text-right align-middle">
                                     <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto">
                                         
-                                        @if(auth()->user()->role !== 'penyedia')
-                                        <a href="#" target="_blank" class="w-full justify-center inline-flex items-center text-slate-700 font-semibold bg-slate-100 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-slate-200 hover:border-slate-800 shadow-sm text-xs">
-                                            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        <a href="#" target="_blank" class="w-full justify-center inline-flex items-center text-slate-700 font-semibold bg-slate-100 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-slate-200 hover:border-slate-800 shadow-sm">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                             <span>PDF</span>
                                         </a>
-                                        @endif
-                                
-                                        @if($item->files->isNotEmpty())
-                                            <a href="{{ Storage::url($item->files->last()->file_path) }}" target="_blank" class="w-full justify-center inline-flex items-center text-emerald-700 font-semibold bg-emerald-50 hover:bg-emerald-600 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-emerald-200 shadow-sm text-xs">
-                                                <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                                <span>Lihat File</span>
-                                            </a>
-                                        @endif
-                                
-                                        @if(auth()->user()->role !== 'satgas')
-                                        <button wire:click="openProgressModal({{ $item->id }})" class="w-full justify-center inline-flex items-center text-amber-700 hover:text-white font-semibold bg-amber-50 hover:bg-amber-500 px-3 py-2 rounded-lg transition-all duration-200 border border-amber-100 text-xs">
-                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                            Progress & File
-                                        </button>
-                                        @endif
-                                
-                                        @if(auth()->user()->role !== 'penyedia')
+    
                                         <div class="flex gap-2">
-                                            <button wire:click="edit({{ $item->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100 text-xs">
-                                                <svg class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <button wire:click="edit({{ $item->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100">
+                                                <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                                 <span class="lg:hidden">Edit</span>
                                             </button>
                                             
-                                            <button wire:click="delete({{ $item->id }})" onclick="confirm('Yakin ingin menghapus laporan ini?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100 text-xs">
-                                                <svg class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <button wire:click="delete({{ $item->id }})" onclick="confirm('Yakin ingin menghapus laporan ini?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100">
+                                                <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 <span class="lg:hidden">Hapus</span>
                                             </button>
                                         </div>
-                                        @endif
                                     </div>
                                 </td>
 
@@ -246,7 +210,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </div>
                         <h3 class="text-lg sm:text-xl font-bold text-gray-900">
-                            {{ $permohonan_id ? 'Edit Data Surat' : 'Tambah Surat Permohonan' }}
+                            {{ $permohonan_id ? 'Edit Surat Permohonan' : 'Tambah Surat Permohonan' }}
                         </h3>
                     </div>
                     <button wire:click="closeModal()" class="text-slate-400 bg-white hover:bg-slate-100 hover:text-slate-900 rounded-xl text-sm p-2 transition-colors border border-slate-200 shadow-sm">
@@ -255,7 +219,7 @@
                 </div>
 
                 <div class="p-5 sm:p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
-                    <form wire:submit.prevent="store" id="form-data-surat">
+                    <form wire:submit.prevent="store" id="form-surat">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             
                             <div class="col-span-1 sm:col-span-2">
@@ -299,72 +263,11 @@
                     <button wire:click="closeModal()" type="button" class="w-full sm:w-auto inline-flex justify-center items-center text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 font-semibold rounded-xl text-sm px-5 py-2.5 transition-colors shadow-sm">
                         Batal
                     </button>
-                    <button type="submit" form="form-data-surat" class="w-full sm:w-auto inline-flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-700 font-semibold rounded-xl text-sm px-5 py-2.5 transition-all shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
-                        Simpan Data
+                    <button type="submit" form="form-surat" class="w-full sm:w-auto inline-flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-700 font-semibold rounded-xl text-sm px-5 py-2.5 transition-all shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
+                        Simpan Surat
                     </button>
                 </div>
-            </div>
-        </div>
-        @endif
-
-        @if($isProgressModalOpen)
-        <div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-opacity">
-            <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl flex flex-col transform transition-all">
                 
-                <div class="flex items-center justify-between p-5 border-b border-slate-100 rounded-t-2xl bg-slate-50/50">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-amber-100 rounded-lg text-amber-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        </div>
-                        <h3 class="text-lg font-bold text-gray-900">Update Progress & Berkas</h3>
-                    </div>
-                    <button wire:click="closeProgressModal()" class="text-slate-400 bg-white hover:bg-slate-100 hover:text-slate-900 rounded-xl text-sm p-2 transition-colors border border-slate-200 shadow-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-
-                <div class="p-5 sm:p-6 space-y-5">
-                    <form wire:submit.prevent="updateProgress" id="form-progress">
-                        
-                        <div class="mb-5">
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Status Progress <span class="text-rose-500">*</span></label>
-                            <select wire:model="progress" class="px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-amber-500 block w-full transition-colors font-medium shadow-sm" required>
-                                <option value="not started">Not Started</option>
-                                <option value="on progress">On Progress</option>
-                                <option value="done">Done</option>
-                            </select>
-                            @error('progress') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
-                        </div>
-
-                        <div class="p-5 border-2 border-dashed border-amber-200 rounded-xl bg-amber-50/50">
-                            <label class="block text-sm font-bold text-amber-900 mb-2">Unggah Berkas Baru <span class="text-amber-600 text-xs font-normal">(Opsional, Max: 2MB)</span></label>
-                            
-                            <input type="file" wire:model="berkas" accept=".jpg,.png,.jpeg,.gif,.pdf,.docx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-amber-500 file:text-white hover:file:bg-amber-600 transition-colors cursor-pointer border border-slate-200 bg-white shadow-sm">
-                            
-                            <div wire:loading wire:target="berkas" class="flex items-center text-xs text-amber-600 mt-3 font-semibold bg-amber-100 p-2 rounded-lg">
-                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                Sedang memproses file... mohon tunggu.
-                            </div>
-                            
-                            @error('berkas') <span class="text-rose-500 text-xs mt-1.5 block font-medium">{{ $message }}</span>@enderror
-
-                            <div class="mt-3 flex items-start text-[10.5px] text-amber-700 font-medium leading-relaxed bg-amber-100/50 p-2.5 rounded-lg border border-amber-100">
-                                <svg class="w-4 h-4 mr-1.5 flex-shrink-0 mt-0.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <p>Jika Anda mengunggah file baru dan status sebelumnya adalah "Not Started", sistem akan mengubahnya menjadi "On Progress" secara otomatis.</p>
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
-
-                <div class="flex flex-col-reverse sm:flex-row items-center justify-end p-5 border-t border-slate-100 rounded-b-2xl sm:space-x-3 bg-slate-50/80 gap-3 sm:gap-0">
-                    <button wire:click="closeProgressModal()" type="button" class="w-full sm:w-auto inline-flex justify-center items-center px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl text-sm font-semibold text-slate-700 transition-colors shadow-sm">
-                        Batal
-                    </button>
-                    <button type="submit" form="form-progress" class="w-full sm:w-auto inline-flex justify-center items-center px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-all shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
-                        Simpan Progress
-                    </button>
-                </div>
             </div>
         </div>
         @endif
