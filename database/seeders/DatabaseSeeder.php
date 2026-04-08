@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
             KapalSeeder::class,
             SoundingSeeder::class,
             LaporanSisaBBMSeeder::class,
-            LaporanSebelumPengisianSeeder::class,
             SuratTugasPengisianSeeder::class,
             SuratPermohonanPengisianSeeder::class,
+            BaPengisianBBMSeeder::class,
         ]);
     }
 }

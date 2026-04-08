@@ -52,7 +52,7 @@ class KapalSeeder extends Seeder
             // 3. Memasukkan data ke DB
             Kapal::create([
                 'nama_kapal'            => trim($data[2] ?? ''),
-                'ukpd_id'               => $ukpdId, // Ganti skpd_ukpd menjadi ukpd_id
+                'ukpd_id'               => $ukpdId ?? 4,
                 'jenis_dan_tipe'        => trim($data[4] ?? ''),
                 'material'              => trim($data[5] ?? ''),
                 'tahun_pembuatan'       => $tahunPembuatan,

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\SuratTugasPengisian;
-use App\Models\LaporanSebelumPengisian;
+use App\Models\LaporanSisaBbm;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 
@@ -11,8 +11,7 @@ class SuratTugasPengisianSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil semua Laporan BBM yang sudah ada
-        $laporans = LaporanSebelumPengisian::orderBy('tanggal', 'asc')->get();
+        $laporans = LaporanSisaBbm::orderBy('tanggal_surat', 'asc')->get();
 
         if ($laporans->isEmpty()) {
             $this->command->info('Tidak ada data Laporan BBM. Buat Laporan BBM terlebih dahulu sebelum menjalankan seeder ini.');
@@ -34,7 +33,7 @@ class SuratTugasPengisianSeeder extends Seeder
             }
 
             SuratTugasPengisian::create([
-                'laporan_pengisian_id' => $laporan->id,
+                'laporan_sisa_bbm_id' => $laporan->id,
                 'nomor_surat' => $nomorSurat,
                 'waktu_pelaksanaan' => '08:00 - Selesai',
                 'tanggal_dikeluarkan' => $tanggalDikeluarkan->format('Y-m-d'),

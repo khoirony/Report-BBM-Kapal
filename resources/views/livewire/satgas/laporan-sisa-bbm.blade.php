@@ -62,9 +62,19 @@
                 </div>
             </div>
 
-            <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
+            <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-slate-100">
+                
                 <div class="relative w-full">
-                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full">
+                    <select wire:model.live="filterUkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full cursor-pointer">
+                        <option value="">Semua SKPD/UKPD</option>
+                        @foreach($ukpds as $ukpd)
+                            <option value="{{ $ukpd->id }}">{{ $ukpd->singkatan ?? $ukpd->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="relative w-full">
+                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full cursor-pointer">
                         <option value="">Semua Kapal</option>
                         @foreach($kapals as $kapal)
                             <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal ?? $kapal->nama }}</option>
@@ -80,7 +90,7 @@
                     <input type="date" wire:model.live="filterTanggalSampai" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full">
                 </div>
                 <div class="flex items-end w-full">
-                    <button wire:click="resetFilters" class="w-full min-h-[34px] flex justify-center items-center px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold rounded-lg border border-rose-100">
+                    <button wire:click="resetFilters" class="w-full min-h-[34px] flex justify-center items-center px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold rounded-lg border border-rose-100 transition-colors">
                         Reset Filter
                     </button>
                 </div>
@@ -124,8 +134,11 @@
                                     </div>
                                 </div>
                                 <div class="bg-indigo-50/50 border border-indigo-100 rounded-lg p-2.5">
-                                    <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider block mb-1">Kapal Terkait</span>
-                                    <p class="text-sm font-bold text-indigo-900 truncate">{{ $laporan->sounding->kapal->nama_kapal ?? $laporan->sounding->kapal->nama ?? 'Kapal Terhapus' }}</p>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider block">Kapal Terkait</span>
+                                        <span class="text-[9px] bg-indigo-200/50 text-indigo-700 px-1 rounded font-bold">{{ $laporan->ukpd->singkatan ?? $laporan->sounding->kapal->ukpd->singkatan ?? '-' }}</span>
+                                    </div>
+                                    <p class="text-sm font-bold text-indigo-900 truncate">{{ $laporan->sounding->kapal->nama_kapal ?? 'Kapal Terhapus' }}</p>
                                 </div>
                             </td>
 
@@ -230,8 +243,9 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-16 text-center text-gray-500">
+                            <td colspan="5" class="px-6 py-16 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 shadow-sm mt-4">
                                 <h3 class="text-base font-semibold text-gray-900 mb-1">Belum ada Laporan</h3>
+                                <p class="text-sm">Silakan buat laporan sisa BBM baru.</p>
                             </td>
                         </tr>
                         @endforelse
@@ -271,7 +285,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kapal <span class="text-rose-500">*</span></label>
-                                    <select wire:model.live="kapal_id" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
+                                    <select wire:model.live="kapal_id" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full cursor-pointer" required>
                                         <option value="">-- Pilih Kapal --</option>
                                         @foreach($kapals as $kapal)
                                             <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal ?? $kapal->nama }}</option>
@@ -313,7 +327,7 @@
                                 <label class="block text-sm font-bold text-indigo-700 mb-2 border-b border-indigo-100 pb-2">
                                     Pilih Data Sounding <span class="text-rose-500">*</span>
                                 </label>
-                                <select wire:model="sounding_id" class="px-4 py-2.5 bg-slate-50 border border-indigo-200 rounded-xl block w-full" required {{ empty($available_soundings) ? 'disabled' : '' }}>
+                                <select wire:model="sounding_id" class="px-4 py-2.5 bg-slate-50 border border-indigo-200 rounded-xl block w-full cursor-pointer" required {{ empty($available_soundings) ? 'disabled' : '' }}>
                                     <option value="">-- Pilih Sounding Terkait Kapal --</option>
                                     @foreach($available_soundings as $snd)
                                         <option value="{{ $snd->id }}">Lokasi: {{ $snd->lokasi }} | Sisa BBM: {{ floatval($snd->bbm_akhir) }} L | Tgl: {{ $snd->created_at->format('d/m/Y') }}</option>
@@ -321,7 +335,7 @@
                                 </select>
                                 @error('sounding_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 @if(empty($available_soundings) && $kapal_id)
-                                    <p class="text-xs text-orange-500 mt-1">Tidak ada data sounding untuk kapal ini.</p>
+                                    <p class="text-xs text-orange-500 mt-1 font-medium">Tidak ada data sounding untuk kapal ini.</p>
                                 @endif
                             </div>
 

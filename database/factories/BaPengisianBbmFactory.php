@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<LaporanPengisian>
  */
-class LaporanSebelumPengisianFactory extends Factory
+class BaPengisianBbmFactory extends Factory
 {
     public function definition(): array
     {

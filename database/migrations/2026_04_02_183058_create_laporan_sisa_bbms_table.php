@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('laporan_sisa_bbms', function (Blueprint $table) {
             $table->id();$table->string('nomor');
             $table->foreignId('sounding_id')->constrained('soundings')->cascadeOnDelete();
+            $table->foreignId('ukpd_id')
+                  ->nullable()
+                  ->constrained('ukpds')
+                  ->onDelete('set null');
             $table->date('tanggal_surat');
             $table->string('klasifikasi')->nullable();
             $table->string('lampiran')->nullable();

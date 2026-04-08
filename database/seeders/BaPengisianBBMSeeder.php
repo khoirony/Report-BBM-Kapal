@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\LaporanSebelumPengisian;
+use App\Models\BaPengisianBbm;
 use App\Models\Sounding;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
-class LaporanSebelumPengisianSeeder extends Seeder
+class BaPengisianBBMSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -24,16 +24,11 @@ class LaporanSebelumPengisianSeeder extends Seeder
             $tanggal = Carbon::parse($firstSounding->created_at);
 
             // Buat 1 Laporan untuk 1 Kapal di Hari yang sama
-            $laporan = LaporanSebelumPengisian::factory()->create([
+            $laporan = BaPengisianBbm::factory()->create([
                 'kapal_id' => $firstSounding->kapal_id,
                 'tanggal' => $tanggal->format('Y-m-d'),
                 'user_id' => 3,
             ]);
-
-            // Update ID laporan ke semua sounding yang ada di grup ini
-            foreach ($soundings as $s) {
-                $s->update(['laporan_pengisian_id' => $laporan->id]);
-            }
         }
     }
 }

@@ -12,6 +12,8 @@
     <style>
         [x-cloak] { display: none !important; }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body class="font-sans text-gray-900 antialiased bg-gray-50 overflow-hidden">
     

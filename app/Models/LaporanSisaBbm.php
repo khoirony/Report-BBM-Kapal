@@ -15,4 +15,9 @@ class LaporanSisaBbm extends Model
     {
         return $this->belongsTo(Sounding::class);
     }
+
+    public function ukpd() 
+    {
+        return $this->belongsTo(Ukpd::class);
+    }
 }

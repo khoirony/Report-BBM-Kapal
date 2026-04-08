@@ -5,6 +5,7 @@ namespace App\Livewire\Satgas;
 use App\Models\Kapal;
 use App\Models\LaporanSisaBbm as SisaBBM; 
 use App\Models\Sounding;
+use App\Models\Ukpd; // Tambahkan Model Ukpd
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -16,10 +17,11 @@ class LaporanSisaBBM extends Component
     public $search = '';
     public $sortBy = 'latest';
     public $filterKapal = '';
+    public $filterUkpd = ''; // Properti filter UKPD
     public $filterTanggalDari = '';
     public $filterTanggalSampai = '';
 
-    // Form Properties (Sesuai Schema)
+    // Form Properties
     public $laporan_id, $nomor, $kapal_id, $sounding_id, $tanggal_surat, $klasifikasi, $lampiran, $perihal, $nama_nakhoda, $nama_pengawas;
     
     public $available_soundings = [];
@@ -27,32 +29,34 @@ class LaporanSisaBBM extends Component
 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingFilterKapal() { $this->resetPage(); }
+    public function updatingFilterUkpd() { $this->resetPage(); } // Reset pagination saat filter UKPD berubah
     public function updatingFilterTanggalDari() { $this->resetPage(); }
     public function updatingFilterTanggalSampai() { $this->resetPage(); }
 
     public function render()
     {
-        // 1. Ubah Eager Loading melewati sounding->kapal
-        $query = SisaBBM::with(['sounding.kapal']);
+        $query = SisaBBM::with(['sounding.kapal.ukpd', 'ukpd']);
 
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nomor', 'like', '%' . $this->search . '%')
                   ->orWhere('perihal', 'like', '%' . $this->search . '%')
                   ->orWhere('nama_nakhoda', 'like', '%' . $this->search . '%')
-                  // 2. Ubah pencarian relasi melewati sounding->kapal
                   ->orWhereHas('sounding.kapal', function($qKapal) {
-                      $qKapal->where('nama_kapal', 'like', '%' . $this->search . '%')
-                             ->orWhere('nama', 'like', '%' . $this->search . '%'); // Antisipasi nama kolom
+                      $qKapal->where('nama_kapal', 'like', '%' . $this->search . '%');
                   });
             });
         }
 
         if ($this->filterKapal) {
-            // 3. Ubah filter agar mengecek kapal_id dari relasi sounding
             $query->whereHas('sounding', function($q) {
                 $q->where('kapal_id', $this->filterKapal);
             });
+        }
+
+        // Terapkan Filter UKPD langsung ke kolom ukpd_id di tabel laporan_sisa_bbms
+        if ($this->filterUkpd) {
+            $query->where('ukpd_id', $this->filterUkpd);
         }
 
         if ($this->filterTanggalDari) {
@@ -71,19 +75,20 @@ class LaporanSisaBBM extends Component
 
         $laporans = $query->paginate(10);
         
-        // 4. Ubah sumber data dropdown Kapal menjadi hanya kapal yang ada di data Sounding
-        $kapals = Kapal::whereHas('sounding')->get();
+        $kapals = Kapal::whereHas('sounding')->orderBy('nama_kapal', 'asc')->get();
+        $ukpds = Ukpd::orderBy('nama', 'asc')->get(); // Ambil list UKPD
 
-        return view('livewire.satgas.laporan-sisa-bbm', compact('laporans', 'kapals'))
+        // Parsing variabel $ukpds ke View
+        return view('livewire.satgas.laporan-sisa-bbm', compact('laporans', 'kapals', 'ukpds'))
             ->layout('layouts.app');
     }
 
     public function resetFilters()
     {
-        $this->reset(['search', 'sortBy', 'filterKapal', 'filterTanggalDari', 'filterTanggalSampai']);
+        // Tambahkan filterUkpd untuk di-reset
+        $this->reset(['search', 'sortBy', 'filterKapal', 'filterUkpd', 'filterTanggalDari', 'filterTanggalSampai']);
     }
 
-    // Load data sounding otomatis ketika Kapal dipilih
     public function updatedKapalId($value) 
     { 
         if ($value) {
@@ -136,9 +141,12 @@ class LaporanSisaBBM extends Component
             'nama_pengawas' => 'required|string',
         ]);
 
+        $sounding = Sounding::with('kapal')->find($this->sounding_id);
+        $ukpdId = $sounding && $sounding->kapal ? $sounding->kapal->ukpd_id : null;
+
         SisaBBM::updateOrCreate(['id' => $this->laporan_id], [
             'nomor' => $this->nomor,
-            'kapal_id' => $this->kapal_id,
+            'ukpd_id' => $ukpdId, 
             'sounding_id' => $this->sounding_id,
             'tanggal_surat' => $this->tanggal_surat,
             'klasifikasi' => $this->klasifikasi,
@@ -156,20 +164,22 @@ class LaporanSisaBBM extends Component
     public function edit($id)
     {
         $this->resetValidation();
-        $laporan = SisaBBM::findOrFail($id);
+        $laporan = SisaBBM::with('sounding')->findOrFail($id);
         
         $this->laporan_id = $id;
         $this->nomor = $laporan->nomor;
-        $this->kapal_id = $laporan->kapal_id;
         $this->sounding_id = $laporan->sounding_id;
-        $this->tanggal_surat = $laporan->tanggal_surat->format('Y-m-d');
+        
+        $this->kapal_id = $laporan->sounding ? $laporan->sounding->kapal_id : '';
+        $this->tanggal_surat = \Carbon\Carbon::parse($laporan->tanggal_surat)->format('Y-m-d');
+        
         $this->klasifikasi = $laporan->klasifikasi;
         $this->lampiran = $laporan->lampiran;
         $this->perihal = $laporan->perihal;
         $this->nama_nakhoda = $laporan->nama_nakhoda;
         $this->nama_pengawas = $laporan->nama_pengawas;
         
-        $this->updatedKapalId($laporan->kapal_id); // Load soundings
+        $this->updatedKapalId($this->kapal_id); 
         
         $this->openModal();
     }
