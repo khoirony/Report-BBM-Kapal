@@ -1,20 +1,31 @@
 version: '3.8'
 
 services:
+  # Container khusus untuk memproses script PHP (Laravel)
+  app:
+    image: php:8.5-fpm # Gunakan versi PHP yang sesuai dengan proyek Anda
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+
+  # Container Nginx hanya bertugas menyajikan ke browser
   web:
     image: nginx:latest
     ports:
       - "8080:80"
     volumes:
-      - .:/usr/share/nginx/html
+      - .:/var/www/html
+      # Anda butuh file konfigurasi nginx khusus untuk meneruskan traffic ke PHP
+      # - ./nginx.conf:/etc/nginx/conf.d/default.conf 
+    depends_on:
+      - app
     restart: always
 
   db:
     image: mysql:8.0
     restart: always
     environment:
-      # Ambil nilai dari file .env nantinya
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} 
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3306:3306"
