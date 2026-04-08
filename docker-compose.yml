@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80" # Akses web di port 8080
+    volumes:
+      - .:/usr/share/nginx/html # Meng-copy file web ke dalam container
+    restart: always
