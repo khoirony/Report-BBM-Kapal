@@ -1,9 +1,25 @@
 version: '3.8'
+
 services:
   web:
     image: nginx:latest
     ports:
-      - "8080:80" # Akses web di port 8080
+      - "8080:80"
     volumes:
-      - .:/usr/share/nginx/html # Meng-copy file web ke dalam container
+      - .:/usr/share/nginx/html
     restart: always
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      # Ambil nilai dari file .env nantinya
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} 
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
