@@ -9,7 +9,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class LaporanBBMSebelumPengisian extends Component
+class BeritaAcaraLaporanPengisian extends Component
 {
     use WithPagination;
 
@@ -95,7 +95,7 @@ class LaporanBBMSebelumPengisian extends Component
         $laporans = $query->paginate(10);
         $kapals = Kapal::orderBy('nama_kapal', 'asc')->get();
 
-        return view('livewire.satgas.laporan-bbm-sebelum-pengisian', [
+        return view('livewire.satgas.berita-acara-laporan-pengisian', [
             'laporans' => $laporans,
             'kapals' => $kapals,
         ])->layout('layouts.app');

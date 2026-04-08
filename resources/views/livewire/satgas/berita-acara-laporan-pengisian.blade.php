@@ -13,7 +13,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Laporan BBM Sebelum Pengisian</h1>
+                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Berita Acara Laporan Pengisian</h1>
                     <p class="text-sm text-gray-500 mt-1 font-medium">Rekapitulasi dan pelaporan tugas pengisian bahan bakar armada.</p>
                 </div>
             </div>

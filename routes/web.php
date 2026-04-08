@@ -11,6 +11,7 @@ use App\Livewire\Dashboard\PenyediaDashboard;
 use App\Livewire\Dashboard\SatgasDashboard;
 use App\Livewire\Dashboard\SoundingDashboard;
 use App\Livewire\Dashboard\SuperAdminDashboard;
+use App\Livewire\Satgas\BeritaAcaraLaporanPengisian;
 use App\Livewire\Satgas\LaporanBBMSebelumPengisian;
 use App\Livewire\Satgas\LaporanSisaBBM;
 use App\Livewire\Satgas\SuratPermohonanPengisianBBM;
@@ -94,7 +95,7 @@ Route::middleware('auth')->group(function () {
         Route::middleware('role:superadmin,satgas')->group(function () {
             Route::get('/data-kapal', DataKapal::class)->name('data-kapal');
             Route::get('/laporan-sisa-bbm', LaporanSisaBBM::class)->name('satgas.laporan-sisa-bbm');
-            Route::get('/laporan-pengisian', LaporanBBMSebelumPengisian::class)->name('satgas.lapor-pengisian');
+            Route::get('/laporan-pengisian', BeritaAcaraLaporanPengisian::class)->name('satgas.lapor-pengisian');
             Route::get('/surat-tugas', SuratTugasPengisianBBM::class)->name('satgas.surat-tugas');
             Route::get('/surat-permohonan', SuratPermohonanPengisianBBM::class)->name('satgas.surat-permohonan');
         });
