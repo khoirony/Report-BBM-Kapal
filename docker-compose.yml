@@ -1,28 +1,30 @@
-version: '3.8'
-
 services:
-  # Container khusus untuk memproses script PHP (Laravel)
+  # Container Laravel
   app:
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
       - .:/var/www/html
-    depends_on:
-      - db
+    restart: always
 
-  # Container Nginx hanya bertugas menyajikan ke browser
+  # Container Nginx
   web:
     image: nginx:latest
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
     volumes:
       - .:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      # Folder untuk menyimpan sertifikat SSL
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - app
     restart: always
 
+  # Container MySQL
   db:
     image: mysql:8.0
     restart: always
@@ -33,6 +35,13 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+
+  # Container Certbot (untuk generate SSL)
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
 
 volumes:
   db_data:

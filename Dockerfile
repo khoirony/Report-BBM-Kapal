@@ -1,18 +1,18 @@
-FROM php:8.5-fpm
+FROM php:8.2-fpm
 
-# Instal ekstensi sistem yang dibutuhkan oleh Laravel & Composer
+# Instal dependensi sistem
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     zip \
     unzip \
-    libonig-dev
+    libonig-dev \
+    libxml2-dev
 
-# Instal ekstensi PHP untuk koneksi ke database MySQL
+# Instal ekstensi PHP untuk MySQL
 RUN docker-php-ext-install pdo_mysql mbstring
 
-# Mengambil Composer dari image resminya
+# Ambil Composer terbaru
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set folder kerja default
 WORKDIR /var/www/html
