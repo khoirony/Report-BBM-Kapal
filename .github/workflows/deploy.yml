@@ -1,0 +1,30 @@
+name: Deploy to Contabo VPS
+
+on:
+  push:
+    branches:
+      - main # Trigger berjalan jika ada push ke branch 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy ke Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Ganti path di bawah dengan lokasi folder proyek Anda di server
+            cd /var/www/proyek-saya 
+            
+            # Tarik kode terbaru dari GitHub
+            git pull origin main
+            
+            # Build ulang dan jalankan container Docker di background
+            docker-compose up -d --build
+            
+            # Hapus image lama yang tidak terpakai (opsional, untuk hemat storage)
+            docker image prune -f
