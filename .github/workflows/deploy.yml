@@ -18,7 +18,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # Ganti path di bawah dengan lokasi folder proyek Anda di server
-            cd /var/www/proyek-saya 
+            cd /var/www/bbm-kapal
             
             # Tarik kode terbaru dari GitHub
             git pull origin main
