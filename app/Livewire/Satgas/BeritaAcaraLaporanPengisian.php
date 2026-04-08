@@ -93,7 +93,11 @@ class BeritaAcaraLaporanPengisian extends Component
 
         // Paginasi & Data Relasi untuk Dropdown
         $laporans = $query->paginate(10);
-        $kapals = Kapal::orderBy('nama_kapal', 'asc')->get();
+        $kapals = Kapal::query();
+        if (auth()->user()->role !== 'superadmin') {
+            $kapals->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+        $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();
 
         return view('livewire.satgas.berita-acara-laporan-pengisian', [
             'laporans' => $laporans,
@@ -131,7 +135,9 @@ class BeritaAcaraLaporanPengisian extends Component
                 ->whereDate('created_at', $this->tanggal);
                 
             if (auth()->user()->role !== 'superadmin') {
-                $query->where('user_id', auth()->id());
+                $query->whereHas('kapal', function ($q) {
+                    $q->where('ukpd_id', auth()->user()?->ukpd_id);
+                });
             }
 
             $this->available_soundings = $query->get();

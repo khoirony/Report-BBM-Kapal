@@ -1,6 +1,5 @@
 <div class="p-4 sm:p-6 lg:px-8 lg:py-6 bg-slate-50 min-h-screen">
     <div class="w-full">
-        
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
             <div class="flex items-center space-x-4">
                 <div class="p-3 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-lg shadow-indigo-200">
@@ -17,8 +16,6 @@
                     <p class="text-sm text-gray-500 mt-1 font-medium">Rekapitulasi dan pelaporan pengisian bahan bakar armada.</p>
                 </div>
             </div>
-            
         </div>
-        
     </div>
 </div>
