@@ -3,7 +3,7 @@
 namespace App\Livewire\Satgas;
 
 use App\Models\Kapal;
-use App\Models\LaporanSebelumPengisian;
+use App\Models\BaPengisianBbm;
 use App\Models\Sounding;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -55,7 +55,7 @@ class BeritaAcaraLaporanPengisian extends Component
 
     public function render()
     {
-        $query = LaporanSebelumPengisian::with(['kapal', 'soundings', 'user']);
+        $query = BaPengisianBbm::with(['kapal', 'soundings', 'user']);
 
         if (auth()->user()->role !== 'superadmin') {
             $query->where('user_id', auth()->id());
@@ -103,7 +103,7 @@ class BeritaAcaraLaporanPengisian extends Component
 
     public function downloadPdf($id)
     {
-        $query = LaporanSebelumPengisian::with(['kapal', 'soundings' => function($q) {
+        $query = BaPengisianBbm::with(['kapal', 'soundings' => function($q) {
             $q->orderBy('created_at', 'asc');
         }]);
 
@@ -196,7 +196,7 @@ class BeritaAcaraLaporanPengisian extends Component
             $data['user_id'] = auth()->id();
         }
 
-        $laporan = LaporanSebelumPengisian::updateOrCreate(['id' => $this->laporan_id], $data);
+        $laporan = BaPengisianBbm::updateOrCreate(['id' => $this->laporan_id], $data);
 
         $laporan->soundings()->sync($this->selected_soundings);
 
@@ -207,7 +207,7 @@ class BeritaAcaraLaporanPengisian extends Component
 
     public function edit($id)
     {
-        $query = LaporanSebelumPengisian::query();
+        $query = BaPengisianBbm::query();
         
         if (auth()->user()->role !== 'superadmin') {
             $query->where('user_id', auth()->id());
@@ -235,7 +235,7 @@ class BeritaAcaraLaporanPengisian extends Component
 
     public function delete($id)
     {
-        $query = LaporanSebelumPengisian::query();
+        $query = BaPengisianBbm::query();
         
         if (auth()->user()->role !== 'superadmin') {
             $query->where('user_id', auth()->id());

@@ -22,7 +22,7 @@ class BaPengisianBbm extends Model
     // Relasi One-to-Many ke Sounding
     public function soundings() 
     {
-        return $this->belongsToMany(Sounding::class, 'laporan_sounding', 'laporan_pengisian_id', 'sounding_id')->withTimestamps();
+        return $this->belongsToMany(Sounding::class, 'laporan_sounding', 'ba_pengisian_bbm_id', 'sounding_id')->withTimestamps();
     }
 
     public function suratTugas()

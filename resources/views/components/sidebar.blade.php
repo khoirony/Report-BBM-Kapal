@@ -78,10 +78,21 @@
                 </svg>
                 Surat Permohonan
             </a>
+        @endif
 
-            <div x-data="{ dropdownOpen: false }" class="space-y-1">
+        @php
+            $pengisianRoutes = [
+                'satgas.pencatatan-pengisian', 
+                'satgas.laporan-pengisian', 
+                'satgas.berita-acara-pengisian'
+            ];
+            $isPengisianActive = request()->routeIs($pengisianRoutes);
+        @endphp
+
+        @if(in_array($role, ['superadmin', 'satgas', 'abk']))
+            <div x-data="{ dropdownOpen: {{ $isPengisianActive ? 'true' : 'false' }} }" class="space-y-1">
                 <button @click="dropdownOpen = !dropdownOpen" 
-                        class="w-full flex items-center justify-between {{ $baseClass }} {{ request()->routeIs('satgas.lapor-pengisian.*') ? $activeClass : $inactiveClass }}">
+                        class="w-full flex items-center justify-between {{ $baseClass }} {{ $isPengisianActive ? $activeClass : $inactiveClass }}">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
@@ -94,21 +105,32 @@
                 </button>
 
                 <div x-show="dropdownOpen" 
-                     x-transition.opacity
-                     class="pl-11 pr-2 py-1 space-y-1"
-                     x-cloak>
-                    <a href="#" class="block px-4 py-2 text-sm font-medium text-gray-600 rounded-xl hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
-                        Pencatatan Hasil Pengisian
-                    </a>
-                    <a href="#" class="block px-4 py-2 text-sm font-medium text-gray-600 rounded-xl hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
-                        Laporan Pengisian BBM
-                    </a>
-                    <a href="{{ route('satgas.lapor-pengisian') }}" class="block px-4 py-2 text-sm font-medium text-gray-600 rounded-xl hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
-                        Berita Acara Pengisian BBM
-                    </a>
+                    x-transition.opacity
+                    class="pl-11 pr-2 py-1 space-y-1"
+                    x-cloak>
+                    
+                    @if(in_array($role, ['superadmin', 'abk']))
+                        <a href="{{ route('satgas.pencatatan-pengisian') }}" 
+                        class="block px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200 {{ request()->routeIs('satgas.pencatatan-pengisian') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700' }}">
+                            Pencatatan Hasil Pengisian
+                        </a>
+                    @endif
+                    
+                    @if(in_array($role, ['superadmin', 'satgas']))
+                        <a href="{{ route('satgas.laporan-pengisian') }}" 
+                        class="block px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200 {{ request()->routeIs('satgas.laporan-pengisian') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700' }}">
+                            Laporan Pengisian BBM
+                        </a>
+                        
+                        <a href="{{ route('satgas.berita-acara-pengisian') }}" 
+                        class="block px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200 {{ request()->routeIs('satgas.berita-acara-pengisian') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700' }}">
+                            Berita Acara Pengisian BBM
+                        </a>
+                    @endif
+                    
                 </div>
             </div>
-            @endif
+        @endif
 
         @if(in_array($role, ['penyedia']))
             <a href="{{ route('penyedia.surat-permohonan') }}" 
