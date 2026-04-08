@@ -64,6 +64,7 @@
 
             <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-slate-100">
                 
+                @if (auth()->user()->role == 'superadmin')
                 <div class="relative w-full">
                     <select wire:model.live="filterUkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full cursor-pointer">
                         <option value="">Semua SKPD/UKPD</option>
@@ -72,6 +73,7 @@
                         @endforeach
                     </select>
                 </div>
+                @endif
 
                 <div class="relative w-full">
                     <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full cursor-pointer">

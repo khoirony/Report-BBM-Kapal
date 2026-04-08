@@ -19,7 +19,7 @@ class SuratTugasPengisian extends Model
 
     public function LaporanSisaBbm()
     {
-        return $this->belongsTo(LaporanSisaBbm::class, 'laporan_pengisian_id');
+        return $this->belongsTo(LaporanSisaBbm::class, 'laporan_sisa_bbm_id');
     }
 
     public function user()

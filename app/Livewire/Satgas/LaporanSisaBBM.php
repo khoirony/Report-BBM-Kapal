@@ -37,6 +37,10 @@ class LaporanSisaBBM extends Component
     {
         $query = SisaBBM::with(['sounding.kapal.ukpd', 'ukpd']);
 
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nomor', 'like', '%' . $this->search . '%')
@@ -75,8 +79,13 @@ class LaporanSisaBBM extends Component
 
         $laporans = $query->paginate(10);
         
-        $kapals = Kapal::whereHas('sounding')->orderBy('nama_kapal', 'asc')->get();
-        $ukpds = Ukpd::orderBy('nama', 'asc')->get(); // Ambil list UKPD
+        $kapals = Kapal::query();
+        if (auth()->user()->role !== 'superadmin') {
+            $kapals->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+        $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();
+
+        $ukpds = Ukpd::orderBy('nama', 'asc')->get();
 
         // Parsing variabel $ukpds ke View
         return view('livewire.satgas.laporan-sisa-bbm', compact('laporans', 'kapals', 'ukpds'))

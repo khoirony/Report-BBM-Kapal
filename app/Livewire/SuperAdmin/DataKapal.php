@@ -46,6 +46,10 @@ class DataKapal extends Component
         // Eager load relasi user dan ukpd
         $query = Kapal::with(['user', 'ukpd']);
 
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nama_kapal', 'like', '%' . $this->search . '%')

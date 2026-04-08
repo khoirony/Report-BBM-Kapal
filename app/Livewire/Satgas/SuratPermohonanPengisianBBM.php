@@ -34,7 +34,7 @@ class SuratPermohonanPengisianBBM extends Component
 
     public function mount()
     {
-        $queryTugas = SuratTugasPengisian::with('laporanSebelumPengisianBbm.kapal', 'user');
+        $queryTugas = SuratTugasPengisian::with('LaporanSisaBbm.sounding.kapal', 'user');
         if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
             $queryTugas->where('user_id', auth()->id());
         }
@@ -58,8 +58,7 @@ class SuratPermohonanPengisianBBM extends Component
     public function render()
     {
         $query = SuratPermohonanPengisian::with([
-            'suratTugas.laporanSebelumPengisianBbm.kapal',
-            'suratTugas.laporanSebelumPengisianBbm.soundings',
+            'suratTugas.LaporanSisaBbm.sounding.kapal',
             'files' 
         ]);
 
@@ -70,14 +69,14 @@ class SuratPermohonanPengisianBBM extends Component
         if (!empty($this->search)) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('suratTugas.laporanSebelumPengisianBbm.kapal', function($qKapal) {
+                  ->orWhereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($qKapal) {
                       $qKapal->where('nama_kapal', 'like', '%' . $this->search . '%');
                   });
             });
         }
 
         if (!empty($this->filterKapal)) {
-            $query->whereHas('suratTugas.laporanSebelumPengisianBbm', function($q) {
+            $query->whereHas('suratTugas.LaporanSisaBbm', function($q) {
                 $q->where('kapal_id', $this->filterKapal);
             });
         }

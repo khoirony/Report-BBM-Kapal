@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\SuratTugasPengisian;
 use App\Models\LaporanSebelumPengisian;
 use App\Models\Kapal;
+use App\Models\LaporanSisaBbm;
 use Illuminate\Support\Facades\Auth;
 
 class SuratTugasPengisianBBM extends Component
@@ -45,7 +46,7 @@ class SuratTugasPengisianBBM extends Component
 
     public function render()
     {
-        $query = SuratTugasPengisian::with(['laporanSebelumPengisianBbm.kapal', 'user']);
+        $query = SuratTugasPengisian::with(['LaporanSisaBbm.sounding.kapal', 'user']);
 
         // Pengecualian filter user_id untuk superadmin pada tabel utama
         if (auth()->user()->role !== 'superadmin') {
@@ -56,7 +57,7 @@ class SuratTugasPengisianBBM extends Component
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('laporanSebelumPengisianBbm', function($l) {
+                  ->orWhereHas('LaporanSisaBbm', function($l) {
                       $l->where('lokasi', 'like', '%' . $this->search . '%')
                         ->orWhereHas('kapal', function($k) {
                             $k->where('nama_kapal', 'like', '%' . $this->search . '%');
@@ -67,7 +68,7 @@ class SuratTugasPengisianBBM extends Component
 
         // 2. Fitur Filter Kapal
         if ($this->filterKapal) {
-            $query->whereHas('laporanSebelumPengisianBbm', function($q) {
+            $query->whereHas('LaporanSisaBbm', function($q) {
                 $q->where('kapal_id', $this->filterKapal);
             });
         }
@@ -88,12 +89,16 @@ class SuratTugasPengisianBBM extends Component
 
         // Ambil data untuk Paginasi & Dropdown Filter
         $surat_tugas = $query->paginate(10);
-        $kapals = Kapal::orderBy('nama_kapal', 'asc')->get(); // Kapal tidak difilter
+        $kapals = Kapal::query();
+        if (auth()->user()->role !== 'superadmin') {
+            $kapals->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+        $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();
         
         // Filter Laporan untuk Dropdown Form (User biasa hanya melihat laporannya sendiri)
-        $queryLaporan = LaporanSebelumPengisian::with('kapal')->latest();
+        $queryLaporan = LaporanSisaBbm::with('sounding.kapal')->latest();
         if (auth()->user()->role !== 'superadmin') {
-            $queryLaporan->where('user_id', auth()->id());
+            $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $laporans = $queryLaporan->get();
 

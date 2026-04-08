@@ -71,14 +71,6 @@
                 Surat Tugas Pengisian
             </a>
 
-            <a href="{{ route('satgas.lapor-pengisian') }}" 
-               class="{{ $baseClass }} {{ request()->routeIs('satgas.lapor-pengisian') ? $activeClass : $inactiveClass }}">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/>
-                </svg>
-                BA Laporan Pengisian
-            </a>
-
             <a href="{{ route('satgas.surat-permohonan') }}" 
                class="{{ $baseClass }} {{ request()->routeIs('satgas.surat-permohonan') ? $activeClass : $inactiveClass }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -86,7 +78,37 @@
                 </svg>
                 Surat Permohonan
             </a>
-        @endif
+
+            <div x-data="{ dropdownOpen: false }" class="space-y-1">
+                <button @click="dropdownOpen = !dropdownOpen" 
+                        class="w-full flex items-center justify-between {{ $baseClass }} {{ request()->routeIs('satgas.lapor-pengisian.*') ? $activeClass : $inactiveClass }}">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
+                        </svg>
+                        Pengisian BBM
+                    </div>
+                    <svg :class="dropdownOpen ? 'rotate-180' : ''" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <div x-show="dropdownOpen" 
+                     x-transition.opacity
+                     class="pl-11 pr-2 py-1 space-y-1"
+                     x-cloak>
+                    <a href="#" class="block px-4 py-2 text-sm font-medium text-gray-600 rounded-xl hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+                        Pencatatan Hasil Pengisian
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-sm font-medium text-gray-600 rounded-xl hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+                        Laporan Pengisian BBM
+                    </a>
+                    <a href="{{ route('satgas.lapor-pengisian') }}" class="block px-4 py-2 text-sm font-medium text-gray-600 rounded-xl hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200">
+                        Berita Acara Pengisian BBM
+                    </a>
+                </div>
+            </div>
+            @endif
 
         @if(in_array($role, ['penyedia']))
             <a href="{{ route('penyedia.surat-permohonan') }}" 
@@ -94,7 +116,7 @@
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                 </svg>
-                Surat Permohonan
+                Pemesanan BBM
             </a>
         @endif
 

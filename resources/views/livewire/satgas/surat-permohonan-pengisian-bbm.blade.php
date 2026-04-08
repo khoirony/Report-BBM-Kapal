@@ -107,9 +107,9 @@
                     <tbody class="block md:table-row-group md:divide-y md:divide-gray-50 space-y-4 md:space-y-0">
                         @forelse($permohonans as $item)
                             @php
-                                $soundings = $item->suratTugas->laporanSebelumPengisianBbm->soundings ?? collect();
-                                $jumlahLiter = $soundings->sum('pengisian');
-                                $jenisBbm = $soundings->first()->jenis_bbm ?? 'Dexlite';
+                                $sounding = $item->suratTugas->LaporanSisaBbm->sounding;
+                                $jumlahLiter = $sounding->sum('pengisian');
+                                $jenisBbm = $sounding->jenis_bbm ?? 'Dexlite';
 
                                 // Logika Warna Progress
                                 $progressColor = match($item->progress) {
@@ -160,8 +160,8 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <span class="font-bold text-gray-800 block">{{ $item->suratTugas->laporanSebelumPengisianBbm->kapal->nama_kapal ?? 'Tidak ada data kapal' }}</span>
-                                            <span class="text-xs text-gray-500">{{ $item->suratTugas->laporanSebelumPengisianBbm->kapal->skpd_ukpd ?? '-' }}</span>
+                                            <span class="font-bold text-gray-800 block">{{ $item->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? 'Tidak ada data kapal' }}</span>
+                                            <span class="text-xs text-gray-500">{{ $item->suratTugas->LaporanSisaBbm->sounding->kapal->ukpd->singkatan ?? '-' }}</span>
                                         </div>
                                     </div>
                                 </td>
@@ -263,7 +263,7 @@
                                 <select wire:model="surat_tugas_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
                                     <option value="">-- Pilih Surat Tugas Terkait --</option>
                                     @foreach($surat_tugas_list as $st)
-                                        <option value="{{ $st->id }}">{{ $st->nomor_surat }} (Kapal: {{ $st->laporanSebelumPengisianBbm->kapal->nama_kapal ?? '-' }})</option>
+                                        <option value="{{ $st->id }}">{{ $st->nomor_surat }} (Kapal: {{ $st->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})</option>
                                     @endforeach
                                 </select>
                                 @error('surat_tugas_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
