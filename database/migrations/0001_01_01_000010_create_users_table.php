@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->foreignId('ukpd_id')
+                  ->nullable() 
+                  ->constrained('ukpds')
+                  ->onDelete('cascade');
             $table->enum('role', ['superadmin', 'sounding', 'satgas', 'penyedia', 'nahkoda', 'pengawas'])->default('sounding');
             $table->rememberToken();
             $table->timestamps();

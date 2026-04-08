@@ -3,6 +3,7 @@
 namespace App\Livewire\SuperAdmin;
 
 use App\Models\Kapal;
+use App\Models\Ukpd; // Tambahkan Model Ukpd
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
@@ -15,7 +16,7 @@ class DataKapal extends Component
 
     // Properti Form Modal
     public $kapal_id;
-    public $nama_kapal, $skpd_ukpd, $jenis_dan_tipe, $material, $tahun_pembuatan, $ukuran, $tonase_kotor_gt, $tenaga_penggerak_kw, $daerah_pelayaran, $list_sertifikat_kapal;
+    public $nama_kapal, $ukpd_id, $jenis_dan_tipe, $material, $tahun_pembuatan, $ukuran, $tonase_kotor_gt, $tenaga_penggerak_kw, $daerah_pelayaran, $list_sertifikat_kapal;
     
     // Properti Gambar
     public $foto_kapal;
@@ -26,7 +27,7 @@ class DataKapal extends Component
     // Properti Search, Filter, dan Sort
     public $search = '';
     public $sortBy = 'latest';
-    public $filterSkpd = '';
+    public $filterUkpd = '';
     public $filterJenis = '';
     public $filterMaterial = '';
     public $filterTahun = '';
@@ -34,7 +35,7 @@ class DataKapal extends Component
 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingSortBy() { $this->resetPage(); }
-    public function updatingFilterSkpd() { $this->resetPage(); }
+    public function updatingFilterUkpd() { $this->resetPage(); }
     public function updatingFilterJenis() { $this->resetPage(); }
     public function updatingFilterMaterial() { $this->resetPage(); }
     public function updatingFilterTahun() { $this->resetPage(); }
@@ -42,17 +43,22 @@ class DataKapal extends Component
 
     public function render()
     {
-        $query = Kapal::with('user');
+        // Eager load relasi user dan ukpd
+        $query = Kapal::with(['user', 'ukpd']);
 
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nama_kapal', 'like', '%' . $this->search . '%')
-                  ->orWhere('skpd_ukpd', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('ukpd', function($qUkpd) {
+                      $qUkpd->where('nama', 'like', '%' . $this->search . '%')
+                            ->orWhere('singkatan', 'like', '%' . $this->search . '%');
+                  })
                   ->orWhere('jenis_dan_tipe', 'like', '%' . $this->search . '%');
             });
         }
 
-        if ($this->filterSkpd) { $query->where('skpd_ukpd', $this->filterSkpd); }
+        // Filter berdasarkan ukpd_id
+        if ($this->filterUkpd) { $query->where('ukpd_id', $this->filterUkpd); }
         if ($this->filterJenis) { $query->where('jenis_dan_tipe', $this->filterJenis); }
         if ($this->filterMaterial) { $query->where('material', $this->filterMaterial); }
         if ($this->filterTahun) { $query->where('tahun_pembuatan', $this->filterTahun); }
@@ -67,7 +73,8 @@ class DataKapal extends Component
 
         $kapals = $query->paginate(10);
 
-        $skpds = Kapal::whereNotNull('skpd_ukpd')->where('skpd_ukpd', '!=', '')->distinct()->pluck('skpd_ukpd');
+        $ukpds = Ukpd::orderBy('nama', 'asc')->get(); 
+        
         $jenisList = Kapal::whereNotNull('jenis_dan_tipe')->where('jenis_dan_tipe', '!=', '')->distinct()->pluck('jenis_dan_tipe');
         $materials = Kapal::whereNotNull('material')->where('material', '!=', '')->distinct()->pluck('material');
         $tahunList = Kapal::whereNotNull('tahun_pembuatan')->where('tahun_pembuatan', '!=', '')->distinct()->orderBy('tahun_pembuatan', 'desc')->pluck('tahun_pembuatan');
@@ -75,7 +82,7 @@ class DataKapal extends Component
 
         return view('livewire.super-admin.data-kapal', [
             'kapals' => $kapals,
-            'skpds' => $skpds,
+            'ukpds' => $ukpds,
             'jenisList' => $jenisList,
             'materials' => $materials,
             'tahunList' => $tahunList,
@@ -105,7 +112,7 @@ class DataKapal extends Component
     {
         $this->kapal_id = '';
         $this->nama_kapal = '';
-        $this->skpd_ukpd = '';
+        $this->ukpd_id = ''; // Sesuaikan
         $this->jenis_dan_tipe = '';
         $this->material = '';
         $this->tahun_pembuatan = '';
@@ -123,13 +130,13 @@ class DataKapal extends Component
     {
         $this->validate([
             'nama_kapal' => 'required',
-            'skpd_ukpd' => 'required',
+            'ukpd_id' => 'required', // Validasi ukpd_id
             'foto_kapal' => 'nullable|image|max:2048', 
         ]);
 
         $data = [
             'nama_kapal' => $this->nama_kapal,
-            'skpd_ukpd' => $this->skpd_ukpd,
+            'ukpd_id' => $this->ukpd_id, // Map ukpd_id
             'jenis_dan_tipe' => $this->jenis_dan_tipe,
             'material' => $this->material,
             'tahun_pembuatan' => $this->tahun_pembuatan,
@@ -138,6 +145,7 @@ class DataKapal extends Component
             'tenaga_penggerak_kw' => $this->tenaga_penggerak_kw,
             'daerah_pelayaran' => $this->daerah_pelayaran,
             'list_sertifikat_kapal' => $this->list_sertifikat_kapal,
+            'user_id' => auth()->id(), // Opsional: Otomatis set user yang sedang login saat create
         ];
 
         if ($this->foto_kapal) {
@@ -160,7 +168,7 @@ class DataKapal extends Component
         
         $this->kapal_id = $id;
         $this->nama_kapal = $kapal->nama_kapal;
-        $this->skpd_ukpd = $kapal->skpd_ukpd;
+        $this->ukpd_id = $kapal->ukpd_id; // Map ukpd_id saat edit
         $this->jenis_dan_tipe = $kapal->jenis_dan_tipe;
         $this->material = $kapal->material;
         $this->tahun_pembuatan = $kapal->tahun_pembuatan;

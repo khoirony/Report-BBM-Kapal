@@ -51,7 +51,7 @@
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
                         </div>
-                        <select wire:model.live="sortBy" class="pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full appearance-none shadow-sm hover:bg-slate-100">
+                        <select wire:model.live="sortBy" class="pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full appearance-none shadow-sm hover:bg-slate-100 cursor-pointer">
                             <option value="latest">Terbaru Ditambahkan</option>
                             <option value="oldest">Terlama Ditambahkan</option>
                         </select>
@@ -63,7 +63,7 @@
             <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-4 border-t border-slate-100 transition-all duration-200">
                 
                 <div class="relative">
-                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50">
+                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
                         <option value="">Semua Armada Kapal</option>
                         @foreach($kapals as $kapal)
                             <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal }}</option>
@@ -73,10 +73,10 @@
                 </div>
 
                 <div class="relative">
-                    <select wire:model.live="filterSkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50">
+                    <select wire:model.live="filterUkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
                         <option value="">Semua SKPD/UKPD</option>
-                        @foreach($skpds as $skpd)
-                            <option value="{{ $skpd }}">{{ $skpd }}</option>
+                        @foreach($ukpds as $ukpd)
+                            <option value="{{ $ukpd->id }}">{{ $ukpd->singkatan ?? $ukpd->nama }}</option>
                         @endforeach
                     </select>
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
@@ -145,7 +145,9 @@
                                             </div>
                                             <div>
                                                 <span class="font-bold text-base block">{{ $firstRecord->kapal->nama_kapal ?? 'Kapal Terhapus' }}</span>
-                                                <span class="text-[10px] bg-indigo-100/80 px-1.5 py-0.5 rounded font-semibold text-indigo-600">{{ $firstRecord->kapal->skpd_ukpd ?? '-' }}</span>
+                                                <span class="text-[10px] bg-indigo-100/80 px-1.5 py-0.5 rounded font-semibold text-indigo-600">
+                                                    {{ $firstRecord->kapal->ukpd->singkatan ?? $firstRecord->kapal->ukpd->nama ?? '-' }}
+                                                </span>
                                             </div>
                                         </div>
 
@@ -279,7 +281,7 @@
                             <div class="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Kapal <span class="text-rose-500">*</span></label>
-                                    <select wire:model="kapal_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                    <select wire:model="kapal_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors cursor-pointer" required>
                                         <option value="">-- Pilih Armada Kapal --</option>
                                         @foreach($kapals as $kapal)
                                             <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal }}</option>

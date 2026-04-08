@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('kapals', function (Blueprint $table) {
             $table->id();
             $table->string('nama_kapal')->nullable();
-            $table->string('skpd_ukpd')->nullable();
+            $table->foreignId('ukpd_id')
+                  ->nullable()
+                  ->constrained('ukpds')
+                  ->onDelete('set null');
             $table->string('jenis_dan_tipe')->nullable();
             $table->string('material')->nullable();
             $table->integer('tahun_pembuatan')->nullable();

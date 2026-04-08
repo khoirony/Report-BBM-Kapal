@@ -12,9 +12,14 @@ class Kapal extends Model
     // Mengizinkan semua kolom untuk diisi secara massal
     protected $guarded = ['id'];
 
+    public function ukpd()
+    {
+        return $this->belongsTo(Ukpd::class);
+    }
+
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function sounding() 

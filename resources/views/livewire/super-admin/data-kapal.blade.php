@@ -47,7 +47,7 @@
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nama kapal atau SKPD..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors shadow-sm">
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nama kapal atau UKPD..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors shadow-sm">
                 </div>
 
                 <div class="flex flex-row gap-3 w-full md:w-auto">
@@ -79,10 +79,10 @@
             <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 pt-4 border-t border-slate-100 transition-all duration-200">
                 
                 <div class="relative">
-                    <select wire:model.live="filterSkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer hover:bg-slate-50">
+                    <select wire:model.live="filterUkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-all appearance-none cursor-pointer hover:bg-slate-50">
                         <option value="">Semua SKPD/UKPD</option>
-                        @foreach($skpds as $skpd)
-                            <option value="{{ $skpd }}">{{ $skpd }}</option>
+                        @foreach($ukpds as $ukpd)
+                            <option value="{{ $ukpd->id }}">{{ $ukpd->singkatan ?? $ukpd->nama }}</option>
                         @endforeach
                     </select>
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
@@ -170,7 +170,7 @@
                                 </div>
                                 <div class="flex flex-col pt-1">
                                     <h3 class="font-bold text-gray-900 text-base sm:text-lg">{{ $kapal->nama_kapal ?? '-' }}</h3>
-                                    <p class="text-sm text-gray-500 font-medium mt-0.5">{{ $kapal->skpd_ukpd ?? 'Tanpa SKPD' }}</p>
+                                    <p class="text-sm text-gray-500 font-medium mt-0.5">{{ $kapal->ukpd->singkatan ?? $kapal->ukpd->nama ?? '-' }}</p>
                                     
                                     <div class="flex flex-wrap gap-2 mt-2">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-600 w-max">
@@ -350,8 +350,18 @@
                             
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">SKPD / UKPD <span class="text-rose-500">*</span></label>
-                                <input type="text" wire:model="skpd_ukpd" placeholder="Contoh: Dinas Perhubungan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors">
-                                @error('skpd_ukpd') <span class="text-rose-500 text-xs mt-1.5 font-medium flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> {{ $message }}</span>@enderror
+                                <div class="relative">
+                                    <select wire:model="ukpd_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors appearance-none cursor-pointer">
+                                        <option value="">Pilih SKPD / UKPD</option>
+                                        @foreach($ukpds as $ukpd)
+                                            <option value="{{ $ukpd->id }}">{{ $ukpd->nama }} ({{ $ukpd->singkatan }})</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                                @error('ukpd_id') <span class="text-rose-500 text-xs mt-1.5 font-medium flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> {{ $message }}</span>@enderror
                             </div>
 
                             <div>
