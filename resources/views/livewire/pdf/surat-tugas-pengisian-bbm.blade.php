@@ -50,8 +50,8 @@
                 <td style="vertical-align: top;">:</td>
                 <td>
                     <ol style="margin: 0; padding-left: 15px;">
-                        <li>Melaksanakan Pengisian BBM dan Operasional Kapal di SPBU {{ $surat->laporanBbm->lokasi }};</li>
-                        <li>Menambatlabuhkan kembali Kapal {{ $surat->laporanBbm->kapal->nama_kapal ?? '........................' }} setelah pengisian BBM ke Pelabuhan Muara Angke.</li>
+                        <li>Melaksanakan Pengisian BBM dan Operasional Kapal di SPBU {{ $surat->LaporanSisaBbm->sounding->lokasi }};</li>
+                        <li>Menambatlabuhkan kembali Kapal {{ $surat->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }} setelah pengisian BBM ke Pelabuhan Muara Angke.</li>
                     </ol>
                 </td>
             </tr>
@@ -61,15 +61,15 @@
         <table style="width: 100%; margin-bottom: 10px;">
             <tr>
                 <td style="width: 25%;">hari</td>
-                <td style="width: 75%;">: {{ $surat->laporanBbm->hari }}</td>
+                <td style="width: 75%;">: {{ $surat->LaporanSisaBbm->sounding->hari }}</td>
             </tr>
             <tr>
                 <td>tanggal</td>
-                <td>: {{ \Carbon\Carbon::parse($surat->laporanBbm->tanggal)->translatedFormat('d F Y') }}</td>
+                <td>: {{ \Carbon\Carbon::parse($surat->LaporanSisaBbm->sounding->tanggal)->translatedFormat('d F Y') }}</td>
             </tr>
             <tr>
                 <td>lokasi pengisian</td>
-                <td>: {{ $surat->laporanBbm->lokasi }}</td>
+                <td>: {{ $surat->LaporanSisaBbm->sounding->lokasi }}</td>
             </tr>
             <tr>
                 <td>pukul</td>
@@ -127,7 +127,7 @@
             <th style="width: 45%;">INSTANSI</th>
         </tr>
         @php
-            $petugasList = $surat->laporanBbm->petugas_list ?? [];
+            $petugasList = $surat->LaporanSisaBbm->petugas_list ?? [];
         @endphp
         @for($i = 0; $i < 7; $i++)
         <tr>

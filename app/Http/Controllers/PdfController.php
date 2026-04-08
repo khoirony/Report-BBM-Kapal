@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BaPengisianBbm;
 use Illuminate\Http\Request;
 use App\Models\LaporanSebelumPengisian;
 use App\Models\LaporanSisaBbm;
@@ -13,7 +14,7 @@ class PdfController extends Controller
     public function previewLaporan($id)
     {
         // Ambil data laporan beserta relasinya (Sama seperti logika di Livewire sebelumnya)
-        $laporan = LaporanSebelumPengisian::with(['kapal', 'soundings' => function($q) {
+        $laporan = BaPengisianBbm::with(['kapal', 'soundings' => function($q) {
             $q->orderBy('created_at', 'asc');
         }])->findOrFail($id);
 
@@ -31,7 +32,7 @@ class PdfController extends Controller
 
     public function previewSuratTugas($id)
     {
-        $surat = SuratTugasPengisian::with(['laporanSisaBbm.kapal'])->findOrFail($id);
+        $surat = SuratTugasPengisian::with(['laporanSisaBbm.sounding.kapal'])->findOrFail($id);
 
         $pdf = Pdf::loadView('pdf.surat-tugas-pengisian-bbm', ['surat' => $surat]);
         $pdf->setPaper('A4', 'portrait');
