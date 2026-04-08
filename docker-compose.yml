@@ -3,10 +3,13 @@ version: '3.8'
 services:
   # Container khusus untuk memproses script PHP (Laravel)
   app:
-    image: php:8.5-fpm # Gunakan versi PHP yang sesuai dengan proyek Anda
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - .:/var/www/html
-    working_dir: /var/www/html
+    depends_on:
+      - db
 
   # Container Nginx hanya bertugas menyajikan ke browser
   web:

@@ -20,12 +20,15 @@ jobs:
             cd /var/www/bbm-kapal
             git pull origin main
             
-            # ---------------------------------------------------
-            # Buat/Timpa file .env dengan data dari GitHub Secrets
-            # ---------------------------------------------------
+            # Setup environment Laravel
             echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" > .env
             echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
+            echo "DB_CONNECTION=mysql" >> .env
+            echo "DB_HOST=db" >> .env
+            echo "DB_PORT=3306" >> .env
+            echo "DB_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
+            echo "DB_USERNAME=root" >> .env
+            echo "DB_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
             
-            # Build ulang dan jalankan container
             docker-compose up -d --build
             docker image prune -f
