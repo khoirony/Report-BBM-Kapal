@@ -32,6 +32,18 @@ jobs:
             echo "DB_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
             echo "DB_USERNAME=root" >> .env
             echo "DB_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+
+            # Setup Email (Brevo SMTP)
+            echo "MAIL_MAILER=smtp" >> .env
+            echo "MAIL_HOST=smtp-relay.brevo.com" >> .env
+            echo "MAIL_PORT=587" >> .env
+            echo "MAIL_USERNAME=a7795d001@smtp-brevo.com" >> .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+            echo "MAIL_ENCRYPTION=tls" >> .env
+            
+            # Email pengirim yang akan terlihat oleh user
+            echo "MAIL_FROM_ADDRESS=noreply@dishub.khoirony.fun" >> .env 
+            echo "MAIL_FROM_NAME=\"\${APP_NAME}\"" >> .env
             
             docker-compose up -d --build
             docker image prune -f
