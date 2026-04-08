@@ -52,8 +52,8 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
                         </div>
                         <select wire:model.live="sortBy" class="pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full appearance-none shadow-sm hover:bg-slate-100 cursor-pointer">
-                            <option value="latest">Terbaru Ditambahkan</option>
-                            <option value="oldest">Terlama Ditambahkan</option>
+                            <option value="latest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                     </div>
@@ -162,27 +162,31 @@
                             @foreach($records as $row)
                             <tr class="relative block md:table-row bg-white hover:bg-slate-50/50 transition-colors duration-150 border-b border-gray-100 last:border-b-0">
                                 
-                                <td class="static md:relative flex flex-col md:table-cell pl-12 pr-4 py-4 md:pl-16 md:pr-6 md:py-5 align-top border-b border-gray-50 md:border-none">
+                                <td class="relative flex flex-col md:table-cell pl-12 pr-4 py-4 md:pl-16 md:pr-6 md:py-5 align-top border-b border-gray-50 md:border-none">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 relative z-10 tracking-wider">Lokasi Sounding</span>
                                     
                                     @if(!$loop->first)
-                                        <div class="absolute left-[23px] md:left-[31px] top-0 w-[2px] h-[24px] md:h-[28px] bg-indigo-200 z-0 hidden md:block"></div>
+                                        <div class="absolute left-[23px] md:left-[31px] top-0 w-[2px] h-[24px] md:h-[28px] bg-indigo-200 z-0"></div>
                                     @endif
                                     
                                     @if(!$loop->last)
-                                        <div class="absolute left-[23px] md:left-[31px] top-[24px] md:top-[28px] bottom-0 w-[2px] bg-indigo-200 z-0 hidden md:block"></div>
+                                        <div class="absolute left-[23px] md:left-[31px] top-[24px] md:top-[28px] bottom-0 w-[2px] bg-indigo-200 z-0"></div>
                                     @endif
 
-                                    <div class="absolute left-[19px] md:left-[27px] top-[19px] md:top-[23px] w-[10px] h-[10px] rounded-full bg-white border-[2.5px] border-indigo-500 z-10 ring-4 ring-white hidden md:block"></div>
+                                    <div class="absolute left-[19px] md:left-[27px] top-[19px] md:top-[23px] w-[10px] h-[10px] rounded-full bg-white border-[2.5px] border-indigo-500 z-10 ring-4 ring-white"></div>
 
                                     <div class="relative z-10">
                                         <h3 class="font-bold text-gray-800 text-sm md:text-base">{{ $row->lokasi }}</h3>
                                     </div>
                                 </td>
                                 
-                                <td class="flex flex-col md:table-cell pl-4 pr-4 py-3 md:pl-6 md:pr-6 md:py-5 border-b border-gray-50 md:border-none align-middle relative z-10">
-                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Rincian Volume BBM</span>
-                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm bg-gray-50 md:bg-transparent p-3 md:p-0 rounded-xl border border-gray-100 md:border-none">
+                                <td class="relative flex flex-col md:table-cell pl-12 pr-4 py-3 md:pl-6 md:pr-6 md:py-5 border-b border-gray-50 md:border-none align-middle z-10">
+                                    @if(!$loop->last)
+                                        <div class="absolute left-[23px] md:hidden top-0 bottom-0 w-[2px] bg-indigo-200 z-0"></div>
+                                    @endif
+
+                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider relative z-10">Rincian Volume BBM</span>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm bg-gray-50 md:bg-transparent p-3 md:p-0 rounded-xl border border-gray-100 md:border-none relative z-10">
                                         <div class="flex flex-col md:border-r md:border-gray-100 pr-2 pb-2 sm:pb-0 border-b border-gray-100 sm:border-b-0">
                                             <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Awal</span>
                                             <span class="font-semibold text-gray-700">{{ floatval($row->bbm_awal) }}</span>
@@ -202,9 +206,13 @@
                                     </div>
                                 </td>
 
-                                <td class="flex flex-col md:table-cell pl-4 pr-4 py-3 md:pl-6 md:pr-6 md:py-5 border-b border-gray-50 md:border-none align-middle relative z-10">
-                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-1 tracking-wider">Waktu Operasi & PIC</span>
-                                    <div class="flex flex-col space-y-2 w-max">
+                                <td class="relative flex flex-col md:table-cell pl-12 pr-4 py-3 md:pl-6 md:pr-6 md:py-5 border-b border-gray-50 md:border-none align-middle z-10">
+                                    @if(!$loop->last)
+                                        <div class="absolute left-[23px] md:hidden top-0 bottom-0 w-[2px] bg-indigo-200 z-0"></div>
+                                    @endif
+
+                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-1 tracking-wider relative z-10">Waktu Operasi & PIC</span>
+                                    <div class="flex flex-col space-y-2 w-max relative z-10">
                                         <div class="flex items-center text-xs font-semibold text-gray-700 bg-blue-50/50 px-2.5 py-1.5 rounded-lg border border-blue-100">
                                             <svg class="w-3.5 h-3.5 text-blue-500 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             {{ \Carbon\Carbon::parse($row->jam_berangkat)->format('H:i') }} - {{ \Carbon\Carbon::parse($row->jam_kembali)->format('H:i') }} WIB
@@ -218,8 +226,12 @@
                                     </div>
                                 </td>
                                 
-                                <td class="flex flex-row md:table-cell pl-4 pr-4 py-4 md:pl-6 md:pr-6 md:py-5 md:text-right gap-2 md:gap-0 align-middle relative z-10">
-                                    <div class="flex md:flex-col lg:flex-row justify-end gap-2 w-full">
+                                <td class="relative flex flex-row md:table-cell pl-12 pr-4 py-4 md:pl-6 md:pr-6 md:py-5 md:text-right gap-2 md:gap-0 align-middle z-10">
+                                    @if(!$loop->last)
+                                        <div class="absolute left-[23px] md:hidden top-0 bottom-0 w-[2px] bg-indigo-200 z-0"></div>
+                                    @endif
+
+                                    <div class="flex md:flex-col lg:flex-row justify-end gap-2 w-full relative z-10">
                                         <button wire:click="edit({{ $row->id }})" class="flex-1 lg:flex-none justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-xl md:rounded-lg transition-all duration-200 border border-indigo-100">
                                             <svg class="w-4 h-4 md:mr-0 lg:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             <span class="md:hidden lg:inline text-xs">Edit</span>
