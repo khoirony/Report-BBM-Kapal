@@ -167,22 +167,28 @@
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
                                 <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Penanggung Jawab</span>
                                 <div class="space-y-3">
-                                    <div class="flex items-center text-xs">
-                                        <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-2 text-[10px] flex-shrink-0">
+                                    <div class="flex items-start text-xs">
+                                        <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-2 text-[10px] flex-shrink-0 mt-0.5">
                                             N
                                         </div>
                                         <div class="flex flex-col truncate">
                                             <span class="font-bold text-gray-800 truncate">{{ $laporan->nama_nakhoda }}</span>
                                             <span class="text-[10px] text-gray-500 truncate">Nakhoda</span>
+                                            @if($laporan->id_nakhoda)
+                                                <span class="text-[10px] text-blue-600 font-medium">NIP/NRK: {{ $laporan->id_nakhoda }}</span>
+                                            @endif
                                         </div>
                                     </div>
-                                    <div class="flex items-center text-xs">
-                                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mr-2 text-[10px] flex-shrink-0">
+                                    <div class="flex items-start text-xs">
+                                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mr-2 text-[10px] flex-shrink-0 mt-0.5">
                                             P
                                         </div>
                                         <div class="flex flex-col truncate">
                                             <span class="font-bold text-gray-800 truncate">{{ $laporan->nama_pengawas }}</span>
                                             <span class="text-[10px] text-gray-500 truncate">Pengawas UPAP</span>
+                                            @if($laporan->id_pengawas)
+                                                <span class="text-[10px] text-emerald-600 font-medium">NIP/NRK: {{ $laporan->id_pengawas }}</span>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -194,7 +200,7 @@
                                     <div class="bg-blue-50/40 border border-blue-100 rounded-lg p-2.5 relative overflow-hidden">
                                         <div class="absolute top-0 left-0 w-1 h-full bg-blue-400"></div>
                                         <div class="flex justify-between items-center mb-2">
-                                            <span class="text-xs font-bold text-blue-900 truncate pr-2">{{ $laporan->sounding->lokasi }}</span>
+                                            <span class="text-xs font-bold text-blue-900 truncate pr-2">{{ $laporan->sounding->keterangan }}</span>
                                         </div>
                                         <div class="grid grid-cols-2 gap-1 sm:grid-cols-4 sm:gap-0 text-[9px] text-center bg-white rounded border border-blue-50 p-1.5 shadow-sm">
                                             <div class="flex flex-col sm:border-r border-gray-50 sm:pb-0 pb-1 border-b sm:border-b-0">
@@ -332,7 +338,7 @@
                                 <select wire:model="sounding_id" class="px-4 py-2.5 bg-slate-50 border border-indigo-200 rounded-xl block w-full cursor-pointer" required {{ empty($available_soundings) ? 'disabled' : '' }}>
                                     <option value="">-- Pilih Sounding Terkait Kapal --</option>
                                     @foreach($available_soundings as $snd)
-                                        <option value="{{ $snd->id }}">Lokasi: {{ $snd->lokasi }} | Sisa BBM: {{ floatval($snd->bbm_akhir) }} L | Tgl: {{ $snd->created_at->format('d/m/Y') }}</option>
+                                        <option value="{{ $snd->id }}">Keterangan: {{ $snd->keterangan }} | Sisa BBM: {{ floatval($snd->bbm_akhir) }} L | Tgl: {{ \Carbon\Carbon::parse($snd->tanggal_sounding)->format('d/m/Y') }}</option>
                                     @endforeach
                                 </select>
                                 @error('sounding_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
@@ -343,16 +349,27 @@
 
                             <div class="border-t border-slate-100"></div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Nakhoda <span class="text-rose-500">*</span></label>
-                                    <input type="text" wire:model="nama_nakhoda" placeholder="Nama Nakhoda..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
+                                    <input type="text" wire:model="nama_nakhoda" placeholder="Masukkan Nama Nakhoda..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
                                     @error('nama_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK Nakhoda</label>
+                                    <input type="text" wire:model="id_nakhoda" placeholder="Contoh: 19800101..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
+                                    @error('id_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                </div>
+                                
+                                <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Pengawas UPAP <span class="text-rose-500">*</span></label>
-                                    <input type="text" wire:model="nama_pengawas" placeholder="Nama Pengawas..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
+                                    <input type="text" wire:model="nama_pengawas" placeholder="Masukkan Nama Pengawas..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
                                     @error('nama_pengawas') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK Pengawas</label>
+                                    <input type="text" wire:model="id_pengawas" placeholder="Contoh: 19900202..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
+                                    @error('id_pengawas') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 </div>
                             </div>
 

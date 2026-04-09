@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Ambil ID UKPD untuk memudahkan mapping
-        $bidpelpen = DB::table('ukpds')->where('singkatan', 'Bidpelpen')->value('id');
+        $bpp = DB::table('ukpds')->where('singkatan', 'BPP')->value('id');
         $upap      = DB::table('ukpds')->where('singkatan', 'UPAP')->value('id');
         $uppd      = DB::table('ukpds')->where('singkatan', 'UPPD')->value('id');
         $sudinhub  = DB::table('ukpds')->where('singkatan', 'Sudinhub Kep. 1000')->value('id');
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // 2. Sounding Man (Contoh di Bidpelpen)
+        // 2. Sounding Man (Contoh di bpp)
         User::updateOrCreate(
             ['email' => 'sounding@gmail.com'],
             [
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
                 'password' => Hash::make('password1234'),
                 'role' => 'sounding',
-                'ukpd_id' => $bidpelpen,
+                'ukpd_id' => $bpp,
             ]
         );
 
@@ -77,7 +77,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // 6. Pengawas (Contoh di Bidpelpen)
+        // 6. Pengawas (Contoh di bpp)
         User::updateOrCreate(
             ['email' => 'pengawas@gmail.com'],
             [
@@ -85,7 +85,7 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
                 'password' => Hash::make('password1234'),
                 'role' => 'pengawas',
-                'ukpd_id' => $bidpelpen,
+                'ukpd_id' => $bpp,
             ]
         );
 

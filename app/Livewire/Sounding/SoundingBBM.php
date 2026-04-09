@@ -4,7 +4,7 @@ namespace App\Livewire\Sounding;
 
 use App\Models\Kapal;
 use App\Models\Sounding;
-use App\Models\Ukpd; // Tambahkan Model Ukpd
+use App\Models\Ukpd;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,7 @@ class SoundingBBM extends Component
     use WithPagination;
 
     // Properti Form Modal
-    public $sounding_id, $kapal_id, $lokasi, $bbm_awal, $pengisian, $pemakaian, $bbm_akhir, $jam_berangkat, $jam_kembali;
+    public $sounding_id, $kapal_id, $keterangan, $tanggal_sounding, $bbm_awal, $pengisian, $pemakaian, $bbm_akhir, $jam_berangkat, $jam_kembali;
     public $isModalOpen = false;
 
     // Properti Search, Filter, & Sort
@@ -22,14 +22,14 @@ class SoundingBBM extends Component
     public $sortBy = 'latest'; 
     
     public $filterKapal = '';
-    public $filterUkpd = ''; // Ubah nama properti menjadi filterUkpd
+    public $filterUkpd = ''; 
     public $filterTanggalAwal = '';
     public $filterTanggalAkhir = '';
 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingSortBy() { $this->resetPage(); }
     public function updatingFilterKapal() { $this->resetPage(); }
-    public function updatingFilterUkpd() { $this->resetPage(); } // Sesuaikan method
+    public function updatingFilterUkpd() { $this->resetPage(); } 
     public function updatingFilterTanggalAwal() { $this->resetPage(); }
     public function updatingFilterTanggalAkhir() { $this->resetPage(); }
 
@@ -43,7 +43,7 @@ class SoundingBBM extends Component
     public function resetFilters()
     {
         $this->filterKapal = '';
-        $this->filterUkpd = ''; // Sesuaikan
+        $this->filterUkpd = ''; 
         $this->filterTanggalAwal = '';
         $this->filterTanggalAkhir = '';
         $this->resetPage();
@@ -51,7 +51,6 @@ class SoundingBBM extends Component
 
     public function render()
     {
-        // Eager load ditambahkan 'kapal.ukpd' agar query lebih efisien
         $query = Sounding::with(['kapal.ukpd', 'user']);
 
         if (auth()->user()->role !== 'superadmin') {
@@ -63,10 +62,9 @@ class SoundingBBM extends Component
         // 1. Fitur Search
         if ($this->search) {
             $query->where(function($q) {
-                $q->where('lokasi', 'like', '%' . $this->search . '%')
+                $q->where('keterangan', 'like', '%' . $this->search . '%')
                   ->orWhereHas('kapal', function($k) {
                       $k->where('nama_kapal', 'like', '%' . $this->search . '%')
-                        // Tambahan: Bisa mencari berdasarkan nama/singkatan UKPD
                         ->orWhereHas('ukpd', function($u) {
                             $u->where('nama', 'like', '%' . $this->search . '%')
                               ->orWhere('singkatan', 'like', '%' . $this->search . '%');
@@ -80,7 +78,6 @@ class SoundingBBM extends Component
             $query->where('kapal_id', $this->filterKapal);
         }
 
-        // Filter menggunakan relasi ukpd_id pada tabel kapal
         if ($this->filterUkpd) {
             $query->whereHas('kapal', function($q) {
                 $q->where('ukpd_id', $this->filterUkpd);
@@ -88,16 +85,16 @@ class SoundingBBM extends Component
         }
 
         if ($this->filterTanggalAwal) {
-            $query->whereDate('created_at', '>=', $this->filterTanggalAwal);
+            $query->whereDate('tanggal_sounding', '>=', $this->filterTanggalAwal);
         }
         
         if ($this->filterTanggalAkhir) {
-            $query->whereDate('created_at', '<=', $this->filterTanggalAkhir);
+            $query->whereDate('tanggal_sounding', '<=', $this->filterTanggalAkhir);
         }
 
         match($this->sortBy) {
-            'oldest' => $query->orderBy('created_at', 'asc'),
-            default => $query->orderBy('created_at', 'desc'), 
+            'oldest' => $query->orderBy('tanggal_sounding', 'asc')->orderBy('id', 'asc'),
+            default => $query->orderBy('tanggal_sounding', 'desc')->orderBy('id', 'desc'), 
         };
 
         $soundings = $query->paginate(10);
@@ -107,19 +104,19 @@ class SoundingBBM extends Component
         }
         $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();
         
-        // Ambil data dari tabel Ukpd langsung
         $ukpds = Ukpd::orderBy('nama', 'asc')->get();
 
         return view('livewire.sounding.sounding-bbm', [
             'soundings' => $soundings,
             'kapals' => $kapals,
-            'ukpds' => $ukpds, // Parsing data ukpds
+            'ukpds' => $ukpds,
         ])->layout('layouts.app');
     }
 
     public function create()
     {
         $this->resetInputFields();
+        $this->tanggal_sounding = date('Y-m-d'); 
         $this->openModal();
     }
 
@@ -138,7 +135,8 @@ class SoundingBBM extends Component
     {
         $this->sounding_id = '';
         $this->kapal_id = '';
-        $this->lokasi = '';
+        $this->keterangan = '';
+        $this->tanggal_sounding = '';
         $this->bbm_awal = 0;
         $this->pengisian = 0;
         $this->pemakaian = 0;
@@ -151,7 +149,8 @@ class SoundingBBM extends Component
     {
         $this->validate([
             'kapal_id' => 'required',
-            'lokasi' => 'required|string|max:255',
+            'keterangan' => 'required|string|max:255',
+            'tanggal_sounding' => 'required|date',
             'bbm_awal' => 'required|numeric',
             'pengisian' => 'required|numeric',
             'pemakaian' => 'required|numeric',
@@ -163,7 +162,8 @@ class SoundingBBM extends Component
 
         $data = [
             'kapal_id' => $this->kapal_id,
-            'lokasi' => $this->lokasi,
+            'keterangan' => $this->keterangan,
+            'tanggal_sounding' => $this->tanggal_sounding,
             'bbm_awal' => $this->bbm_awal,
             'pengisian' => $this->pengisian,
             'pemakaian' => $this->pemakaian,
@@ -189,14 +189,17 @@ class SoundingBBM extends Component
         $query = Sounding::query();
         
         if (auth()->user()->role !== 'superadmin') {
-            $query->where('user_id', auth()->id());
+            $query->whereHas('kapal', function ($q) {
+                $q->where('ukpd_id', auth()->user()?->ukpd_id);
+            });
         }
         
         $sounding = $query->findOrFail($id);
         
         $this->sounding_id = $id;
         $this->kapal_id = $sounding->kapal_id;
-        $this->lokasi = $sounding->lokasi;
+        $this->keterangan = $sounding->keterangan;
+        $this->tanggal_sounding = $sounding->tanggal_sounding;
         $this->bbm_awal = $sounding->bbm_awal;
         $this->pengisian = $sounding->pengisian;
         $this->pemakaian = $sounding->pemakaian;
@@ -212,7 +215,9 @@ class SoundingBBM extends Component
         $query = Sounding::query();
         
         if (auth()->user()->role !== 'superadmin') {
-            $query->where('user_id', auth()->id());
+            $query->whereHas('kapal', function ($q) {
+                $q->where('ukpd_id', auth()->user()?->ukpd_id);
+            });
         }
         
         $sounding = $query->findOrFail($id);

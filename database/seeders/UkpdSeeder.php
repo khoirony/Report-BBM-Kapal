@@ -12,7 +12,7 @@ class UkpdSeeder extends Seeder
         $data = [
             [
                 'nama' => 'Bidang Pelayaran dan Penerbangan',
-                'singkatan' => 'Bidpelpen',
+                'singkatan' => 'BPP',
             ],
             [
                 'nama' => 'Unit Pengelola Angkutan Perairan',

@@ -5,7 +5,7 @@ namespace App\Livewire\Satgas;
 use App\Models\Kapal;
 use App\Models\LaporanSisaBbm as SisaBBM; 
 use App\Models\Sounding;
-use App\Models\Ukpd; // Tambahkan Model Ukpd
+use App\Models\Ukpd; 
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -17,19 +17,19 @@ class LaporanSisaBBM extends Component
     public $search = '';
     public $sortBy = 'latest';
     public $filterKapal = '';
-    public $filterUkpd = ''; // Properti filter UKPD
+    public $filterUkpd = ''; 
     public $filterTanggalDari = '';
     public $filterTanggalSampai = '';
 
-    // Form Properties
-    public $laporan_id, $nomor, $kapal_id, $sounding_id, $tanggal_surat, $klasifikasi, $lampiran, $perihal, $nama_nakhoda, $nama_pengawas;
+    // Form Properties (Ditambahkan id_nakhoda dan id_pengawas)
+    public $laporan_id, $nomor, $kapal_id, $sounding_id, $tanggal_surat, $klasifikasi, $lampiran, $perihal, $nama_nakhoda, $id_nakhoda, $nama_pengawas, $id_pengawas;
     
     public $available_soundings = [];
     public $isOpen = false;
 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingFilterKapal() { $this->resetPage(); }
-    public function updatingFilterUkpd() { $this->resetPage(); } // Reset pagination saat filter UKPD berubah
+    public function updatingFilterUkpd() { $this->resetPage(); } 
     public function updatingFilterTanggalDari() { $this->resetPage(); }
     public function updatingFilterTanggalSampai() { $this->resetPage(); }
 
@@ -46,6 +46,9 @@ class LaporanSisaBBM extends Component
                 $q->where('nomor', 'like', '%' . $this->search . '%')
                   ->orWhere('perihal', 'like', '%' . $this->search . '%')
                   ->orWhere('nama_nakhoda', 'like', '%' . $this->search . '%')
+                  ->orWhere('id_nakhoda', 'like', '%' . $this->search . '%')
+                  ->orWhere('nama_pengawas', 'like', '%' . $this->search . '%')
+                  ->orWhere('id_pengawas', 'like', '%' . $this->search . '%')
                   ->orWhereHas('sounding.kapal', function($qKapal) {
                       $qKapal->where('nama_kapal', 'like', '%' . $this->search . '%');
                   });
@@ -58,7 +61,6 @@ class LaporanSisaBBM extends Component
             });
         }
 
-        // Terapkan Filter UKPD langsung ke kolom ukpd_id di tabel laporan_sisa_bbms
         if ($this->filterUkpd) {
             $query->where('ukpd_id', $this->filterUkpd);
         }
@@ -87,14 +89,12 @@ class LaporanSisaBBM extends Component
 
         $ukpds = Ukpd::orderBy('nama', 'asc')->get();
 
-        // Parsing variabel $ukpds ke View
         return view('livewire.satgas.laporan-sisa-bbm', compact('laporans', 'kapals', 'ukpds'))
             ->layout('layouts.app');
     }
 
     public function resetFilters()
     {
-        // Tambahkan filterUkpd untuk di-reset
         $this->reset(['search', 'sortBy', 'filterKapal', 'filterUkpd', 'filterTanggalDari', 'filterTanggalSampai']);
     }
 
@@ -135,7 +135,9 @@ class LaporanSisaBBM extends Component
         $this->lampiran = '';
         $this->perihal = 'Laporan Perhitungan Jumlah Sisa BBM Kapal Sebelum Pengisian';
         $this->nama_nakhoda = '';
+        $this->id_nakhoda = '';
         $this->nama_pengawas = '';
+        $this->id_pengawas = '';
         $this->available_soundings = [];
     }
 
@@ -147,7 +149,9 @@ class LaporanSisaBBM extends Component
             'sounding_id' => 'required',
             'tanggal_surat' => 'required|date',
             'nama_nakhoda' => 'required|string',
+            'id_nakhoda' => 'nullable|string',
             'nama_pengawas' => 'required|string',
+            'id_pengawas' => 'nullable|string',
         ]);
 
         $sounding = Sounding::with('kapal')->find($this->sounding_id);
@@ -162,7 +166,9 @@ class LaporanSisaBBM extends Component
             'lampiran' => $this->lampiran,
             'perihal' => $this->perihal ?: 'Laporan Perhitungan Jumlah Sisa BBM Kapal Sebelum Pengisian',
             'nama_nakhoda' => $this->nama_nakhoda,
+            'id_nakhoda' => $this->id_nakhoda,
             'nama_pengawas' => $this->nama_pengawas,
+            'id_pengawas' => $this->id_pengawas,
             'user_id' => auth()->id() ?? 1,
         ]);
 
@@ -185,8 +191,11 @@ class LaporanSisaBBM extends Component
         $this->klasifikasi = $laporan->klasifikasi;
         $this->lampiran = $laporan->lampiran;
         $this->perihal = $laporan->perihal;
+        
         $this->nama_nakhoda = $laporan->nama_nakhoda;
+        $this->id_nakhoda = $laporan->id_nakhoda;
         $this->nama_pengawas = $laporan->nama_pengawas;
+        $this->id_pengawas = $laporan->id_pengawas;
         
         $this->updatedKapalId($this->kapal_id); 
         

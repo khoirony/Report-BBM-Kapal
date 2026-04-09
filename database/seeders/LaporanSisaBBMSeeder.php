@@ -14,10 +14,12 @@ class LaporanSisaBBMSeeder extends Seeder
      */
     public function run(): void
     {
-        $soundings = Sounding::with('kapal')->orderBy('created_at', 'asc')->get();
+        // Menggunakan tanggal_sounding untuk sorting agar konsisten dengan perubahan sebelumnya
+        $soundings = Sounding::with('kapal')->orderBy('tanggal_sounding', 'asc')->get();
         
         $groupedSoundings = $soundings->groupBy(function($item) {
-            return $item->kapal_id . '_' . Carbon::parse($item->created_at)->format('Y-m-d');
+            // Grouping berdasarkan tanggal_sounding
+            return $item->kapal_id . '_' . Carbon::parse($item->tanggal_sounding)->format('Y-m-d');
         });
 
         $nomorUrutSisaBbm = 1;
@@ -25,7 +27,7 @@ class LaporanSisaBBMSeeder extends Seeder
         foreach ($groupedSoundings as $groupKey => $soundingsInGroup) {
             $firstSounding = $soundingsInGroup->first();
             $lastSounding = $soundingsInGroup->last(); 
-            $tanggal = Carbon::parse($firstSounding->created_at);
+            $tanggal = Carbon::parse($firstSounding->tanggal_sounding);
             
             $nomorSurat = str_pad($nomorUrutSisaBbm, 3, '0', STR_PAD_LEFT) . '/PH.12.00/' . $tanggal->format('Y');
 
@@ -39,11 +41,18 @@ class LaporanSisaBBMSeeder extends Seeder
                 'klasifikasi'   => 'Biasa',
                 'lampiran'      => '-',
                 'perihal'       => 'Laporan Perhitungan Jumlah Sisa BBM Kapal Sebelum Pengisian',
+                
+                // Data Nama dan ID Nakhoda
                 'nama_nakhoda'  => 'Nakhoda Kapal ' . $lastSounding->kapal_id,
+                'id_nakhoda'    => '19800101201001100' . $lastSounding->kapal_id, // Contoh NIP/NRK dinamis
+                
+                // Data Nama dan ID Pengawas
                 'nama_pengawas' => 'Pengawas Lapangan',
+                'id_pengawas'   => '19900202201502100' . $ukpdId, // Contoh NIP/NRK dinamis
+                
                 'user_id'       => 1,
-                'created_at'    => $tanggal,
-                'updated_at'    => $tanggal,
+                'created_at'    => now(), // Sebaiknya created_at diset now() untuk penanda waktu record dibuat di DB
+                'updated_at'    => now(),
             ]);
 
             $nomorUrutSisaBbm++;

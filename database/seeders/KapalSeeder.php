@@ -13,8 +13,34 @@ class KapalSeeder extends Seeder
         // 1. Ambil semua data UKPD ke dalam memori agar tidak query berulang kali di dalam loop
         $ukpds = DB::table('ukpds')->get();
 
-        $csvFile = fopen(base_path("database/seeders/kapal.csv"), "r");
+        // Mengubah URL Google Sheet menjadi URL Export CSV
+        $sheetId = "1FTqKmUxb4afNysuppr4yZF76txwkjYffOkLs7xYmIYE";
+        $gid = "1075867526";
+        $csvUrl = "https://docs.google.com/spreadsheets/d/{$sheetId}/export?format=csv&gid={$gid}";
+
+        // Mencoba membuka file langsung dari URL Google Sheets
+        // Menggunakan @ untuk menekan error/warning bawaan PHP jika koneksi internet terputus
+        $csvFile = @fopen($csvUrl, "r");
   
+        // Validasi jika gagal membuka URL, gunakan fallback ke file lokal
+        if ($csvFile === FALSE) {
+            $this->command->warn("Koneksi ke Google Sheets gagal/timeout. Mencoba membaca file lokal...");
+            
+            // Tentukan lokasi file CSV lokal Anda (misal kita taruh di folder database/data/)
+            $localFilePath = database_path('seeders/kapal.csv');
+            
+            // Cek apakah file lokalnya ada
+            if (file_exists($localFilePath)) {
+                $csvFile = fopen($localFilePath, "r");
+                $this->command->info("Berhasil! Menggunakan data dari file lokal: database/seeders/kapal.csv");
+            } else {
+                $this->command->error("Gagal! URL Google Sheets tidak dapat diakses dan file lokal tidak ditemukan di: {$localFilePath}");
+                return; // Hentikan eksekusi jika keduanya gagal
+            }
+        } else {
+            $this->command->info("Koneksi sukses! Menggunakan data langsung dari Google Sheets.");
+        }
+
         $row = 0;
         
         while (($data = fgetcsv($csvFile, 2000, ",")) !== FALSE) {
@@ -66,5 +92,7 @@ class KapalSeeder extends Seeder
         }
   
         fclose($csvFile);
+        
+        $this->command->info('Data kapal berhasil di-seed!');
     }
 }

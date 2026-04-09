@@ -22,8 +22,7 @@ class CheckRole
 
         // Cek apakah role user saat ini ADA di dalam array $roles yang dikirim dari route
         if (!in_array($request->user()->role, $roles)) {
-            // Jika tidak ada, tampilkan error 403
-            abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk melihat halaman ini.');
+            return redirect()->route('home');
         }
 
         return $next($request);

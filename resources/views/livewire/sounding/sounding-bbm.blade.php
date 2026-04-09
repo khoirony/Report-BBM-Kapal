@@ -37,7 +37,7 @@
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari lokasi sounding atau armada..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari keterangan atau armada..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
                 </div>
 
                 <div class="flex flex-row gap-3 w-full md:w-auto">
@@ -105,8 +105,9 @@
         </div>
 
         @php
+            // Grouping diubah menggunakan tanggal_sounding
             $groupedSoundings = $soundings->groupBy(function($item) {
-                return $item->kapal_id . '_' . \Carbon\Carbon::parse($item->created_at)->format('Y-m-d');
+                return $item->kapal_id . '_' . $item->tanggal_sounding;
             });
         @endphp
 
@@ -120,7 +121,7 @@
                 <table class="w-full text-sm text-left text-gray-600 block md:table">
                     <thead class="hidden md:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
                         <tr>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/3">Titik / Lokasi Sounding</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/3">Keterangan Sounding</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/3">Rincian Volume BBM (Liter)</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6">Waktu Operasi & PIC</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider text-right w-1/6">Aksi</th>
@@ -131,7 +132,8 @@
                         @forelse($groupedSoundings as $groupKey => $records)
                             @php
                                 $firstRecord = $records->first();
-                                $tanggal = \Carbon\Carbon::parse($firstRecord->created_at)->translatedFormat('l, d F Y');
+                                // Menggunakan kolom tanggal_sounding
+                                $tanggal = \Carbon\Carbon::parse($firstRecord->tanggal_sounding)->translatedFormat('l, d F Y');
                             @endphp
                             
                             <tr class="block md:table-row bg-indigo-50/60 border-t border-indigo-100 md:border-t-0">
@@ -165,7 +167,7 @@
                             <tr class="relative block md:table-row bg-white hover:bg-slate-50/50 transition-colors duration-150 border-b border-gray-100 last:border-b-0">
                                 
                                 <td class="relative flex flex-col md:table-cell pl-12 pr-4 py-4 md:pl-16 md:pr-6 md:py-5 align-top border-b border-gray-50 md:border-none">
-                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 relative z-10 tracking-wider">Lokasi Sounding</span>
+                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 relative z-10 tracking-wider">Keterangan Sounding</span>
                                     
                                     @if(!$loop->first)
                                         <div class="absolute left-[23px] md:left-[31px] top-0 w-[2px] h-[24px] md:h-[28px] bg-indigo-200 z-0"></div>
@@ -178,7 +180,7 @@
                                     <div class="absolute left-[19px] md:left-[27px] top-[19px] md:top-[23px] w-[10px] h-[10px] rounded-full bg-white border-[2.5px] border-indigo-500 z-10 ring-4 ring-white"></div>
 
                                     <div class="relative z-10">
-                                        <h3 class="font-bold text-gray-800 text-sm md:text-base">{{ $row->lokasi }}</h3>
+                                        <h3 class="font-bold text-gray-800 text-sm md:text-base">{{ $row->keterangan }}</h3>
                                     </div>
                                 </td>
                                 
@@ -270,7 +272,7 @@
 
         @if($isModalOpen)
         <div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-opacity">
-            <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl transform transition-all max-h-[95vh] flex flex-col">
+            <div class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl transform transition-all max-h-[95vh] flex flex-col">
                 
                 <div class="flex items-center justify-between p-5 sm:p-6 border-b border-slate-100 rounded-t-2xl bg-slate-50/50 shrink-0">
                     <div class="flex items-center space-x-3">
@@ -292,23 +294,15 @@
                     <form wire:submit.prevent="store" id="form-sounding">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             
-                            <div class="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Kapal <span class="text-rose-500">*</span></label>
-                                    <select wire:model="kapal_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors cursor-pointer" required>
-                                        <option value="">-- Pilih Armada Kapal --</option>
-                                        @foreach($kapals as $kapal)
-                                            <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('kapal_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Titik / Lokasi <span class="text-rose-500">*</span></label>
-                                    <input type="text" wire:model="lokasi" placeholder="Contoh: Pom Bensin / Titik A" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
-                                    @error('lokasi') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
-                                </div>
+                            <div class="col-span-1 sm:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Kapal <span class="text-rose-500">*</span></label>
+                                <select wire:model="kapal_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors cursor-pointer" required>
+                                    <option value="">-- Pilih Armada Kapal --</option>
+                                    @foreach($kapals as $kapal)
+                                        <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal }}</option>
+                                    @endforeach
+                                </select>
+                                @error('kapal_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                             </div>
 
                             <div class="col-span-1 sm:col-span-2 border-t border-slate-100 my-1"></div>
@@ -347,15 +341,32 @@
 
                             <div class="col-span-1 sm:col-span-2 border-t border-slate-100 my-1"></div>
 
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jam Berangkat (WIB) <span class="text-rose-500">*</span></label>
-                                <input type="time" wire:model="jam_berangkat" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                            <div class="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Sounding <span class="text-rose-500">*</span></label>
+                                    <input type="date" wire:model="tanggal_sounding" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                    @error('tanggal_sounding') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jam Berangkat (WIB) <span class="text-rose-500">*</span></label>
+                                    <input type="time" wire:model="jam_berangkat" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                    @error('jam_berangkat') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jam Kembali (WIB) <span class="text-rose-500">*</span></label>
+                                    <input type="time" wire:model="jam_kembali" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                    @error('jam_kembali') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                </div>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jam Kembali (WIB) <span class="text-rose-500">*</span></label>
-                                <input type="time" wire:model="jam_kembali" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                            <div class="col-span-1 sm:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Keterangan / Titik Sounding <span class="text-rose-500">*</span></label>
+                                <textarea wire:model="keterangan" rows="3" placeholder="Contoh: Pengisian di Pom Bensin Dermaga A..." class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors resize-y" required></textarea>
+                                @error('keterangan') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                             </div>
+
                         </div>
                     </form>
                 </div>
