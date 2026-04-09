@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('surat_permohonan_pengisians', function (Blueprint $table) {
             $table->id();
             $table->foreignId('surat_tugas_id')->constrained('surat_tugas_pengisians')->cascadeOnDelete();
+            $table->foreignId('ukpd_id')
+                  ->nullable()
+                  ->constrained('ukpds')
+                  ->onDelete('set null');
             $table->string('nomor_surat')->nullable();
             $table->date('tanggal_surat');
             $table->string('klasifikasi')->nullable();

@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('surat_tugas_pengisians', function (Blueprint $table) {
             $table->id();
             $table->foreignId('laporan_sisa_bbm_id')->constrained('laporan_sisa_bbms')->cascadeOnDelete();
+            $table->foreignId('ukpd_id')
+                  ->nullable()
+                  ->constrained('ukpds')
+                  ->onDelete('set null');
             $table->string('nomor_surat');
             $table->string('waktu_pelaksanaan')->default('08:00 - Selesai');
             $table->date('tanggal_dikeluarkan');

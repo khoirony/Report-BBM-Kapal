@@ -21,26 +21,29 @@ class SuratTugasPengisianSeeder extends Seeder
         $nomorUrut = 1; // Mulai nomor surat dari 1
 
         foreach ($laporans as $laporan) {
-            // Format nomor surat menjadi 3 digit (contoh: 001, 002)
-            $nomorSurat = str_pad($nomorUrut, 3, '0', STR_PAD_LEFT);
-
             // Tanggal dikeluarkan biasanya H-1 atau sama dengan tanggal pelaksanaan
-            $tanggalDikeluarkan = Carbon::parse($laporan->tanggal)->subDay();
+            $tanggalDikeluarkan = Carbon::parse($laporan->tanggal_surat)->subDay();
             
             // Jika H-1 jatuh di hari Minggu (0), mundurkan ke hari Jumat
             if ($tanggalDikeluarkan->dayOfWeek === Carbon::SUNDAY) {
                 $tanggalDikeluarkan->subDays(2);
             }
 
+            // Format nomor surat menjadi full (Contoh: 001/PH.12.00/2026)
+            $nomorSurat = str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/PH.12.00/' . $tanggalDikeluarkan->format('Y');
+
             SuratTugasPengisian::create([
                 'laporan_sisa_bbm_id' => $laporan->id,
-                'nomor_surat' => $nomorSurat,
-                'waktu_pelaksanaan' => '08:00 - Selesai',
+                'ukpd_id'             => $laporan->ukpd_id, // Menyalin ukpd_id dari Laporan BBM
+                'nomor_surat'         => $nomorSurat,
+                'waktu_pelaksanaan'   => '08:00 - Selesai',
                 'tanggal_dikeluarkan' => $tanggalDikeluarkan->format('Y-m-d'),
-                'user_id' => 3,
+                'user_id'             => 3,
             ]);
 
             $nomorUrut++;
         }
+
+        $this->command->info('Data Surat Tugas Pengisian berhasil di-seed dengan nomor surat penuh!');
     }
 }

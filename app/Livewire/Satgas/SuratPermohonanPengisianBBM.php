@@ -8,6 +8,7 @@ use Livewire\WithFileUploads;
 use App\Models\SuratPermohonanPengisian;
 use App\Models\SuratTugasPengisian;
 use App\Models\Kapal;
+use App\Models\Ukpd; // Tambahkan ini
 use App\Models\FileSuratPermohonan;
 use Illuminate\Support\Facades\DB;
 
@@ -29,28 +30,37 @@ class SuratPermohonanPengisianBBM extends Component
     public $search = '';
     public $sortBy = 'latest';
     public $filterKapal = '';
+    public $filterUkpd = ''; // Tambahan properti filter UKPD
     public $filterTanggalAwal = '';
     public $filterTanggalAkhir = '';
 
     public function mount()
     {
+        // Menampilkan pilihan Surat Tugas sesuai UKPD
         $queryTugas = SuratTugasPengisian::with('LaporanSisaBbm.sounding.kapal', 'user');
         if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
-            $queryTugas->where('user_id', auth()->id());
+            $queryTugas->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $this->surat_tugas_list = $queryTugas->get();
-        $this->kapals = Kapal::orderBy('nama_kapal')->get();
+
+        // Menampilkan pilihan Kapal sesuai UKPD
+        $queryKapal = Kapal::orderBy('nama_kapal');
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+            $queryKapal->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+        $this->kapals = $queryKapal->get();
     }
 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingFilterKapal() { $this->resetPage(); }
+    public function updatingFilterUkpd() { $this->resetPage(); } // Reset saat filter UKPD diubah
     public function updatingFilterTanggalAwal() { $this->resetPage(); }
     public function updatingFilterTanggalAkhir() { $this->resetPage(); }
     public function updatingSortBy() { $this->resetPage(); }
 
     public function resetFilters()
     {
-        $this->reset(['search', 'filterKapal', 'filterTanggalAwal', 'filterTanggalAkhir']);
+        $this->reset(['search', 'filterKapal', 'filterUkpd', 'filterTanggalAwal', 'filterTanggalAkhir']);
         $this->sortBy = 'latest';
         $this->resetPage();
     }
@@ -62,8 +72,9 @@ class SuratPermohonanPengisianBBM extends Component
             'files' 
         ]);
 
+        // Batasi tampilan tabel utama berdasarkan ukpd_id untuk selain superadmin & penyedia
         if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
-            $query->where('user_id', auth()->id());
+            $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
         if (!empty($this->search)) {
@@ -77,8 +88,15 @@ class SuratPermohonanPengisianBBM extends Component
 
         if (!empty($this->filterKapal)) {
             $query->whereHas('suratTugas.LaporanSisaBbm', function($q) {
-                $q->where('kapal_id', $this->filterKapal);
+                $q->whereHas('sounding', function($s) {
+                    $s->where('kapal_id', $this->filterKapal);
+                });
             });
+        }
+
+        // Terapkan Filter UKPD
+        if (!empty($this->filterUkpd)) {
+            $query->where('ukpd_id', $this->filterUkpd);
         }
 
         if (!empty($this->filterTanggalAwal)) {
@@ -94,8 +112,11 @@ class SuratPermohonanPengisianBBM extends Component
             $query->latest('tanggal_surat');
         }
 
+        $ukpds = Ukpd::orderBy('nama', 'asc')->get();
+
         return view('livewire.satgas.surat-permohonan-pengisian-bbm', [
-            'permohonans' => $query->paginate(10)
+            'permohonans' => $query->paginate(10),
+            'ukpds' => $ukpds
         ])->layout('layouts.app');
     }
 
@@ -108,12 +129,18 @@ class SuratPermohonanPengisianBBM extends Component
     public function edit($id)
     {
         $this->resetFields();
-        $permohonan = SuratPermohonanPengisian::findOrFail($id);
+        
+        $query = SuratPermohonanPengisian::query();
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+            $query->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+        
+        $permohonan = $query->findOrFail($id);
         
         $this->permohonan_id = $id;
         $this->surat_tugas_id = $permohonan->surat_tugas_id;
         $this->nomor_surat = $permohonan->nomor_surat;
-        $this->tanggal_surat = $permohonan->tanggal_surat;
+        $this->tanggal_surat = \Carbon\Carbon::parse($permohonan->tanggal_surat)->format('Y-m-d');
         $this->klasifikasi = $permohonan->klasifikasi;
         $this->lampiran = $permohonan->lampiran;
 
@@ -128,8 +155,11 @@ class SuratPermohonanPengisianBBM extends Component
             'tanggal_surat' => 'required|date',
         ]);
 
+        $suratTugas = SuratTugasPengisian::find($this->surat_tugas_id);
+
         $data = [
             'surat_tugas_id' => $this->surat_tugas_id,
+            'ukpd_id' => $suratTugas ? $suratTugas->ukpd_id : null, // Membawa UKPD ID dari Surat Tugas
             'nomor_surat' => $this->nomor_surat,
             'tanggal_surat' => $this->tanggal_surat,
             'klasifikasi' => $this->klasifikasi,
@@ -153,8 +183,14 @@ class SuratPermohonanPengisianBBM extends Component
 
     public function openProgressModal($id)
     {
-        $this->reset(['berkas']); // Kosongkan file sebelumnya
-        $permohonan = SuratPermohonanPengisian::findOrFail($id);
+        $this->reset(['berkas']); 
+        
+        $query = SuratPermohonanPengisian::query();
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+            $query->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+        
+        $permohonan = $query->findOrFail($id);
         
         $this->permohonan_id = $permohonan->id;
         $this->progress = $permohonan->progress;
@@ -178,7 +214,6 @@ class SuratPermohonanPengisianBBM extends Component
         $permohonan = SuratPermohonanPengisian::findOrFail($this->permohonan_id);
 
         DB::transaction(function () use ($permohonan) {
-            // Jika ada file yang diunggah
             if ($this->berkas) {
                 $path = $this->berkas->store('berkas_surat', 'public');
 
@@ -188,13 +223,11 @@ class SuratPermohonanPengisianBBM extends Component
                     'file_path' => $path,
                 ]);
 
-                // Auto ubah progress menjadi on progress jika sebelumnya not started
                 if ($this->progress === 'not started') {
                     $this->progress = 'on progress';
                 }
             }
 
-            // Update status progress di tabel utama
             $permohonan->update([
                 'progress' => $this->progress
             ]);
@@ -212,7 +245,12 @@ class SuratPermohonanPengisianBBM extends Component
 
     public function delete($id)
     {
-        SuratPermohonanPengisian::findOrFail($id)->delete();
+        $query = SuratPermohonanPengisian::query();
+        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+            $query->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+        
+        $query->findOrFail($id)->delete();
         session()->flash('message', 'Surat Permohonan Berhasil Dihapus.');
     }
 }

@@ -45,7 +45,7 @@
                     </button>
         
                     <div class="relative flex-1 md:flex-none md:w-48">
-                        <select wire:model.live="sortBy" class="pl-4 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full appearance-none shadow-sm hover:bg-slate-100">
+                        <select wire:model.live="sortBy" class="pl-4 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full appearance-none shadow-sm hover:bg-slate-100 cursor-pointer">
                             <option value="latest">Terbaru</option>
                             <option value="oldest">Terlama</option>
                         </select>
@@ -54,10 +54,22 @@
                 </div>
             </div>
         
-            <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-100 transition-all duration-200">
+            <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-slate-100 transition-all duration-200">
                 
+                @if (auth()->user()->role == 'superadmin')
                 <div class="relative w-full">
-                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50">
+                    <select wire:model.live="filterUkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
+                        <option value="">Semua SKPD/UKPD</option>
+                        @foreach($ukpds as $ukpd)
+                            <option value="{{ $ukpd->id }}">{{ $ukpd->singkatan ?? $ukpd->nama }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                </div>
+                @endif
+
+                <div class="relative w-full">
+                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
                         <option value="">Semua Armada Kapal</option>
                         @foreach($kapals as $kapal)
                             <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal }}</option>
@@ -111,7 +123,7 @@
                                 
                                 <div class="mb-3">
                                     <div class="bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 inline-block mb-1">
-                                        <span class="font-bold text-gray-800 tracking-wide">{{ $surat->nomor_surat }}/PH.12.00</span>
+                                        <span class="font-bold text-gray-800 tracking-wide">{{ $surat->nomor_surat }}</span>
                                     </div>
                                     <p class="text-xs text-gray-500 font-medium ml-1">
                                         Dikeluarkan: <span class="text-gray-700 font-bold">{{ \Carbon\Carbon::parse($surat->tanggal_dikeluarkan)->format('d M Y') }}</span>
@@ -152,8 +164,13 @@
                                                     </svg>
                                                 </div>
                                                 <div>
-                                                    <p class="font-bold text-gray-900 text-sm">{{ $surat->laporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal Tidak Ditemukan' }}</p>
-                                                    <p class="text-[10px] text-gray-500 mt-0.5">Laporan ID: #{{ $surat->laporanSisaBbm->sounding->id }}</p>
+                                                    <p class="font-bold text-gray-900 text-sm">
+                                                        {{ $surat->laporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal Tidak Ditemukan' }}
+                                                    </p>
+                                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                                        <span class="text-[9px] bg-indigo-100 text-indigo-700 px-1 rounded font-bold">{{ $surat->laporanSisaBbm->sounding->kapal->ukpd->singkatan ?? 'UKPD' }}</span>
+                                                        <p class="text-[10px] text-gray-500">Lap ID: #{{ $surat->laporanSisaBbm->id }}</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-1 rounded font-bold">{{ $surat->laporanSisaBbm->sounding->kapal->jenis_dan_tipe ?? '-' }}</span>
@@ -165,12 +182,14 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                 </svg>
                                                 <span class="text-gray-700">
-                                                    {{ \Carbon\Carbon::parse($surat->laporanSisaBbm->sounding->tanggal)->locale('id')->translatedFormat('l, d M Y') }}
+                                                    {{ \Carbon\Carbon::parse($surat->laporanSisaBbm->tanggal_surat)->locale('id')->translatedFormat('l, d M Y') }}
                                                 </span>
                                             </div>
                                             <div class="flex items-start">
                                                 <svg class="w-3.5 h-3.5 text-gray-400 mr-1.5 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                                <span class="text-gray-700">{{ $surat->laporanSisaBbm->sounding->lokasi }}</span>
+                                                <span class="text-gray-700 truncate" title="{{ $surat->laporanSisaBbm->sounding->keterangan ?? '-' }}">
+                                                    {{ $surat->laporanSisaBbm->sounding->keterangan ?? '-' }}
+                                                </span>
                                             </div>
                                         </div>
                                         
@@ -178,7 +197,7 @@
                                 @else
                                     <div class="bg-rose-50 text-rose-600 border border-rose-100 p-3 rounded-xl text-xs font-semibold flex items-center">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                        Laporan pengisian BBM terkait telah dihapus dari sistem.
+                                        Laporan BBM terkait telah dihapus dari sistem.
                                     </div>
                                 @endif
                             </td>
@@ -242,10 +261,10 @@
                             
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tautkan Laporan BBM <span class="text-rose-500">*</span></label>
-                                <select wire:model="laporan_pengisian_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                <select wire:model="laporan_pengisian_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer" required>
                                     <option value="">-- Pilih Laporan BBM --</option>
                                     @foreach($laporans as $lap)
-                                        <option value="{{ $lap->id }}">Lap #{{ $lap->id }} - {{ $lap->kapal->nama_kapal ?? 'Kapal' }} (Tgl: {{ \Carbon\Carbon::parse($lap->tanggal)->format('d/m/Y') }})</option>
+                                        <option value="{{ $lap->id }}">Lap #{{ $lap->nomor }} - {{ $lap->sounding->kapal->nama_kapal ?? 'Kapal' }} (Tgl: {{ \Carbon\Carbon::parse($lap->tanggal_surat)->format('d/m/Y') }})</option>
                                     @endforeach
                                 </select>
                                 <p class="text-[10px] text-gray-500 mt-1">Data Kapal, Tanggal, Lokasi, dan Petugas akan otomatis terisi di PDF berdasarkan Laporan ini.</p>
@@ -256,10 +275,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Surat <span class="text-rose-500">*</span></label>
-                                    <div class="flex items-center">
-                                        <input type="text" wire:model="nomor_surat" placeholder="001" class="px-4 py-2.5 bg-slate-50 border border-slate-200 border-r-0 text-sm rounded-l-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                                        <span class="px-3 py-2.5 bg-gray-100 border border-gray-200 text-sm rounded-r-xl font-bold text-gray-600">/PH.12.00</span>
-                                    </div>
+                                    <input type="text" wire:model="nomor_surat" placeholder="Contoh: 001/PH.12.00/2026" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Dikeluarkan <span class="text-rose-500">*</span></label>

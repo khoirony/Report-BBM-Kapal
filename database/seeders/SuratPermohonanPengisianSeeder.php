@@ -10,11 +10,11 @@ class SuratPermohonanPengisianSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil semua ID surat tugas yang ada menjadi array
-        $suratTugasIds = SuratTugasPengisian::pluck('id')->toArray(); 
+        // Ambil semua data surat tugas agar bisa mengakses ukpd_id-nya
+        $suratTugasList = SuratTugasPengisian::all(); 
 
         // Jika tabel surat tugas kosong, hentikan seeder agar tidak error
-        if (empty($suratTugasIds)) {
+        if ($suratTugasList->isEmpty()) {
             $this->command->info('Tidak ada data Surat Tugas. Seeder dibatalkan.');
             return;
         }
@@ -73,10 +73,16 @@ class SuratPermohonanPengisianSeeder extends Seeder
 
         // Lakukan perulangan untuk menyimpan ke database
         foreach ($dataPermohonan as $item) {
-            // Pilih secara acak dari ID surat tugas yang tersedia
-            $item['surat_tugas_id'] = $suratTugasIds[array_rand($suratTugasIds)];
+            // Pilih satu object Surat Tugas secara acak dari collection
+            $randomSuratTugas = $suratTugasList->random();
+            
+            // Masukkan id dan ukpd_id dari Surat Tugas yang terpilih
+            $item['surat_tugas_id'] = $randomSuratTugas->id;
+            $item['ukpd_id']        = $randomSuratTugas->ukpd_id;
             
             SuratPermohonanPengisian::create($item);
         }
+
+        $this->command->info('Data Surat Permohonan Pengisian berhasil di-seed beserta UKPD ID!');
     }
 }

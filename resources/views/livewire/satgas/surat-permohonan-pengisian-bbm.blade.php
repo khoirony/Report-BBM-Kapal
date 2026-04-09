@@ -58,9 +58,22 @@
                 </div>
             </div>
 
-            <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-slate-100 transition-all duration-200">
-                <div class="relative">
-                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50">
+            <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-4 border-t border-slate-100 transition-all duration-200">
+                
+                @if (auth()->user()->role == 'superadmin')
+                <div class="relative w-full">
+                    <select wire:model.live="filterUkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
+                        <option value="">Semua SKPD/UKPD</option>
+                        @foreach($ukpds as $ukpd)
+                            <option value="{{ $ukpd->id }}">{{ $ukpd->singkatan ?? $ukpd->nama }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                </div>
+                @endif
+
+                <div class="relative w-full">
+                    <select wire:model.live="filterKapal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
                         <option value="">Semua Armada Kapal</option>
                         @foreach($kapals as $kapal)
                             <option value="{{ $kapal->id }}">{{ $kapal->nama_kapal }}</option>
@@ -69,17 +82,17 @@
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                 </div>
 
-                <div class="relative">
+                <div class="relative w-full">
                     <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-500 z-10">Dari Tgl</label>
                     <input type="date" wire:model.live="filterTanggalAwal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0">
                 </div>
 
-                <div class="relative">
+                <div class="relative w-full">
                     <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-500 z-10">Sampai Tgl</label>
                     <input type="date" wire:model.live="filterTanggalAkhir" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0">
                 </div>
                 
-                <div class="flex items-end">
+                <div class="flex items-end w-full">
                     <button wire:click="resetFilters" class="w-full h-full min-h-[34px] flex justify-center items-center px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold rounded-lg transition-colors border border-rose-100">
                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Reset Filter
@@ -107,8 +120,8 @@
                     <tbody class="block md:table-row-group md:divide-y md:divide-gray-50 space-y-4 md:space-y-0">
                         @forelse($permohonans as $item)
                             @php
-                                $sounding = $item->suratTugas->LaporanSisaBbm->sounding;
-                                $jumlahLiter = $sounding->sum('pengisian');
+                                $sounding = $item->suratTugas->LaporanSisaBbm->sounding ?? null;
+                                $jumlahLiter = $sounding ? $sounding->sum('pengisian') : 0;
                                 $jenisBbm = $sounding->jenis_bbm ?? 'Dexlite';
 
                                 // Logika Warna Progress
@@ -161,7 +174,7 @@
                                         </div>
                                         <div>
                                             <span class="font-bold text-gray-800 block">{{ $item->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? 'Tidak ada data kapal' }}</span>
-                                            <span class="text-xs text-gray-500">{{ $item->suratTugas->LaporanSisaBbm->sounding->kapal->ukpd->singkatan ?? '-' }}</span>
+                                            <span class="text-xs text-gray-500 font-bold bg-slate-100 px-1.5 py-0.5 rounded inline-block mt-0.5">{{ $item->suratTugas->LaporanSisaBbm->sounding->kapal->ukpd->singkatan ?? '-' }}</span>
                                         </div>
                                     </div>
                                 </td>
@@ -271,7 +284,7 @@
 
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Surat <span class="text-rose-500">*</span></label>
-                                <input type="text" wire:model="nomor_surat" placeholder=".../PH.12.00" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                <input type="text" wire:model="nomor_surat" placeholder="Contoh: 001/PH.12.00/2026" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
                                 @error('nomor_surat') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                             </div>
 
