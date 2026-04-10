@@ -4,11 +4,20 @@
      @click="sidebarOpen = false" x-cloak>
 </div>
 
+@php
+    $role = auth()->user()->role;
+    $baseClass = "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors duration-200";
+    $activeClass = "bg-indigo-50 text-indigo-700";
+    $inactiveClass = "text-gray-600 hover:bg-gray-50 hover:text-indigo-600";
+@endphp
+
 <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
        class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-100 transition-transform duration-300 ease-in-out transform lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none flex flex-col">
     
     <div class="flex items-center justify-between h-16 border-b border-gray-100 px-6">
-        <span class="text-2xl font-extrabold text-indigo-600 tracking-wider">BBM<span class="text-gray-800">KAPAL</span></span>
+        <div class="flex flex-col">
+            <span class="text-2xl font-extrabold text-indigo-600 tracking-wider leading-none">BBM<span class="text-gray-800">KAPAL</span></span>
+        </div>
         
         <button @click="sidebarOpen = false" class="lg:hidden text-gray-400 hover:text-red-500 focus:outline-none transition-colors duration-200">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,15 +26,8 @@
         </button>
     </div>
 
-    <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+    <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
         
-        @php
-            $role = auth()->user()->role;
-            $baseClass = "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors duration-200";
-            $activeClass = "bg-indigo-50 text-indigo-700";
-            $inactiveClass = "text-gray-600 hover:bg-gray-50 hover:text-indigo-600";
-        @endphp
-
         <a href="{{ route('dashboard.' . $role) }}" 
            class="{{ $baseClass }} {{ request()->routeIs('dashboard.*') ? $activeClass : $inactiveClass }}">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -35,6 +37,7 @@
         </a>
 
         @if(in_array($role, ['superadmin', 'satgas']))
+            <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Data Master</h3>
             <a href="{{ route('data-kapal') }}" 
                class="{{ $baseClass }} {{ request()->routeIs('data-kapal') ? $activeClass : $inactiveClass }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -45,6 +48,7 @@
         @endif
 
         @if(in_array($role, ['superadmin', 'sounding']))
+            <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Modul Sounding</h3>
             <a href="{{ route('sounding.sounding-bbm') }}" 
                class="{{ $baseClass }} {{ request()->routeIs('sounding.sounding-bbm') ? $activeClass : $inactiveClass }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -55,6 +59,8 @@
         @endif
         
         @if(in_array($role, ['superadmin', 'satgas']))
+            <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Administrasi Satgas</h3>
+            
             <a href="{{ route('satgas.laporan-sisa-bbm') }}" 
                class="{{ $baseClass }} {{ request()->routeIs('satgas.laporan-sisa-bbm') ? $activeClass : $inactiveClass }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -90,6 +96,8 @@
         @endphp
 
         @if(in_array($role, ['superadmin', 'satgas', 'abk']))
+            <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Operasional Kapal</h3>
+            
             <div x-data="{ dropdownOpen: {{ $isPengisianActive ? 'true' : 'false' }} }" class="space-y-1">
                 <button @click="dropdownOpen = !dropdownOpen" 
                         class="w-full flex items-center justify-between {{ $baseClass }} {{ $isPengisianActive ? $activeClass : $inactiveClass }}">
@@ -133,6 +141,7 @@
         @endif
 
         @if(in_array($role, ['superadmin','penyedia']))
+            <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Portal Penyedia</h3>
             <a href="{{ route('penyedia.pesanan-bbm') }}" 
             class="{{ $baseClass }} {{ request()->routeIs('penyedia.pesanan-bbm') ? $activeClass : $inactiveClass }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
