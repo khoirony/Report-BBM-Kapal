@@ -1,4 +1,4 @@
-<div class="p-4 sm:p-6 lg:px-8 lg:py-6 bg-slate-50 min-h-screen">
+<div class="p-4 sm:p-6 lg:px-8 lg:py-6 bg-slate-50 min-h-screen font-sans">
     <div class="w-full">
         
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
@@ -10,7 +10,7 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Surat Permohonan BBM</h1>
-                    <p class="text-sm text-gray-500 mt-1 font-medium">Kelola surat permohonan pengisian bahan bakar armada.</p>
+                    <p class="text-sm text-gray-500 mt-1 font-medium">Kelola surat permohonan dan penyediaan bahan bakar armada.</p>
                 </div>
             </div>
             
@@ -21,11 +21,16 @@
         </div>
 
         @if (session()->has('message'))
-            <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-xl shadow-sm animate-fade-in-down flex items-center">
-                <div class="flex-shrink-0 bg-emerald-100 p-1 rounded-full mr-3">
-                    <svg class="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <div x-data="{ show: true }" x-show="show" class="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-xl shadow-sm animate-fade-in-down flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-emerald-100 p-1 rounded-full mr-3">
+                        <svg class="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <p class="text-sm font-semibold text-emerald-800">{{ session('message') }}</p>
                 </div>
-                <p class="text-sm font-semibold text-emerald-800">{{ session('message') }}</p>
+                <button @click="show = false" class="text-emerald-500 hover:text-emerald-700 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
         @endif
 
@@ -35,21 +40,17 @@
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nomor surat atau kapal..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari surat, penyedia, atau kapal..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
                 </div>
 
                 <div class="flex flex-row gap-3 w-full md:w-auto">
                     <button @click="showFilters = !showFilters" type="button" class="md:hidden flex-1 flex items-center justify-center px-4 py-2.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-semibold rounded-xl hover:bg-indigo-100 transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500">
-                        <svg x-show="!showFilters" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                        <svg x-show="showFilters" style="display: none;" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                         <span x-text="showFilters ? 'Tutup Filter' : 'Filter'">Filter</span>
                     </button>
 
                     <div class="relative flex-1 md:flex-none md:w-48">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
-                        </div>
-                        <select wire:model.live="sortBy" class="pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full appearance-none shadow-sm hover:bg-slate-100">
+                        <select wire:model.live="sortBy" class="pl-4 pr-8 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full appearance-none shadow-sm hover:bg-slate-100 cursor-pointer">
                             <option value="latest">Terbaru</option>
                             <option value="oldest">Terlama</option>
                         </select>
@@ -84,12 +85,12 @@
 
                 <div class="relative w-full">
                     <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-500 z-10">Dari Tgl</label>
-                    <input type="date" wire:model.live="filterTanggalAwal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0">
+                    <input type="date" wire:model.live="filterTanggalAwal" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
                 </div>
 
                 <div class="relative w-full">
                     <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-500 z-10">Sampai Tgl</label>
-                    <input type="date" wire:model.live="filterTanggalAkhir" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0">
+                    <input type="date" wire:model.live="filterTanggalAkhir" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full hover:bg-slate-50 relative z-0 cursor-pointer">
                 </div>
                 
                 <div class="flex items-end w-full">
@@ -102,7 +103,7 @@
         </div>
 
         <div class="bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-hidden w-full relative">
-            <div wire:loading class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
+            <div wire:loading.delay.longest class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
                 <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
             </div>
 
@@ -112,7 +113,7 @@
                         <tr>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Nomor & Progress</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Informasi Kapal</th>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Rincian Volume BBM</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Rincian Penyedia BBM</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider text-right w-1/4">Aksi</th>
                         </tr>
                     </thead>
@@ -121,10 +122,12 @@
                         @forelse($permohonans as $item)
                             @php
                                 $sounding = $item->suratTugas->LaporanSisaBbm->sounding ?? null;
-                                $jumlahLiter = $sounding ? $sounding->sum('pengisian') : 0;
-                                $jenisBbm = $sounding->jenis_bbm ?? 'Dexlite';
+                                
+                                // Jika Jumlah BBM belum diset di surat permohonan, ambil dari sounding
+                                $jumlahLiter = $item->jumlah_bbm ?? ($sounding ? $sounding->sum('pengisian') : 0);
+                                // Sama halnya dengan jenis BBM
+                                $jenisBbm = $item->jenis_bbm ?? ($sounding->jenis_bbm ?? '-');
 
-                                // Logika Warna Progress
                                 $progressColor = match($item->progress) {
                                     'not started' => 'bg-rose-100 text-rose-700 border-rose-200',
                                     'on progress' => 'bg-amber-100 text-amber-700 border-amber-200',
@@ -156,7 +159,7 @@
                                         @if(auth()->user() && auth()->user()->role === 'superadmin')
                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-100" title="Ditambahkan oleh">
                                                 <svg class="w-3 h-3 text-indigo-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                                {{ $item->user->name ?? 'Sistem / Terhapus' }}
+                                                {{ $item->user->name ?? 'Sistem' }}
                                             </span>
                                         @endif
                                     </div>
@@ -165,7 +168,7 @@
                                 <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Informasi Kapal</span>
                                     <div class="flex items-center mt-1">
-                                        <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600 mr-3 hidden md:block">
+                                        <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600 mr-3 hidden md:block flex-shrink-0">
                                             <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <circle cx="12" cy="5" r="3"></circle>
                                                 <line x1="12" y1="8" x2="12" y2="22"></line>
@@ -180,15 +183,21 @@
                                 </td>
                                 
                                 <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
-                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Rincian Volume BBM</span>
-                                    <div class="inline-flex items-center px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-100 mt-1">
-                                        <span class="font-bold text-emerald-700 text-sm mr-1">{{ $jenisBbm }}</span>
+                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Rincian Penyedia BBM</span>
+                                    
+                                    <div class="mb-1.5">
+                                        <span class="text-xs font-bold text-slate-800 block line-clamp-1">{{ $item->nama_perusahaan ?? 'Penyedia Belum Diset' }}</span>
+                                        <span class="text-[10px] text-slate-500 font-medium">{{ $item->tempat_pengambilan_bbm ?? '-' }}</span>
+                                    </div>
+                                    
+                                    <div class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-100 mt-1">
+                                        <span class="font-bold text-emerald-700 text-[11px] mr-1 truncate max-w-[80px]" title="{{ $jenisBbm }}">{{ $jenisBbm }}</span>
                                         <span class="text-emerald-500 mx-1">|</span>
-                                        <span class="font-extrabold text-emerald-800 text-sm">{{ rtrim(rtrim(number_format($jumlahLiter, 2, ',', '.'), '0'), ',') }} L</span>
+                                        <span class="font-extrabold text-emerald-800 text-[11px]">{{ rtrim(rtrim(number_format($jumlahLiter, 2, ',', '.'), '0'), ',') }} L</span>
                                     </div>
                                 </td>
 
-                                <td class="block lg:table-cell px-2 py-4 lg:px-6 lg:py-5 lg:text-right align-middle">
+                                <td class="flex justify-end md:table-cell px-4 py-4 md:px-6 md:py-5 md:text-right align-middle">
                                     <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto">
                                         
                                         @if(auth()->user()->role !== 'penyedia')
@@ -251,7 +260,7 @@
 
         @if($isModalOpen)
         <div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-opacity">
-            <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl transform transition-all max-h-[95vh] flex flex-col">
+            <div class="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl transform transition-all max-h-[95vh] flex flex-col">
                 
                 <div class="flex items-center justify-between p-5 sm:p-6 border-b border-slate-100 rounded-t-2xl bg-slate-50/50 shrink-0">
                     <div class="flex items-center space-x-3">
@@ -259,7 +268,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </div>
                         <h3 class="text-lg sm:text-xl font-bold text-gray-900">
-                            {{ $permohonan_id ? 'Edit Data Surat' : 'Tambah Surat Permohonan' }}
+                            {{ $permohonan_id ? 'Edit Surat Permohonan BBM' : 'Buat Surat Permohonan Baru' }}
                         </h3>
                     </div>
                     <button wire:click="closeModal()" class="text-slate-400 bg-white hover:bg-slate-100 hover:text-slate-900 rounded-xl text-sm p-2 transition-colors border border-slate-200 shadow-sm">
@@ -267,41 +276,110 @@
                     </button>
                 </div>
 
-                <div class="p-5 sm:p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
+                <div class="p-5 sm:p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
                     <form wire:submit.prevent="store" id="form-data-surat">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            
-                            <div class="col-span-1 sm:col-span-2">
-                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Pilih Surat Tugas <span class="text-rose-500">*</span></label>
-                                <select wire:model="surat_tugas_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
-                                    <option value="">-- Pilih Surat Tugas Terkait --</option>
-                                    @foreach($surat_tugas_list as $st)
-                                        <option value="{{ $st->id }}">{{ $st->nomor_surat }} (Kapal: {{ $st->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})</option>
-                                    @endforeach
-                                </select>
-                                @error('surat_tugas_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
-                            </div>
+                        
+                        <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 mb-6">
+                            <label class="block text-sm font-semibold text-slate-800 mb-2">Tautkan ke Surat Tugas <span class="text-rose-500">*</span></label>
+                            <select wire:model.live="surat_tugas_id" class="px-4 py-3 bg-white border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm cursor-pointer" required>
+                                <option value="">-- Pilih Surat Tugas --</option>
+                                @foreach($surat_tugas_list as $st)
+                                    <option value="{{ $st->id }}">{{ $st->nomor_surat }} (Kapal: {{ $st->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})</option>
+                                @endforeach
+                            </select>
+                            @error('surat_tugas_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                            <p class="text-[10px] text-gray-500 mt-1.5 flex items-center"><svg class="w-3.5 h-3.5 mr-1 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Data Identitas Kapal akan disalin secara otomatis.</p>
+                        </div>
 
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 border-b border-slate-100 pb-2">Informasi Administrasi Surat</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Surat <span class="text-rose-500">*</span></label>
-                                <input type="text" wire:model="nomor_surat" placeholder="Contoh: 001/PH.12.00/2026" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                <input type="text" wire:model="nomor_surat" placeholder="Contoh: 001/PH.12.00" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
                                 @error('nomor_surat') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                             </div>
-
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Surat <span class="text-rose-500">*</span></label>
                                 <input type="date" wire:model="tanggal_surat" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
                                 @error('tanggal_surat') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                             </div>
-
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Klasifikasi</label>
-                                <input type="text" wire:model="klasifikasi" placeholder="Biasa / Penting" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
+                                <input type="text" wire:model="klasifikasi" placeholder="Biasa / Penting / Segera" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
                             </div>
-
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Lampiran</label>
                                 <input type="text" wire:model="lampiran" placeholder="1 (satu) berkas" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
+                            </div>
+                        </div>
+
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 border-b border-slate-100 pb-2 mt-6">Detail Penyedia & Pengiriman BBM</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Perusahaan (Penyedia BBM)</label>
+                                <input type="text" wire:model="nama_perusahaan" placeholder="Contoh: PT Pertamina Patra Niaga" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
+                            </div>
+
+                            <div x-data="{ jenis_penyedia: @entangle('jenis_penyedia_bbm') }">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jenis Penyedia BBM</label>
+                                <select x-model="jenis_penyedia" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors cursor-pointer mb-2">
+                                    <option value="">-- Pilih Jenis --</option>
+                                    <option value="Stasiun Pengisian Bahan Bakar Umum (SPBU)">Stasiun Pengisian Bahan Bakar Umum (SPBU)</option>
+                                    <option value="Agen BBM">Agen BBM</option>
+                                    <option value="Lainnya">Lainnya...</option>
+                                </select>
+                                
+                                <div x-show="jenis_penyedia === 'Lainnya'" x-collapse>
+                                    <input type="text" wire:model="jenis_penyedia_bbm_lainnya" placeholder="Tuliskan Jenis Penyedia..." class="px-4 py-2.5 bg-white border border-indigo-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-inner">
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <label class="block text-sm font-semibold text-slate-700">Tempat Pengambilan BBM</label>
+                                    <button type="button" wire:click="setLokasiSama" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-indigo-700 font-bold px-2 py-0.5 rounded border border-slate-200 transition-colors" {{ !$surat_tugas_id ? 'disabled class=opacity-50 cursor-not-allowed' : '' }}>
+                                        Sama dg Surat Tugas
+                                    </button>
+                                </div>
+                                <input type="text" wire:model="tempat_pengambilan_bbm" placeholder="Contoh: SPBU 31.102.02 Muara Angke" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Metode Pengiriman</label>
+                                <select wire:model="metode_pengiriman" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors cursor-pointer">
+                                    <option value="">-- Pilih Metode --</option>
+                                    <option value="Ambil ditempat">Ambil di Tempat</option>
+                                    <option value="Pengiriman Jalur Darat">Pengiriman Jalur Darat</option>
+                                    <option value="Pengiriman Jalur Laut">Pengiriman Jalur Laut</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-slate-100 pt-5 mt-2">
+                                <div x-data="{ jenis_bbm_state: @entangle('jenis_bbm') }">
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jenis Bahan Bakar</label>
+                                    <select x-model="jenis_bbm_state" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors cursor-pointer mb-2">
+                                        <option value="">-- Pilih Jenis BBM --</option>
+                                        <option value="Pertamax/sekelas">Pertamax / Sekelas</option>
+                                        <option value="Pertamina Dex/sekelas">Pertamina Dex / Sekelas</option>
+                                        <option value="Dexlite/sekelas">Dexlite / Sekelas</option>
+                                        <option value="Lainnya">Lainnya...</option>
+                                    </select>
+                                    
+                                    <div x-show="jenis_bbm_state === 'Lainnya'" x-collapse>
+                                        <input type="text" wire:model="jenis_bbm_lainnya" placeholder="Tuliskan Nama BBM..." class="px-4 py-2.5 bg-white border border-indigo-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-inner">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jumlah Bahan Bakar (Liter)</label>
+                                    <div class="relative">
+                                        <input type="text" wire:model="jumlah_bbm" placeholder="Contoh: 1500.50" class="pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
+                                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-500 font-bold">L</span>
+                                    </div>
+                                    <p class="text-[10px] text-gray-400 mt-1">Kosongkan jika ingin mengikuti jumlah dari Data Sounding.</p>
+                                    @error('jumlah_bbm') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                </div>
                             </div>
 
                         </div>
@@ -312,7 +390,7 @@
                     <button wire:click="closeModal()" type="button" class="w-full sm:w-auto inline-flex justify-center items-center text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 font-semibold rounded-xl text-sm px-5 py-2.5 transition-colors shadow-sm">
                         Batal
                     </button>
-                    <button type="submit" form="form-data-surat" class="w-full sm:w-auto inline-flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-700 font-semibold rounded-xl text-sm px-5 py-2.5 transition-all shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
+                    <button type="submit" form="form-data-surat" class="w-full sm:w-auto inline-flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-700 font-semibold rounded-xl text-sm px-6 py-2.5 transition-all shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
                         Simpan Data
                     </button>
                 </div>
@@ -341,7 +419,7 @@
                         
                         <div class="mb-5">
                             <label class="block text-sm font-semibold text-slate-700 mb-2">Status Progress <span class="text-rose-500">*</span></label>
-                            <select wire:model="progress" class="px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-amber-500 block w-full transition-colors font-medium shadow-sm" required>
+                            <select wire:model="progress" class="px-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-amber-500 block w-full transition-colors font-medium shadow-sm cursor-pointer" required>
                                 <option value="not started">Not Started</option>
                                 <option value="on progress">On Progress</option>
                                 <option value="done">Done</option>

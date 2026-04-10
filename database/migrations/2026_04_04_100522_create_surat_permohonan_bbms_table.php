@@ -22,6 +22,16 @@ return new class extends Migration
             $table->date('tanggal_surat');
             $table->string('klasifikasi')->nullable();
             $table->string('lampiran')->default('1 (satu) berkas');
+            $table->string('nama_perusahaan')->nullable();
+            $table->string('jenis_penyedia_bbm')->nullable(); 
+            $table->string('tempat_pengambilan_bbm')->nullable();
+            $table->enum('metode_pengiriman', [
+                'Ambil ditempat', 
+                'Pengiriman Jalur Darat', 
+                'Pengiriman Jalur Laut'
+            ])->nullable();
+            $table->string('jenis_bbm')->nullable();
+            $table->decimal('jumlah_bbm', 10, 2)->nullable()->comment('Dalam satuan liter');
             $table->integer('user_id')->nullable();
             $table->enum('progress', ['not started', 'on progress', 'done'])->default('not started');
             $table->timestamps();
