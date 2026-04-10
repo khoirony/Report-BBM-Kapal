@@ -1,3 +1,7 @@
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+
 <div class="p-4 sm:p-6 lg:px-8 lg:py-6 bg-slate-50 min-h-screen">
     <div class="w-full">
         
@@ -27,7 +31,7 @@
         </div>
 
         @if (session()->has('message'))
-            <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-xl shadow-sm animate-fade-in-down">
+            <div x-data="{ show: true }" x-show="show" x-cloak class="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-xl shadow-sm animate-fade-in-down flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 bg-emerald-100 p-1 rounded-full">
                         <svg class="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
@@ -36,6 +40,9 @@
                         <p class="text-sm font-semibold text-emerald-800">{{ session('message') }}</p>
                     </div>
                 </div>
+                <button @click="show = false" class="text-emerald-500 hover:text-emerald-700 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
         @endif
 
@@ -50,7 +57,7 @@
 
                 <div class="flex flex-row gap-3 w-full md:w-auto">
                     <button @click="showFilters = !showFilters" type="button" class="md:hidden flex-1 flex items-center justify-center px-4 py-2.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-semibold rounded-xl hover:bg-indigo-100 transition-colors shadow-sm">
-                        <span x-text="showFilters ? 'Tutup Filter' : 'Filter'"></span>
+                        <span x-cloak x-text="showFilters ? 'Tutup Filter' : 'Filter'">Filter</span>
                     </button>
 
                     <div class="relative flex-1 md:flex-none md:w-48">
