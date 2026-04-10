@@ -25,7 +25,7 @@ jobs:
             echo "APP_ENV=production" >> .env
             echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
             echo "APP_DEBUG=false" >> .env
-            echo "APP_URL=https://dishub.khoirony.fun" >> .env
+            echo "APP_URL=https://bbmkapal-dishubjakarta.com" >> .env
             echo "DB_CONNECTION=mysql" >> .env
             echo "DB_HOST=db" >> .env
             echo "DB_PORT=3306" >> .env
@@ -42,7 +42,7 @@ jobs:
             echo "MAIL_ENCRYPTION=tls" >> .env
             
             # Email pengirim yang akan terlihat oleh user
-            echo "MAIL_FROM_ADDRESS=noreply@dishub.khoirony.fun" >> .env 
+            echo "MAIL_FROM_ADDRESS=noreply@bbmkapal-dishubjakarta.com" >> .env 
             echo "MAIL_FROM_NAME=\"\${APP_NAME}\"" >> .env
             
             docker-compose up -d --build
