@@ -11,8 +11,8 @@ use App\Livewire\Dashboard\PenyediaDashboard;
 use App\Livewire\Dashboard\SatgasDashboard;
 use App\Livewire\Dashboard\SoundingDashboard;
 use App\Livewire\Dashboard\SuperAdminDashboard;
+use App\Livewire\Penyedia\PesananMasukBBM;
 use App\Livewire\Satgas\BeritaAcaraLaporanPengisian;
-use App\Livewire\Satgas\LaporanBBMSebelumPengisian;
 use App\Livewire\Satgas\LaporanPengisianBBM;
 use App\Livewire\Satgas\LaporanSisaBBM;
 use App\Livewire\Satgas\SuratPermohonanPengisianBBM;
@@ -107,6 +107,10 @@ Route::middleware('auth')->group(function () {
         // --- FITUR SOUNDING & SUPERADMIN ---
         Route::middleware('role:superadmin,sounding')->group(function () {
             Route::get('/sounding-bbm', SoundingBBM::class)->name('sounding.sounding-bbm');
+        });
+
+        Route::middleware('role:superadmin,penyedia')->group(function () {
+            Route::get('/pesanan-bbm', PesananMasukBBM::class)->name('penyedia.pesanan-bbm');
         });
 
         // --- CETAK PDF (Dilindungi Auth agar tidak bocor) ---

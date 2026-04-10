@@ -7,7 +7,7 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\LaporanPengisianBbm as PengisianBbm;
 use App\Models\SuratPermohonanPengisian;
-use App\Models\Sounding; // Asumsi model sounding Anda
+use App\Models\Sounding;
 use App\Models\Kapal;
 use App\Models\Ukpd;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,7 @@ class LaporanPengisianBBM extends Component
 {
     use WithPagination, WithFileUploads;
 
-    // Data Master
+    // Master Data
     public $permohonan_list, $kapals, $available_soundings = [];
     
     // Form Properties
@@ -26,21 +26,21 @@ class LaporanPengisianBBM extends Component
     public $kegiatan = 'Pengisian BBM KDO Khusus', $kegiatan_lainnya;
     public $tujuan = 'Memastikan ketersediaan BBM Kapal untuk menunjang kegiatan Operasional', $tujuan_lainnya;
     
-    // Kalkulasi BBM
+    // Form Properties - Kalkulasi BBM
     public $sounding_awal_id, $jumlah_bbm_awal = 0;
     public $jumlah_bbm_pengisian = 0;
     public $pemakaian_bbm = 0;
     public $sounding_akhir_id, $jumlah_bbm_akhir = 0;
     
-    // Waktu & Media
+    // Form Properties - Waktu & Dokumentasi
     public $jam_berangkat, $jam_kembali;
     public $dokumentasi_baru = [];
     public $dokumentasi_lama = [];
 
-    // Table Filters
+    // Filter Properties
     public $search = '', $sortBy = 'latest', $filterKapal = '', $filterUkpd = '';
     public $filterTanggalAwal = '', $filterTanggalAkhir = '';
-    public $isModalOpen = false;
+    public $isOpen = false;
 
     public function mount()
     {
@@ -56,7 +56,6 @@ class LaporanPengisianBBM extends Component
         }
         $this->kapals = $queryKapal->get();
         
-        // Default text untuk dasar hukum
         $this->dasar_hukum = "1. Undang-Undang Nomor 17 Tahun 2008 tentang Pelayaran;\n2. DPA Dinas Perhubungan Provinsi DKI Jakarta Tahun 2026;";
     }
 
@@ -74,7 +73,7 @@ class LaporanPengisianBBM extends Component
         $this->resetPage();
     }
 
-    // Auto-fill saat memilih Surat Permohonan
+    // Listener otomatis saat memilih surat permohonan
     public function updatedSuratPermohonanId($val)
     {
         if($val) {
@@ -85,36 +84,48 @@ class LaporanPengisianBBM extends Component
                 $this->lokasi_pengisian = $permohonan->tempat_pengambilan_bbm ?? ($permohonan->suratTugas->lokasi ?? '');
                 $this->jumlah_bbm_pengisian = $permohonan->jumlah_bbm ?? 0;
                 
-                // Load Sounding terkait kapal ini untuk dipilih di form
                 $kapalId = $permohonan->suratTugas->LaporanSisaBbm->sounding->kapal_id ?? null;
                 if($kapalId) {
                     $this->available_soundings = Sounding::where('kapal_id', $kapalId)->latest()->take(10)->get();
                 }
             }
         }
+        $this->calculateBbm();
     }
 
-    // Auto-fill BBM Awal saat memilih sounding awal
+    // Listener untuk Sounding Awal
     public function updatedSoundingAwalId($val)
     {
         if($val) {
             $snd = Sounding::find($val);
             $this->jumlah_bbm_awal = $snd ? $snd->bbm_akhir : 0;
         }
+        $this->calculateBbm();
     }
 
-    // Auto-fill BBM Akhir saat memilih sounding akhir
-    public function updatedSoundingAkhirId($val)
+    // Listener untuk Pemakaian (Triggers hitung ulang BBM Akhir)
+    public function updatedPemakaianBbm()
     {
-        if($val) {
-            $snd = Sounding::find($val);
-            $this->jumlah_bbm_akhir = $snd ? $snd->bbm_akhir : 0;
-        }
+        $this->calculateBbm();
+    }
+
+    public function updatedJumlahBbmAwal()
+    {
+        $this->calculateBbm();
+    }
+
+    // Fungsi Kalkulasi
+    private function calculateBbm()
+    {
+        $awal = floatval($this->jumlah_bbm_awal ?: 0);
+        $isi = floatval($this->jumlah_bbm_pengisian ?: 0);
+        $pakai = floatval($this->pemakaian_bbm ?: 0);
+        $this->jumlah_bbm_akhir = ($awal + $isi) - $pakai;
     }
 
     public function render()
     {
-        $query = PengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal', 'suratPermohonan']);
+        $query = PengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal', 'suratPermohonan', 'soundingAwal', 'soundingAkhir', 'approverNakhoda', 'approverPenyedia']);
 
         if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
@@ -163,7 +174,7 @@ class LaporanPengisianBBM extends Component
     public function create()
     {
         $this->resetFields();
-        $this->isModalOpen = true;
+        $this->isOpen = true;
     }
 
     public function edit($id)
@@ -183,7 +194,6 @@ class LaporanPengisianBBM extends Component
         $this->dasar_hukum = $laporan->dasar_hukum;
         $this->lokasi_pengisian = $laporan->lokasi_pengisian;
         
-        // Logika Dropdown "Lainnya"
         $this->kegiatan = in_array($laporan->kegiatan, ['Pengisian BBM KDO Khusus']) ? $laporan->kegiatan : 'Lainnya';
         $this->kegiatan_lainnya = $this->kegiatan === 'Lainnya' ? $laporan->kegiatan : '';
 
@@ -202,7 +212,7 @@ class LaporanPengisianBBM extends Component
         
         $this->dokumentasi_lama = json_decode($laporan->dokumentasi_foto, true) ?? [];
 
-        $this->isModalOpen = true;
+        $this->isOpen = true;
     }
 
     public function store()
@@ -212,7 +222,7 @@ class LaporanPengisianBBM extends Component
             'tanggal' => 'required|date',
             'lokasi_pengisian' => 'required|string',
             'jumlah_bbm_pengisian' => 'required|numeric|min:0',
-            'dokumentasi_baru.*' => 'image|max:2048', // Maks 2MB per foto
+            'dokumentasi_baru.*' => 'image|max:2048', // Max 2MB
         ]);
 
         $finalKegiatan = $this->kegiatan === 'Lainnya' ? $this->kegiatan_lainnya : $this->kegiatan;
@@ -258,17 +268,16 @@ class LaporanPengisianBBM extends Component
 
     public function deleteFoto($index)
     {
-        // Hapus file fisik
         if (isset($this->dokumentasi_lama[$index])) {
             Storage::disk('public')->delete($this->dokumentasi_lama[$index]);
             unset($this->dokumentasi_lama[$index]);
-            $this->dokumentasi_lama = array_values($this->dokumentasi_lama); // reindex
+            $this->dokumentasi_lama = array_values($this->dokumentasi_lama); 
         }
     }
 
     public function closeModal()
     {
-        $this->isModalOpen = false;
+        $this->isOpen = false;
     }
 
     public function resetFields()
@@ -288,11 +297,30 @@ class LaporanPengisianBBM extends Component
     {
         $laporan = PengisianBbm::findOrFail($id);
         
-        // Hapus file fisik dokumentasi
         $fotos = json_decode($laporan->dokumentasi_foto, true) ?? [];
         foreach($fotos as $f) { Storage::disk('public')->delete($f); }
         
         $laporan->delete();
         session()->flash('message', 'Laporan Berhasil Dihapus.');
+    }
+
+    public function approveNakhoda($id)
+    {
+        $laporan = PengisianBbm::findOrFail($id);
+        $laporan->update([
+            'disetujui_nakhoda_by' => auth()->id(),
+            'disetujui_nakhoda_at' => now(),
+        ]);
+        session()->flash('message', 'Laporan berhasil disetujui oleh Nakhoda.');
+    }
+
+    public function approvePenyedia($id)
+    {
+        $laporan = PengisianBbm::findOrFail($id);
+        $laporan->update([
+            'disetujui_penyedia_by' => auth()->id(),
+            'disetujui_penyedia_at' => now(),
+        ]);
+        session()->flash('message', 'Laporan berhasil disetujui oleh Penyedia BBM.');
     }
 }

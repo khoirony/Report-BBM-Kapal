@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             LaporanSisaBBMSeeder::class,
             SuratTugasPengisianSeeder::class,
             SuratPermohonanPengisianSeeder::class,
+            ProsesPenyediaBbmSeeder::class,
             LaporanPengisianBbmSeeder::class,
             BaPengisianBBMSeeder::class,
         ]);

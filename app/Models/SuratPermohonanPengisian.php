@@ -25,4 +25,9 @@ class SuratPermohonanPengisian extends Model
     {
         return $this->hasMany(FileSuratPermohonan::class, 'surat_permohonan_id');
     }
+
+    public function prosesPenyedia()
+    {
+        return $this->hasOne(ProsesPenyediaBbm::class, 'surat_permohonan_id');
+    }
 }

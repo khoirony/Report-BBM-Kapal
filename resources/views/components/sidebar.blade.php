@@ -132,11 +132,15 @@
             </div>
         @endif
 
-        @if(in_array($role, ['penyedia']))
-            <a href="{{ route('penyedia.surat-permohonan') }}" 
-               class="{{ $baseClass }} {{ request()->routeIs('penyedia.surat-permohonan') ? $activeClass : $inactiveClass }}">
+        @if(in_array($role, ['superadmin','penyedia']))
+            <a href="{{ route('penyedia.pesanan-bbm') }}" 
+            class="{{ $baseClass }} {{ request()->routeIs('penyedia.pesanan-bbm') ? $activeClass : $inactiveClass }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    <line x1="3" y1="22" x2="15" y2="22"></line>
+                    <line x1="4" y1="9" x2="14" y2="9"></line>
+                    <path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"></path>
+                    <path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"></path>
+                    <path d="M18 10a2 2 0 0 0-2-2V5.5A2.5 2.5 0 0 0 13.5 3h-.5"></path>
                 </svg>
                 Pemesanan BBM
             </a>

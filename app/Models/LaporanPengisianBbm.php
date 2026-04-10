@@ -20,4 +20,22 @@ class LaporanPengisianBbm extends Model
     {
         return $this->belongsTo(SuratPermohonanPengisian::class, 'surat_permohonan_id');
     }
+
+    public function soundingAwal() {
+        return $this->belongsTo(Sounding::class, 'sounding_awal_id');
+    }
+
+    public function soundingAkhir() {
+        return $this->belongsTo(Sounding::class, 'sounding_akhir_id');
+    }
+
+    public function approverNakhoda()
+    {
+        return $this->belongsTo(User::class, 'disetujui_nakhoda_by');
+    }
+
+    public function approverPenyedia()
+    {
+        return $this->belongsTo(User::class, 'disetujui_penyedia_by');
+    }
 }
