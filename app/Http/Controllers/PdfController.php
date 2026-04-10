@@ -32,12 +32,13 @@ class PdfController extends Controller
 
     public function previewSuratTugas($id)
     {
-        $surat = SuratTugasPengisian::with(['laporanSisaBbm.sounding.kapal'])->findOrFail($id);
+        $surat = SuratTugasPengisian::with(['laporanSisaBbm.sounding.kapal', 'petugas'])->findOrFail($id);
 
         $pdf = Pdf::loadView('pdf.surat-tugas-pengisian-bbm', ['surat' => $surat]);
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $surat->laporanBbm->kapal->nama_kapal ?? 'Kapal') . '.pdf';
+        $namaKapal = $surat->laporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal';
+        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $namaKapal) . '.pdf';
 
         return $pdf->stream($namaFile);
     }

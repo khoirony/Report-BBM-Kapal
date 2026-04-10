@@ -19,6 +19,7 @@ return new class extends Migration
                   ->constrained('ukpds')
                   ->onDelete('set null');
             $table->string('nomor_surat');
+            $table->string('lokasi');
             $table->string('waktu_pelaksanaan')->default('08:00 - Selesai');
             $table->date('tanggal_dikeluarkan');
             $table->integer('user_id')->nullable();

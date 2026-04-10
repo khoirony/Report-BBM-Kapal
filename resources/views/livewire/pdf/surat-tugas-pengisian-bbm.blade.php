@@ -29,7 +29,7 @@
 
     <div class="text-center mt-20">
         <div class="font-bold underline text-lg">SURAT TUGAS</div>
-        <div>NOMOR : {{ $surat->nomor_surat }}/PH.12.00</div>
+        <div>NOMOR : {{ $surat->nomor_surat }}</div>
     </div>
 
     <div class="text-center font-bold mt-10">TENTANG PENYEDIAAN BBM KDO/KDO KHUSUS</div>
@@ -50,8 +50,8 @@
                 <td style="vertical-align: top;">:</td>
                 <td>
                     <ol style="margin: 0; padding-left: 15px;">
-                        <li>Melaksanakan Pengisian BBM dan Operasional Kapal di SPBU {{ $surat->LaporanSisaBbm->sounding->lokasi }};</li>
-                        <li>Menambatlabuhkan kembali Kapal {{ $surat->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }} setelah pengisian BBM ke Pelabuhan Muara Angke.</li>
+                        <li>Melaksanakan Pengisian BBM dan Operasional Kapal di {{ $surat->lokasi }};</li>
+                        <li>Menambatlabuhkan kembali Kapal {{ $surat->laporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }} setelah pengisian BBM ke Pelabuhan Muara Angke.</li>
                     </ol>
                 </td>
             </tr>
@@ -61,15 +61,15 @@
         <table style="width: 100%; margin-bottom: 10px;">
             <tr>
                 <td style="width: 25%;">hari</td>
-                <td style="width: 75%;">: {{ $surat->LaporanSisaBbm->sounding->hari }}</td>
+                <td style="width: 75%;">: {{ \Carbon\Carbon::parse($surat->laporanSisaBbm->tanggal_surat)->translatedFormat('l') }}</td>
             </tr>
             <tr>
                 <td>tanggal</td>
-                <td>: {{ \Carbon\Carbon::parse($surat->LaporanSisaBbm->sounding->tanggal)->translatedFormat('d F Y') }}</td>
+                <td>: {{ \Carbon\Carbon::parse($surat->laporanSisaBbm->tanggal_surat)->translatedFormat('d F Y') }}</td>
             </tr>
             <tr>
                 <td>lokasi pengisian</td>
-                <td>: {{ $surat->LaporanSisaBbm->sounding->lokasi }}</td>
+                <td>: {{ $surat->lokasi }}</td>
             </tr>
             <tr>
                 <td>pukul</td>
@@ -112,7 +112,7 @@
         </tr>
         <tr>
             <td>Nomor</td>
-            <td>: {{ $surat->nomor_surat }}/PH.12.00</td>
+            <td>: {{ $surat->nomor_surat }}</td>
         </tr>
         <tr>
             <td>Tanggal</td>
@@ -124,18 +124,20 @@
         <tr>
             <th style="width: 10%;">No</th>
             <th style="width: 45%;">NAMA</th>
-            <th style="width: 45%;">INSTANSI</th>
+            <th style="width: 45%;">JABATAN</th>
         </tr>
-        @php
-            $petugasList = $surat->LaporanSisaBbm->petugas_list ?? [];
-        @endphp
-        @for($i = 0; $i < 7; $i++)
+        
+        @forelse($surat->petugas as $index => $petugas)
         <tr>
-            <td class="text-center">{{ $i + 1 }}.</td>
-            <td>{{ isset($petugasList[$i]['nama']) ? $petugasList[$i]['nama'] : '' }}</td>
-            <td class="text-center">Unit Pengelola Angkutan Perairan (UPAP)</td>
+            <td class="text-center">{{ $index + 1 }}.</td>
+            <td>{{ $petugas->nama_petugas }}</td>
+            <td class="text-center">{{ $petugas->jabatan }}</td>
         </tr>
-        @endfor
+        @empty
+        <tr>
+            <td colspan="3" class="text-center">Belum ada daftar petugas.</td>
+        </tr>
+        @endforelse
     </table>
 
 </body>

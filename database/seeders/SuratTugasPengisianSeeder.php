@@ -5,7 +5,9 @@ namespace Database\Seeders;
 use App\Models\SuratTugasPengisian;
 use App\Models\LaporanSisaBbm;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB; // Ditambahkan untuk insert tabel relasi
 use Carbon\Carbon;
+use Faker\Factory as Faker; // Ditambahkan untuk generate nama random
 
 class SuratTugasPengisianSeeder extends Seeder
 {
@@ -18,7 +20,16 @@ class SuratTugasPengisianSeeder extends Seeder
             return;
         }
 
+        $faker = Faker::create('id_ID'); // Inisialisasi Faker dengan locale Indonesia
         $nomorUrut = 1; // Mulai nomor surat dari 1
+
+        // Array contoh lokasi pengisian BBM
+        $listLokasi = [
+            'SPBU Pertamina 31.102.02 MT Haryono',
+            'SPBU Pertamina 34.105.04 Cempaka Putih',
+            'SPBU Shell Gatot Subroto',
+            'Pool Kendaraan Dinas Operasional'
+        ];
 
         foreach ($laporans as $laporan) {
             // Tanggal dikeluarkan biasanya H-1 atau sama dengan tanggal pelaksanaan
@@ -32,18 +43,39 @@ class SuratTugasPengisianSeeder extends Seeder
             // Format nomor surat menjadi full (Contoh: 001/PH.12.00/2026)
             $nomorSurat = str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/PH.12.00/' . $tanggalDikeluarkan->format('Y');
 
-            SuratTugasPengisian::create([
+            // 1. Simpan data Surat Tugas ke dalam variabel $suratTugas
+            $suratTugas = SuratTugasPengisian::create([
                 'laporan_sisa_bbm_id' => $laporan->id,
-                'ukpd_id'             => $laporan->ukpd_id, // Menyalin ukpd_id dari Laporan BBM
+                'ukpd_id'             => $laporan->ukpd_id,
                 'nomor_surat'         => $nomorSurat,
+                'lokasi'              => $faker->randomElement($listLokasi), // Assign lokasi random dari array
                 'waktu_pelaksanaan'   => '08:00 - Selesai',
                 'tanggal_dikeluarkan' => $tanggalDikeluarkan->format('Y-m-d'),
                 'user_id'             => 3,
             ]);
 
+            // 2. Siapkan data petugas untuk surat tugas ini (Misal 2 petugas per surat)
+            $dataPetugas = [
+                [
+                    'surat_tugas_pengisian_id' => $suratTugas->id,
+                    'nama_petugas'             => $faker->name('male'),
+                    'jabatan'                  => 'Supir',
+                    'created_at'               => now(),
+                    'updated_at'               => now(),
+                ],
+                [
+                    'surat_tugas_pengisian_id' => $suratTugas->id,
+                    'nama_petugas'             => $faker->name(),
+                    'jabatan'                  => 'Pendamping',
+                    'created_at'               => now(),
+                    'updated_at'               => now(),
+                ]
+            ];
+
+            // 3. Insert data ke tabel relasi petugas_surat_tugas
+            DB::table('petugas_surat_tugas')->insert($dataPetugas);
+
             $nomorUrut++;
         }
-
-        $this->command->info('Data Surat Tugas Pengisian berhasil di-seed dengan nomor surat penuh!');
     }
 }

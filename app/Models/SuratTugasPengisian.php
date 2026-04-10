@@ -26,4 +26,9 @@ class SuratTugasPengisian extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function petugas()
+    {
+        return $this->hasMany(PetugasSuratTugas::class, 'surat_tugas_pengisian_id');
+    }
 }
