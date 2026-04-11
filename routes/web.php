@@ -15,6 +15,7 @@ use App\Livewire\Dashboard\SuperAdminDashboard;
 use App\Livewire\Dashboard\AdminUkpdDashboard; 
 use App\Livewire\Dashboard\PptkDashboard;
 use App\Livewire\Dashboard\KepalaUkpdDashboard;
+use App\Livewire\Nahkoda\PencatatanHasilPengisian;
 // ... (import livewire lainnya tetap sama) ...
 use App\Livewire\Penyedia\PesananMasukBBM;
 use App\Livewire\Satgas\BeritaAcaraLaporanPengisian;
@@ -22,6 +23,7 @@ use App\Livewire\Satgas\LaporanPengisianBBM;
 use App\Livewire\Satgas\LaporanSisaBBM;
 use App\Livewire\Satgas\SuratPermohonanPengisianBBM;
 use App\Livewire\Satgas\SuratTugasPengisianBBM;
+use App\Livewire\Satgas\SuratSpj; // <-- IMPORT BARU UNTUK SPJ
 use App\Livewire\Sounding\SoundingBBM;
 use App\Livewire\SuperAdmin\DataKapal;
 use App\Livewire\SuperAdmin\KelolaUser;
@@ -34,15 +36,15 @@ Route::get('/', function () {
         return redirect()->route('login');
     }
 
-    // UPDATE: Gunakan relasi role->slug
-    return match (auth()->user()?->role?->slug->slug) {
+    // UPDATE: Perbaikan pemanggilan relasi role->slug (sebelumnya ->slug->slug)
+    return match (auth()->user()?->role?->slug) {
         'superadmin'  => redirect()->route('dashboard.superadmin'),
-        'admin_ukpd'  => redirect()->route('dashboard.admin_ukpd'), // Tambahan Baru
+        'admin_ukpd'  => redirect()->route('dashboard.admin_ukpd'), 
         'sounding'    => redirect()->route('dashboard.sounding'),
         'satgas'      => redirect()->route('dashboard.satgas'),
         'pengawas'    => redirect()->route('dashboard.pengawas'),
-        'pptk'        => redirect()->route('dashboard.pptk'),       // Tambahan Baru
-        'kepala_ukpd' => redirect()->route('dashboard.kepala_ukpd'),// Tambahan Baru
+        'pptk'        => redirect()->route('dashboard.pptk'),       
+        'kepala_ukpd' => redirect()->route('dashboard.kepala_ukpd'),
         'nahkoda'     => redirect()->route('dashboard.nahkoda'),
         'penyedia'    => redirect()->route('dashboard.penyedia'),
         default       => abort(403, 'Unauthorized action.'),
@@ -67,8 +69,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
-        // UPDATE: Gunakan role->slug untuk redirect
-        return redirect('/dashboard-' . str_replace('_', '-', auth()->user()?->role?->slug->slug)); 
+        // UPDATE: Perbaikan pemanggilan role->slug
+        return redirect('/dashboard-' . str_replace('_', '-', auth()->user()?->role?->slug)); 
     })->middleware('signed')->name('verification.verify');
 
     Route::post('/email/verification-notification', function (Request $request) {
@@ -106,17 +108,26 @@ Route::middleware('auth')->group(function () {
         Route::middleware('role:nahkoda')->get('/dashboard-nahkoda', NahkodaDashboard::class)->name('dashboard.nahkoda');
         Route::middleware('role:pengawas')->get('/dashboard-pengawas', PengawasDashboard::class)->name('dashboard.pengawas');
 
+        // --- FITUR PENCATATAN HASIL (Akses Global untuk Kolaborasi) ---
+        Route::middleware('role:superadmin,satgas,admin_ukpd,nahkoda,pengawas,penyedia,kepala_ukpd')->group(function () {
+            Route::get('/pencatatan-pengisian', PencatatanHasilPengisian::class)->name('satgas.pencatatan-pengisian');
+        });
+
         // --- FITUR SATGAS, ADMIN UKPD, & SUPERADMIN ---
-        // (Saya tambahkan admin_ukpd ke akses data kapal sesuai ketentuanmu sebelumnya)
         Route::middleware('role:superadmin,satgas,admin_ukpd')->group(function () {
             Route::get('/data-kapal', DataKapal::class)->name('data-kapal');
             Route::get('/laporan-sisa-bbm', LaporanSisaBBM::class)->name('satgas.laporan-sisa-bbm');
             Route::get('/surat-tugas', SuratTugasPengisianBBM::class)->name('satgas.surat-tugas');
             Route::get('/surat-permohonan', SuratPermohonanPengisianBBM::class)->name('satgas.surat-permohonan');
 
-            Route::get('/pencatatan-pengisian', BeritaAcaraLaporanPengisian::class)->name('satgas.pencatatan-pengisian');
             Route::get('/laporan-pengisian', LaporanPengisianBBM::class)->name('satgas.laporan-pengisian');
             Route::get('/berita-acara-pengisian', BeritaAcaraLaporanPengisian::class)->name('satgas.berita-acara-pengisian');
+        });
+
+        // --- FITUR SURAT SPJ (Bisa diakses oleh pembuat dan approver) ---
+        // Penambahan role pptk & kepala_ukpd agar mereka bisa mengakses view dan approve
+        Route::middleware('role:superadmin,satgas,admin_ukpd,pptk,kepala_ukpd')->group(function () {
+            Route::get('/surat-spj', SuratSpj::class)->name('satgas.surat-spj');
         });
 
         // --- FITUR SOUNDING & SUPERADMIN ---

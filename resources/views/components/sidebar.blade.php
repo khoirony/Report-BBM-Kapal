@@ -5,7 +5,6 @@
 </div>
 
 @php
-    // UPDATE: Ambil slug dari relasi role
     $role = auth()->user()?->role?->slug ?? null;
     $baseClass = "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors duration-200";
     $activeClass = "bg-indigo-50 text-indigo-700";
@@ -15,10 +14,23 @@
 <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
        class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-100 transition-transform duration-300 ease-in-out transform lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none flex flex-col">
     
-    <div class="flex items-center justify-between h-16 border-b border-gray-100 px-6">
-        <div class="flex flex-col">
-            <span class="text-2xl font-extrabold text-indigo-600 tracking-wider leading-none">BBM<span class="text-gray-800">KAPAL</span></span>
-        </div>
+       <div class="flex items-center justify-between h-16 border-b border-gray-100 px-6">
+        <a href="#" class="flex items-center gap-3 group">
+            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white shadow-md shadow-indigo-200 transition-transform duration-300 group-hover:scale-105 shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="5" r="3"></circle>
+                    <line x1="12" y1="22" x2="12" y2="8"></line>
+                    <path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
+                </svg>
+            </div>
+            
+            <div class="flex flex-col">
+                <span class="text-xl font-black tracking-tight leading-none text-gray-800">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">BBM</span>KAPAL
+                </span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Dishub Jakarta</span>
+            </div>
+        </a>
         
         <button @click="sidebarOpen = false" class="lg:hidden text-gray-400 hover:text-red-500 focus:outline-none transition-colors duration-200">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,10 +38,8 @@
             </svg>
         </button>
     </div>
-
     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
         
-        {{-- UPDATE: Penyesuaian nama route dinamis jika nama role memiliki underscore (contoh admin_ukpd jadi admin-ukpd) --}}
         <a href="{{ route('dashboard.' . str_replace('_', '-', $role)) }}" 
            class="{{ $baseClass }} {{ request()->routeIs('dashboard.*') ? $activeClass : $inactiveClass }}">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -104,6 +114,15 @@
                 </svg>
                 Surat Permohonan
             </a>
+
+            <a href="{{ route('satgas.surat-spj') }}" 
+               class="{{ $baseClass }} {{ request()->routeIs('satgas.surat-spj') ? $activeClass : $inactiveClass }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <path d="M9 15l2 2 4-4"></path> </svg>
+                Surat SPJ
+            </a>
         @endif
 
         @php
@@ -115,17 +134,15 @@
             $isPengisianActive = request()->routeIs($pengisianRoutes);
         @endphp
 
-        {{-- OPERASIONAL KAPAL: Superadmin, Satgas, Admin UKPD, Nahkoda --}}
-        @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd', 'nahkoda']))
+        {{-- OPERASIONAL KAPAL: Superadmin, Satgas, Admin UKPD, Nahkoda, Pengawas, Penyedia, Kepala UKPD --}}
+        @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd', 'nahkoda', 'pengawas', 'penyedia', 'kepala_ukpd']))
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Operasional Kapal</h3>
-            
+
             <div x-data="{ dropdownOpen: {{ $isPengisianActive ? 'true' : 'false' }} }" class="space-y-1">
                 <button @click="dropdownOpen = !dropdownOpen" 
                         class="w-full flex items-center justify-between {{ $baseClass }} {{ $isPengisianActive ? $activeClass : $inactiveClass }}">
                     <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
-                        </svg>
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
                         Pengisian BBM
                     </div>
                     <svg :class="dropdownOpen ? 'rotate-180' : ''" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,25 +150,20 @@
                     </svg>
                 </button>
 
-                <div x-show="dropdownOpen" 
-                    x-transition.opacity
-                    class="pl-11 pr-2 py-1 space-y-1"
-                    x-cloak>
+                <div x-show="dropdownOpen" x-transition.opacity class="pl-11 pr-2 py-1 space-y-1" x-cloak>
                     
-                    {{-- Pencatatan Hasil (Nahkoda ikut akses, sebelumnya abk) --}}
-                    @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd', 'nahkoda']))
-                        <a href="{{ route('satgas.pencatatan-pengisian') }}" 
-                        class="block px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200 {{ request()->routeIs('satgas.pencatatan-pengisian') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700' }}">
-                            Pencatatan Hasil Pengisian
-                        </a>
-                    @endif
+                    {{-- Pencatatan Hasil (Nahkoda ikut akses, serta tim verifikator) --}}
+                    <a href="{{ route('satgas.pencatatan-pengisian') }}" 
+                    class="block px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200 {{ request()->routeIs('satgas.pencatatan-pengisian') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700' }}">
+                        Pencatatan Hasil Pengisian
+                    </a>
                     
+                    {{-- Laporan hanya untuk Admin / Satgas / Superadmin --}}
                     @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd']))
                         <a href="{{ route('satgas.laporan-pengisian') }}" 
                         class="block px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200 {{ request()->routeIs('satgas.laporan-pengisian') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700' }}">
                             Laporan Pengisian BBM
                         </a>
-                        
                         <a href="{{ route('satgas.berita-acara-pengisian') }}" 
                         class="block px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200 {{ request()->routeIs('satgas.berita-acara-pengisian') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700' }}">
                             Berita Acara Pengisian BBM
