@@ -4,17 +4,15 @@ namespace App\Livewire\Satgas;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\WithFileUploads;
 use App\Models\SuratPermohonanPengisian;
 use App\Models\SuratTugasPengisian;
 use App\Models\Kapal;
 use App\Models\Ukpd; 
-use App\Models\FileSuratPermohonan;
 use Illuminate\Support\Facades\DB;
 
 class SuratPermohonanPengisianBBM extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithPagination;
 
     public $surat_tugas_list, $kapals;
     public $permohonan_id, $surat_tugas_id, $nomor_surat, $tanggal_surat, $klasifikasi, $lampiran;
@@ -26,13 +24,8 @@ class SuratPermohonanPengisianBBM extends Component
     public $jenis_penyedia_bbm_lainnya = '';
     public $jenis_bbm_lainnya = '';
 
-    // Properti khusus Progress & File
-    public $berkas; 
-    public $progress = 'not started'; 
-
     // Kontrol Modal
     public $isModalOpen = false;
-    public $isProgressModalOpen = false;
 
     public $search = '';
     public $sortBy = 'latest';
@@ -43,12 +36,6 @@ class SuratPermohonanPengisianBBM extends Component
 
     public function mount()
     {
-        $queryTugas = SuratTugasPengisian::with('LaporanSisaBbm.sounding.kapal', 'user');
-        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
-            $queryTugas->where('ukpd_id', auth()->user()?->ukpd_id);
-        }
-        $this->surat_tugas_list = $queryTugas->get();
-
         $queryKapal = Kapal::orderBy('nama_kapal');
         if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $queryKapal->where('ukpd_id', auth()->user()?->ukpd_id);
@@ -70,7 +57,29 @@ class SuratPermohonanPengisianBBM extends Component
         $this->resetPage();
     }
 
-    // Fungsi untuk menyalin lokasi dari Surat Tugas
+    public function loadSuratTugasList($currentSuratTugasId = null)
+    {
+        $queryTugas = SuratTugasPengisian::with('LaporanSisaBbm.sounding.kapal', 'user');
+        
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
+            $queryTugas->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+
+        $usedSuratTugasIds = SuratPermohonanPengisian::whereNotNull('surat_tugas_id')
+            ->pluck('surat_tugas_id')
+            ->toArray();
+
+        if ($currentSuratTugasId) {
+            $usedSuratTugasIds = array_diff($usedSuratTugasIds, [$currentSuratTugasId]);
+        }
+
+        if (!empty($usedSuratTugasIds)) {
+            $queryTugas->whereNotIn('id', $usedSuratTugasIds);
+        }
+
+        $this->surat_tugas_list = $queryTugas->get();
+    }
+
     public function setLokasiSama()
     {
         if($this->surat_tugas_id) {
@@ -84,8 +93,7 @@ class SuratPermohonanPengisianBBM extends Component
     public function render()
     {
         $query = SuratPermohonanPengisian::with([
-            'suratTugas.LaporanSisaBbm.sounding.kapal',
-            'files' 
+            'suratTugas.LaporanSisaBbm.sounding.kapal'
         ]);
 
         if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
@@ -95,7 +103,7 @@ class SuratPermohonanPengisianBBM extends Component
         if (!empty($this->search)) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
-                  ->orWhere('nama_perusahaan', 'like', '%' . $this->search . '%') // Pencarian berdasarkan perusahaan
+                  ->orWhere('nama_perusahaan', 'like', '%' . $this->search . '%')
                   ->orWhereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($qKapal) {
                       $qKapal->where('nama_kapal', 'like', '%' . $this->search . '%');
                   });
@@ -138,6 +146,7 @@ class SuratPermohonanPengisianBBM extends Component
     public function create()
     {
         $this->resetFields();
+        $this->loadSuratTugasList();
         $this->isModalOpen = true;
     }
 
@@ -159,13 +168,11 @@ class SuratPermohonanPengisianBBM extends Component
         $this->klasifikasi = $permohonan->klasifikasi;
         $this->lampiran = $permohonan->lampiran;
         
-        // Mapping data baru
         $this->nama_perusahaan = $permohonan->nama_perusahaan;
         $this->tempat_pengambilan_bbm = $permohonan->tempat_pengambilan_bbm;
         $this->metode_pengiriman = $permohonan->metode_pengiriman;
         $this->jumlah_bbm = $permohonan->jumlah_bbm;
         
-        // Logika Dropdown "Lainnya" untuk Jenis Penyedia
         $jenisPenyediaStandard = ['Stasiun Pengisian Bahan Bakar Umum (SPBU)', 'Agen BBM'];
         if (in_array($permohonan->jenis_penyedia_bbm, $jenisPenyediaStandard) || empty($permohonan->jenis_penyedia_bbm)) {
             $this->jenis_penyedia_bbm = $permohonan->jenis_penyedia_bbm;
@@ -175,7 +182,6 @@ class SuratPermohonanPengisianBBM extends Component
             $this->jenis_penyedia_bbm_lainnya = $permohonan->jenis_penyedia_bbm;
         }
         
-        // Logika Dropdown "Lainnya" untuk Jenis BBM
         $jenisBbmStandard = ['Pertamax/sekelas', 'Pertamina Dex/sekelas', 'Dexlite/sekelas'];
         if (in_array($permohonan->jenis_bbm, $jenisBbmStandard) || empty($permohonan->jenis_bbm)) {
             $this->jenis_bbm = $permohonan->jenis_bbm;
@@ -184,6 +190,8 @@ class SuratPermohonanPengisianBBM extends Component
             $this->jenis_bbm = 'Lainnya';
             $this->jenis_bbm_lainnya = $permohonan->jenis_bbm;
         }
+
+        $this->loadSuratTugasList($this->surat_tugas_id);
 
         $this->isModalOpen = true;
     }
@@ -202,7 +210,6 @@ class SuratPermohonanPengisianBBM extends Component
 
         $suratTugas = SuratTugasPengisian::find($this->surat_tugas_id);
 
-        // Tentukan nilai final yang akan masuk ke DB untuk dropdown "Lainnya"
         $finalJenisPenyedia = $this->jenis_penyedia_bbm === 'Lainnya' ? $this->jenis_penyedia_bbm_lainnya : $this->jenis_penyedia_bbm;
         $finalJenisBbm = $this->jenis_bbm === 'Lainnya' ? $this->jenis_bbm_lainnya : $this->jenis_bbm;
 
@@ -236,69 +243,12 @@ class SuratPermohonanPengisianBBM extends Component
         $this->isModalOpen = false;
     }
 
-    public function openProgressModal($id)
-    {
-        $this->reset(['berkas']); 
-        
-        $query = SuratPermohonanPengisian::query();
-        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
-            $query->where('ukpd_id', auth()->user()?->ukpd_id);
-        }
-        
-        $permohonan = $query->findOrFail($id);
-        
-        $this->permohonan_id = $permohonan->id;
-        $this->progress = $permohonan->progress;
-        
-        $this->isProgressModalOpen = true;
-    }
-
-    public function closeProgressModal()
-    {
-        $this->isProgressModalOpen = false;
-        $this->reset(['berkas', 'permohonan_id', 'progress']);
-    }
-
-    public function updateProgress()
-    {
-        $this->validate([
-            'progress' => 'required|in:not started,on progress,done',
-            'berkas' => 'nullable|file|mimes:pdf,docx,jpg,jpeg,png|max:2048',
-        ]);
-
-        $permohonan = SuratPermohonanPengisian::findOrFail($this->permohonan_id);
-
-        DB::transaction(function () use ($permohonan) {
-            if ($this->berkas) {
-                $path = $this->berkas->store('berkas_surat', 'public');
-
-                FileSuratPermohonan::create([
-                    'surat_permohonan_id' => $permohonan->id,
-                    'nama_file' => $this->berkas->getClientOriginalName(),
-                    'file_path' => $path,
-                ]);
-
-                if ($this->progress === 'not started') {
-                    $this->progress = 'on progress';
-                }
-            }
-
-            $permohonan->update([
-                'progress' => $this->progress
-            ]);
-        });
-
-        session()->flash('message', 'Progress dan File berhasil diperbarui.');
-        $this->closeProgressModal();
-    }
-
     public function resetFields()
     {
         $this->reset([
             'permohonan_id', 'surat_tugas_id', 'nomor_surat', 'tanggal_surat', 'klasifikasi', 
             'nama_perusahaan', 'jenis_penyedia_bbm', 'jenis_penyedia_bbm_lainnya', 
-            'tempat_pengambilan_bbm', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm',
-            'berkas', 'progress'
+            'tempat_pengambilan_bbm', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm'
         ]);
         $this->lampiran = '1 (satu) berkas';
     }

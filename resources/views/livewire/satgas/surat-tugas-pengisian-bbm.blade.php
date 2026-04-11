@@ -109,7 +109,7 @@
                     <thead class="hidden lg:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
                         <tr>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Nomor & Tanggal</th>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Informasi Armada</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Armada & Laporan BBM</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Giat & Lokasi</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6">Personel</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider text-right">Aksi</th>
@@ -126,12 +126,12 @@
                                 <div class="font-bold text-slate-900 mb-1 tracking-tight">{{ $surat->nomor_surat }}</div>
                                 <div class="flex items-center text-xs text-slate-500 font-medium">
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    {{ \Carbon\Carbon::parse($surat->tanggal_dikeluarkan)->format('d M Y') }}
+                                    {{ \Carbon\Carbon::parse($surat->tanggal_dikeluarkan)->translatedFormat('d M Y') }}
                                 </div>
                             </td>
         
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
-                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Informasi Armada</span>
+                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Armada & Laporan BBM</span>
                                 
                                 @if($surat->laporanSisaBbm)
                                     <div class="font-semibold text-slate-900 mb-1 flex items-center gap-2">
@@ -140,8 +140,21 @@
                                             {{ $surat->laporanSisaBbm->sounding->kapal->ukpd->singkatan ?? 'UKPD' }}
                                         </span>
                                     </div>
-                                    <div class="text-xs text-slate-500 truncate max-w-[200px]" title="{{ $surat->laporanSisaBbm->sounding->keterangan ?? '-' }}">
-                                        Lap #{{ $surat->laporanSisaBbm->id }} • {{ \Carbon\Carbon::parse($surat->laporanSisaBbm->tanggal_surat)->format('d/m/Y') }}
+                                    
+                                    <div class="mt-3 bg-slate-50 border border-slate-100 rounded-lg p-2.5">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ref. Laporan BBM</span>
+                                        <div class="flex items-start">
+                                            <svg class="w-3.5 h-3.5 mr-1.5 mt-0.5 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                            <div>
+                                                <span class="text-xs font-semibold text-slate-700 block">{{ $surat->laporanSisaBbm->nomor ?? 'Lap #'.$surat->laporanSisaBbm->id }}</span>
+                                                @if($surat->laporanSisaBbm->tanggal_surat)
+                                                    <span class="text-[10px] text-slate-500 mt-0.5 block">{{ \Carbon\Carbon::parse($surat->laporanSisaBbm->tanggal_surat)->translatedFormat('d M Y') }}</span>
+                                                @endif
+                                                @if($surat->laporanSisaBbm->keterangan)
+                                                    <span class="text-[10px] text-slate-500 mt-0.5 block line-clamp-2" title="{{ $surat->laporanSisaBbm->keterangan }}">{{ $surat->laporanSisaBbm->keterangan }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 @else
                                     <span class="inline-flex items-center text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-md border border-rose-100">
@@ -259,12 +272,14 @@
                             <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 space-y-4">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tautkan Laporan BBM <span class="text-rose-500">*</span></label>
+                                    
                                     <select wire:model="laporan_pengisian_id" class="px-4 py-2.5 bg-white border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer" required>
                                         <option value="">-- Pilih Laporan BBM --</option>
-                                        @foreach($laporans as $lap)
-                                            <option value="{{ $lap->id }}">Lap #{{ $lap->nomor }} - {{ $lap->sounding->kapal->nama_kapal ?? 'Kapal' }} (Tgl: {{ \Carbon\Carbon::parse($lap->tanggal_surat)->format('d/m/Y') }})</option>
+                                        @foreach($laporanList as $lap)
+                                            <option value="{{ $lap->id }}">Lap #{{ $lap->nomor ?? $lap->id }} - {{ $lap->sounding->kapal->nama_kapal ?? 'Kapal' }} (Tgl: {{ \Carbon\Carbon::parse($lap->tanggal_surat)->format('d/m/Y') }})</option>
                                         @endforeach
                                     </select>
+
                                     <p class="text-[10px] text-gray-500 mt-1">Data Kapal & Tanggal akan otomatis terisi di PDF berdasarkan Laporan ini.</p>
                                 </div>
     

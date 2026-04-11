@@ -19,6 +19,9 @@ class SuratTugasPengisianBBM extends Component
     public $surat_id, $laporan_pengisian_id, $nomor_surat, $lokasi, $waktu_pelaksanaan, $tanggal_dikeluarkan;
     public $petugasList = [];
     public $isOpen = false;
+    
+    // Properti baru untuk menampung list Laporan Sisa BBM
+    public $laporanList = [];
 
     // Properti Search, Filter & Sort
     public $search = '';
@@ -46,6 +49,33 @@ class SuratTugasPengisianBBM extends Component
         $this->resetPage();
     }
 
+    // Fungsi baru untuk memuat Laporan Sisa BBM yang belum terpakai
+    public function loadLaporanList($currentLaporanId = null)
+    {
+        // Ambil ID Laporan yang sudah dibuatkan Surat Tugas
+        $usedLaporanIds = SuratTugasPengisian::whereNotNull('laporan_sisa_bbm_id')
+            ->pluck('laporan_sisa_bbm_id')
+            ->toArray();
+
+        // Jika mode Edit, kecualikan laporan saat ini agar tetap muncul di dropdown
+        if ($currentLaporanId) {
+            $usedLaporanIds = array_diff($usedLaporanIds, [$currentLaporanId]);
+        }
+
+        $queryLaporan = LaporanSisaBbm::with('sounding.kapal')->latest();
+        
+        if (auth()->user()?->role?->slug !== 'superadmin') {
+            $queryLaporan->where('ukpd_id', auth()->user()?->ukpd_id);
+        }
+
+        // Saring agar Laporan yang sudah terpakai tidak muncul
+        if (!empty($usedLaporanIds)) {
+            $queryLaporan->whereNotIn('id', $usedLaporanIds);
+        }
+
+        $this->laporanList = $queryLaporan->get();
+    }
+
     public function render()
     {
         $query = SuratTugasPengisian::with(['LaporanSisaBbm.sounding.kapal', 'user', 'petugas']);
@@ -57,15 +87,18 @@ class SuratTugasPengisianBBM extends Component
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
-                  ->orWhere('lokasi', 'like', '%' . $this->search . '%') // Pencarian Lokasi
+                  ->orWhere('lokasi', 'like', '%' . $this->search . '%') 
                   ->orWhereHas('petugas', function($p) {
-                      $p->where('nama_petugas', 'like', '%' . $this->search . '%'); // Pencarian Nama Petugas
+                      $p->where('nama_petugas', 'like', '%' . $this->search . '%'); 
                   })
                   ->orWhereHas('LaporanSisaBbm', function($l) {
-                      $l->where('keterangan', 'like', '%' . $this->search . '%') 
-                        ->orWhereHas('kapal', function($k) {
-                            $k->where('nama_kapal', 'like', '%' . $this->search . '%');
-                        });
+                      // PERBAIKAN DI SINI: keterangan dan nama_kapal dimasukkan ke dalam relasi sounding
+                      $l->whereHas('sounding', function($s) {
+                          $s->where('keterangan', 'like', '%' . $this->search . '%')
+                            ->orWhereHas('kapal', function($k) {
+                                $k->where('nama_kapal', 'like', '%' . $this->search . '%');
+                            });
+                      });
                   });
             });
         }
@@ -103,16 +136,9 @@ class SuratTugasPengisianBBM extends Component
         $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();
 
         $ukpds = Ukpd::orderBy('nama', 'asc')->get();
-        
-        $queryLaporan = LaporanSisaBbm::with('sounding.kapal')->latest();
-        if (auth()->user()?->role?->slug !== 'superadmin') {
-            $queryLaporan->where('ukpd_id', auth()->user()?->ukpd_id);
-        }
-        $laporans = $queryLaporan->get();
 
         return view('livewire.satgas.surat-tugas-pengisian-bbm', [
             'surat_tugas' => $surat_tugas,
-            'laporans' => $laporans,
             'kapals' => $kapals,
             'ukpds' => $ukpds
         ])->layout('layouts.app');
@@ -128,6 +154,9 @@ class SuratTugasPengisianBBM extends Component
             ['nama_petugas' => '', 'jabatan' => 'Supir'],
             ['nama_petugas' => '', 'jabatan' => 'Pendamping']
         ];
+        
+        // Memuat list Laporan yang murni belum terpakai
+        $this->loadLaporanList();
         
         $this->openModal();
     }
@@ -252,6 +281,9 @@ class SuratTugasPengisianBBM extends Component
         if (empty($this->petugasList)) {
             $this->petugasList[] = ['nama_petugas' => '', 'jabatan' => ''];
         }
+
+        // Memuat list laporan termasuk yang dipakai pada surat tugas ini
+        $this->loadLaporanList($this->laporan_pengisian_id);
 
         $this->openModal();
     }
