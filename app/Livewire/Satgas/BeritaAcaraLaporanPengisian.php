@@ -57,7 +57,7 @@ class BeritaAcaraLaporanPengisian extends Component
     {
         $query = BaPengisianBbm::with(['kapal', 'soundings', 'user']);
 
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('user_id', auth()->id());
         }
 
@@ -94,7 +94,7 @@ class BeritaAcaraLaporanPengisian extends Component
         // Paginasi & Data Relasi untuk Dropdown
         $laporans = $query->paginate(10);
         $kapals = Kapal::query();
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $kapals->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();
@@ -111,7 +111,7 @@ class BeritaAcaraLaporanPengisian extends Component
             $q->orderBy('created_at', 'asc');
         }]);
 
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('user_id', auth()->id());
         }
 
@@ -134,7 +134,7 @@ class BeritaAcaraLaporanPengisian extends Component
             $query = Sounding::where('kapal_id', $this->kapal_id)
                 ->whereDate('created_at', $this->tanggal);
                 
-            if (auth()->user()->role !== 'superadmin') {
+            if (auth()->user()?->role?->slug !== 'superadmin') {
                 $query->whereHas('kapal', function ($q) {
                     $q->where('ukpd_id', auth()->user()?->ukpd_id);
                 });
@@ -215,7 +215,7 @@ class BeritaAcaraLaporanPengisian extends Component
     {
         $query = BaPengisianBbm::query();
         
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('user_id', auth()->id());
         }
         
@@ -243,7 +243,7 @@ class BeritaAcaraLaporanPengisian extends Component
     {
         $query = BaPengisianBbm::query();
         
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('user_id', auth()->id());
         }
         

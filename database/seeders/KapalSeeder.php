@@ -2,61 +2,60 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Kapal;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class KapalSeeder extends Seeder
 {
     public function run()
     {
-        // 1. Ambil semua data UKPD ke dalam memori agar tidak query berulang kali di dalam loop
+        // 1. Ambil data master ke memori (UKPD & Role Nahkoda)
         $ukpds = DB::table('ukpds')->get();
+        $nahkodaRoleId = DB::table('roles')->where('slug', 'nahkoda')->value('id'); // AMBIL ID ROLE NAHKODA
+
+        // Cek jika role nahkoda belum ada di DB
+        if (!$nahkodaRoleId) {
+            $this->command->error("Role 'nahkoda' tidak ditemukan. Pastikan RoleSeeder sudah dijalankan.");
+            return;
+        }
 
         // Mengubah URL Google Sheet menjadi URL Export CSV
         $sheetId = "1FTqKmUxb4afNysuppr4yZF76txwkjYffOkLs7xYmIYE";
         $gid = "1075867526";
         $csvUrl = "https://docs.google.com/spreadsheets/d/{$sheetId}/export?format=csv&gid={$gid}";
 
-        // Mencoba membuka file langsung dari URL Google Sheets
-        // Menggunakan @ untuk menekan error/warning bawaan PHP jika koneksi internet terputus
         $csvFile = @fopen($csvUrl, "r");
   
-        // Validasi jika gagal membuka URL, gunakan fallback ke file lokal
         if ($csvFile === FALSE) {
             $this->command->warn("Koneksi ke Google Sheets gagal/timeout. Mencoba membaca file lokal...");
             
-            // Tentukan lokasi file CSV lokal Anda (misal kita taruh di folder database/data/)
             $localFilePath = database_path('seeders/kapal.csv');
             
-            // Cek apakah file lokalnya ada
             if (file_exists($localFilePath)) {
                 $csvFile = fopen($localFilePath, "r");
                 $this->command->info("Berhasil! Menggunakan data dari file lokal: database/seeders/kapal.csv");
             } else {
                 $this->command->error("Gagal! URL Google Sheets tidak dapat diakses dan file lokal tidak ditemukan di: {$localFilePath}");
-                return; // Hentikan eksekusi jika keduanya gagal
+                return; 
             }
         } else {
             $this->command->info("Koneksi sukses! Menggunakan data langsung dari Google Sheets.");
         }
 
         $row = 0;
+        $defaultPassword = Hash::make('password1234');
         
         while (($data = fgetcsv($csvFile, 2000, ",")) !== FALSE) {
             $row++;
             
-            // Skip baris 1 (Judul) dan baris 2 (Header Tabel)
-            if ($row <= 2) {
-                continue;
-            }
+            if ($row <= 2) continue;
 
-            // Skip jika bukan nomor (biasanya keterangan a, b, c)
-            if (!isset($data[1]) || !is_numeric(trim($data[1]))) {
-                continue;
-            }
+            if (!isset($data[1]) || !is_numeric(trim($data[1]))) continue;
 
-            // Validasi tahun pembuatan
             $tahunPembuatan = (isset($data[6]) && is_numeric(trim($data[6]))) ? (int) trim($data[6]) : null;
 
             // 2. Logika Pencocokan UKPD
@@ -64,21 +63,42 @@ class KapalSeeder extends Seeder
             $ukpdId = null;
 
             if (!empty($namaUkpdCsv)) {
-                // Mencari UKPD yang cocok (berdasarkan singkatan atau nama dari tabel ukpds)
                 $matchedUkpd = $ukpds->first(function ($ukpd) use ($namaUkpdCsv) {
                     return (strcasecmp($ukpd->singkatan, $namaUkpdCsv) === 0) || 
                            (strcasecmp($ukpd->nama, $namaUkpdCsv) === 0) ||
-                           (stripos($namaUkpdCsv, $ukpd->singkatan) !== false); // Cek jika singkatan ada di dalam teks CSV
+                           (stripos($namaUkpdCsv, $ukpd->singkatan) !== false); 
                 });
 
-                // Jika ketemu, ambil ID-nya. Jika tidak, biarkan null.
                 $ukpdId = $matchedUkpd ? $matchedUkpd->id : null;
             }
 
-            // 3. Memasukkan data ke DB
+            $namaKapal = trim($data[2] ?? '');
+            $ukpdIdFinal = $ukpdId ?? 4; 
+
+            // =====================================================================
+            // 3. BUAT AKUN NAHKODA UNTUK KAPAL INI
+            // =====================================================================
+            
+            $safeKapalName = Str::slug($namaKapal, '_');
+            $nahkodaEmail = "nahkoda_{$safeKapalName}@gmail.com";
+
+            $nahkodaUser = User::updateOrCreate(
+                ['email' => $nahkodaEmail], 
+                [
+                    'name'              => 'Nahkoda ' . $namaKapal,
+                    'email_verified_at' => now(),
+                    'password'          => $defaultPassword,
+                    'role_id'           => $nahkodaRoleId, // GANTI: role menjadi role_id
+                    'ukpd_id'           => $ukpdIdFinal,
+                ]
+            );
+
+            // =====================================================================
+            // 4. MEMASUKKAN DATA KAPAL KE DB & HUBUNGKAN DENGAN NAHKODA
+            // =====================================================================
             Kapal::create([
-                'nama_kapal'            => trim($data[2] ?? ''),
-                'ukpd_id'               => $ukpdId ?? 4,
+                'nama_kapal'            => $namaKapal,
+                'ukpd_id'               => $ukpdIdFinal,
                 'jenis_dan_tipe'        => trim($data[4] ?? ''),
                 'material'              => trim($data[5] ?? ''),
                 'tahun_pembuatan'       => $tahunPembuatan,
@@ -87,12 +107,12 @@ class KapalSeeder extends Seeder
                 'tenaga_penggerak_kw'   => trim($data[9] ?? ''),
                 'daerah_pelayaran'      => trim($data[10] ?? ''),
                 'list_sertifikat_kapal' => trim($data[11] ?? ''),
-                'user_id'               => 1, // Pastikan user dengan ID 1 sudah terbuat dari UserSeeder
+                'user_id'               => $nahkodaUser->id,
             ]);
         }
   
         fclose($csvFile);
         
-        $this->command->info('Data kapal berhasil di-seed!');
+        $this->command->info('Data kapal beserta akun Nahkoda-nya berhasil di-seed!');
     }
 }

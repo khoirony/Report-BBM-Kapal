@@ -4,6 +4,7 @@ namespace App\Livewire\SuperAdmin;
 
 use App\Models\User;
 use App\Models\Ukpd;
+use App\Models\Role; // UPDATE: Tambahkan import model Role
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Hash;
@@ -14,22 +15,22 @@ class KelolaUser extends Component
     use WithPagination;
 
     // Properti Form
-    public $userId, $name, $email, $password, $ukpd_id, $role;
-    public $is_verified = true; // Properti baru untuk verifikasi
+    // UPDATE: Ganti $role menjadi $role_id
+    public $userId, $name, $email, $password, $ukpd_id, $role_id;
+    public $is_verified = true; 
 
     // Properti Filter, Search, Sort
     public $search = '';
-    public $filterRole = '';
+    public $filterRole = ''; // Menyimpan ID Role untuk filter
     public $filterUkpd = '';
-    public $filterVerifikasi = ''; // Filter baru
+    public $filterVerifikasi = ''; 
     public $sortBy = 'created_at';
     public $sortDirection = 'desc';
 
     // Properti Modal
     public $isModalOpen = false;
-    public $modalMode = 'create'; // 'create' atau 'edit'
+    public $modalMode = 'create'; 
 
-    // Reset pagination ketika melakukan pencarian atau filtering
     public function updatingSearch() { $this->resetPage(); }
     public function updatingFilterRole() { $this->resetPage(); }
     public function updatingFilterUkpd() { $this->resetPage(); }
@@ -48,7 +49,8 @@ class KelolaUser extends Component
     public function openModal($mode = 'create', $id = null)
     {
         $this->resetValidation();
-        $this->reset(['userId', 'name', 'email', 'password', 'ukpd_id', 'role', 'is_verified']);
+        // UPDATE: Reset role_id
+        $this->reset(['userId', 'name', 'email', 'password', 'ukpd_id', 'role_id', 'is_verified']);
         $this->modalMode = $mode;
 
         if ($mode === 'edit' && $id) {
@@ -57,12 +59,13 @@ class KelolaUser extends Component
             $this->name = $user->name;
             $this->email = $user->email;
             $this->ukpd_id = $user->ukpd_id;
-            $this->role = $user->role;
-            // Cek apakah email_verified_at ada isinya
+            $this->role_id = $user->role_id; // UPDATE: Ambil dari role_id
             $this->is_verified = !is_null($user->email_verified_at);
         } else {
-            $this->role = 'sounding'; // Nilai default
-            $this->is_verified = true; // Default admin buat user langsung terverifikasi
+            // UPDATE: Default ke role Sounding (ambil ID-nya dinamis)
+            $defaultRole = Role::where('slug', 'sounding')->first();
+            $this->role_id = $defaultRole ? $defaultRole->id : null; 
+            $this->is_verified = true; 
         }
 
         $this->isModalOpen = true;
@@ -83,12 +86,12 @@ class KelolaUser extends Component
                 'max:255', 
                 Rule::unique('users')->ignore($this->userId)
             ],
-            'role' => 'required|in:superadmin,sounding,satgas,penyedia,nahkoda,pengawas',
+            // UPDATE: Validasi cek eksistensi ID di tabel roles
+            'role_id' => 'required|exists:roles,id',
             'ukpd_id' => 'nullable|exists:ukpds,id',
             'is_verified' => 'boolean'
         ];
 
-        // Password wajib saat create, opsional saat edit
         if ($this->modalMode === 'create') {
             $rules['password'] = 'required|min:8';
         } else {
@@ -100,12 +103,10 @@ class KelolaUser extends Component
         $data = [
             'name' => $this->name,
             'email' => $this->email,
-            'role' => $this->role,
-            // Jika kosong/string kosong, ubah jadi null agar tidak gagal di foreign key constraint
+            'role_id' => $this->role_id, // UPDATE: Simpan role_id
             'ukpd_id' => empty($this->ukpd_id) ? null : $this->ukpd_id, 
         ];
 
-        // Kelola status verifikasi
         if ($this->modalMode === 'edit') {
             $user = User::find($this->userId);
             if ($this->is_verified && is_null($user->email_verified_at)) {
@@ -117,7 +118,6 @@ class KelolaUser extends Component
             $data['email_verified_at'] = $this->is_verified ? now() : null;
         }
 
-        // Jika password diisi, enkripsi
         if (!empty($this->password)) {
             $data['password'] = Hash::make($this->password);
         }
@@ -131,7 +131,6 @@ class KelolaUser extends Component
         $this->closeModal();
     }
 
-    // Aksi Cepat: Toggle Verifikasi dari Tabel
     public function toggleVerification($id)
     {
         $user = User::findOrFail($id);
@@ -152,7 +151,8 @@ class KelolaUser extends Component
 
     public function render()
     {
-        $users = User::with('ukpd')
+        // UPDATE: Eager load relasi role
+        $users = User::with(['ukpd', 'role'])
             ->when($this->search, function ($query) {
                 $query->where(function ($subQuery) {
                     $subQuery->where('name', 'like', '%' . $this->search . '%')
@@ -160,13 +160,13 @@ class KelolaUser extends Component
                 });
             })
             ->when($this->filterRole, function ($query) {
-                $query->where('role', $this->filterRole);
+                // UPDATE: Filter berdasarkan role_id
+                $query->where('role_id', $this->filterRole);
             })
             ->when($this->filterUkpd, function ($query) {
                 $query->where('ukpd_id', $this->filterUkpd);
             })
             ->when($this->filterVerifikasi !== '', function ($query) {
-                // Filter status verifikasi
                 if ($this->filterVerifikasi == '1') {
                     $query->whereNotNull('email_verified_at');
                 } else {
@@ -177,10 +177,12 @@ class KelolaUser extends Component
             ->paginate(10);
 
         $ukpds = Ukpd::all();
+        $roles = Role::all(); // UPDATE: Ambil semua data role
 
         return view('livewire.super-admin.kelola-user', [
             'users' => $users,
             'ukpds' => $ukpds,
+            'roles' => $roles, // UPDATE: Kirim ke Blade
         ])->layout('layouts.app');
     }
 }

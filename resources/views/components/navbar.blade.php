@@ -29,7 +29,7 @@
                  
                 <div class="px-4 py-2 border-b border-gray-50 mb-1">
                     <p class="text-xs text-gray-500">Login sebagai</p>
-                    <p class="text-sm font-bold text-gray-800 uppercase">{{ auth()->user()->role ?? 'Role' }} <span class="text-red-500">{{ auth()->user()->ukpd ? '('.auth()->user()->ukpd->singkatan.')' : '' }}</span></p>
+                    <p class="text-sm font-bold text-gray-800 uppercase">{{ auth()->user()?->role?->slug ?? 'Role' }} <span class="text-red-500">{{ auth()->user()->ukpd ? '('.auth()->user()->ukpd->singkatan.')' : '' }}</span></p>
                 </div>
 
                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">Profil Saya</a>

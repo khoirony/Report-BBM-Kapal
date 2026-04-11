@@ -15,13 +15,13 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // Pastikan user sudah login
         if (!auth()->check()) {
             return redirect()->route('login');
         }
 
-        // Cek apakah role user saat ini ADA di dalam array $roles yang dikirim dari route
-        if (!in_array($request->user()->role, $roles)) {
+        $userRoleSlug = $request->user()->role->slug ?? null;
+
+        if (!$userRoleSlug || !in_array($userRoleSlug, $roles)) {
             return redirect()->route('home');
         }
 

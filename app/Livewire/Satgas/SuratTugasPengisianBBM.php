@@ -50,7 +50,7 @@ class SuratTugasPengisianBBM extends Component
     {
         $query = SuratTugasPengisian::with(['LaporanSisaBbm.sounding.kapal', 'user', 'petugas']);
 
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
@@ -97,7 +97,7 @@ class SuratTugasPengisianBBM extends Component
         $surat_tugas = $query->paginate(10);
         
         $kapals = Kapal::query();
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $kapals->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();
@@ -105,7 +105,7 @@ class SuratTugasPengisianBBM extends Component
         $ukpds = Ukpd::orderBy('nama', 'asc')->get();
         
         $queryLaporan = LaporanSisaBbm::with('sounding.kapal')->latest();
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $queryLaporan->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $laporans = $queryLaporan->get();
@@ -224,7 +224,7 @@ class SuratTugasPengisianBBM extends Component
     {
         $query = SuratTugasPengisian::query();
         
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
@@ -260,7 +260,7 @@ class SuratTugasPengisianBBM extends Component
     {
         $query = SuratTugasPengisian::query();
         
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 

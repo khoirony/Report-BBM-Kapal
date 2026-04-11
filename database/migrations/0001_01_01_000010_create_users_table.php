@@ -21,7 +21,8 @@ return new class extends Migration
                   ->nullable() 
                   ->constrained('ukpds')
                   ->onDelete('cascade');
-            $table->enum('role', ['superadmin', 'sounding', 'satgas', 'penyedia', 'nahkoda', 'pengawas'])->default('sounding');
+            
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
         });

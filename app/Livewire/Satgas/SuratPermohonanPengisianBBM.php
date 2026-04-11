@@ -44,13 +44,13 @@ class SuratPermohonanPengisianBBM extends Component
     public function mount()
     {
         $queryTugas = SuratTugasPengisian::with('LaporanSisaBbm.sounding.kapal', 'user');
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $queryTugas->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $this->surat_tugas_list = $queryTugas->get();
 
         $queryKapal = Kapal::orderBy('nama_kapal');
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $queryKapal->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $this->kapals = $queryKapal->get();
@@ -88,7 +88,7 @@ class SuratPermohonanPengisianBBM extends Component
             'files' 
         ]);
 
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
@@ -146,7 +146,7 @@ class SuratPermohonanPengisianBBM extends Component
         $this->resetFields();
         
         $query = SuratPermohonanPengisian::query();
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         
@@ -241,7 +241,7 @@ class SuratPermohonanPengisianBBM extends Component
         $this->reset(['berkas']); 
         
         $query = SuratPermohonanPengisian::query();
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         
@@ -306,7 +306,7 @@ class SuratPermohonanPengisianBBM extends Component
     public function delete($id)
     {
         $query = SuratPermohonanPengisian::query();
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         

@@ -46,7 +46,8 @@ class DataKapal extends Component
         // Eager load relasi user dan ukpd
         $query = Kapal::with(['user', 'ukpd']);
 
-        if (auth()->user()->role !== 'superadmin') {
+        // UPDATE: Gunakan ->role->slug
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
@@ -116,7 +117,7 @@ class DataKapal extends Component
     {
         $this->kapal_id = '';
         $this->nama_kapal = '';
-        $this->ukpd_id = ''; // Sesuaikan
+        $this->ukpd_id = ''; 
         $this->jenis_dan_tipe = '';
         $this->material = '';
         $this->tahun_pembuatan = '';
@@ -134,13 +135,13 @@ class DataKapal extends Component
     {
         $this->validate([
             'nama_kapal' => 'required',
-            'ukpd_id' => 'required', // Validasi ukpd_id
+            'ukpd_id' => 'required', 
             'foto_kapal' => 'nullable|image|max:2048', 
         ]);
 
         $data = [
             'nama_kapal' => $this->nama_kapal,
-            'ukpd_id' => $this->ukpd_id, // Map ukpd_id
+            'ukpd_id' => $this->ukpd_id, 
             'jenis_dan_tipe' => $this->jenis_dan_tipe,
             'material' => $this->material,
             'tahun_pembuatan' => $this->tahun_pembuatan,
@@ -149,7 +150,7 @@ class DataKapal extends Component
             'tenaga_penggerak_kw' => $this->tenaga_penggerak_kw,
             'daerah_pelayaran' => $this->daerah_pelayaran,
             'list_sertifikat_kapal' => $this->list_sertifikat_kapal,
-            'user_id' => auth()->id(), // Opsional: Otomatis set user yang sedang login saat create
+            'user_id' => auth()->id(),
         ];
 
         if ($this->foto_kapal) {
@@ -172,7 +173,7 @@ class DataKapal extends Component
         
         $this->kapal_id = $id;
         $this->nama_kapal = $kapal->nama_kapal;
-        $this->ukpd_id = $kapal->ukpd_id; // Map ukpd_id saat edit
+        $this->ukpd_id = $kapal->ukpd_id; 
         $this->jenis_dan_tipe = $kapal->jenis_dan_tipe;
         $this->material = $kapal->material;
         $this->tahun_pembuatan = $kapal->tahun_pembuatan;

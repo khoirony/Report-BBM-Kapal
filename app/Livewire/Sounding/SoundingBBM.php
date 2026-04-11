@@ -53,7 +53,7 @@ class SoundingBBM extends Component
     {
         $query = Sounding::with(['kapal.ukpd', 'user']);
 
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->whereHas('kapal', function ($q) {
                 $q->where('ukpd_id', auth()->user()?->ukpd_id);
             });
@@ -99,7 +99,7 @@ class SoundingBBM extends Component
 
         $soundings = $query->paginate(10);
         $kapals = Kapal::query();
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $kapals->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();
@@ -188,7 +188,7 @@ class SoundingBBM extends Component
     {
         $query = Sounding::query();
         
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->whereHas('kapal', function ($q) {
                 $q->where('ukpd_id', auth()->user()?->ukpd_id);
             });
@@ -214,7 +214,7 @@ class SoundingBBM extends Component
     {
         $query = Sounding::query();
         
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->whereHas('kapal', function ($q) {
                 $q->where('ukpd_id', auth()->user()?->ukpd_id);
             });

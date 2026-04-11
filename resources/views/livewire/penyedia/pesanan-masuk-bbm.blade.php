@@ -58,7 +58,7 @@
         
             <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-4 border-t border-slate-100 transition-all duration-200">
                 
-                @if (auth()->user()->role == 'superadmin')
+                @if (auth()->user()?->role?->slug == 'superadmin')
                 <div class="relative w-full">
                     <select wire:model.live="filterUkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-amber-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
                         <option value="">Semua SKPD/UKPD</option>

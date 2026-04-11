@@ -45,13 +45,13 @@ class LaporanPengisianBBM extends Component
     public function mount()
     {
         $queryPermohonan = SuratPermohonanPengisian::with('suratTugas.LaporanSisaBbm.sounding.kapal')->whereIn('progress', ['on progress', 'done']);
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $queryPermohonan->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $this->permohonan_list = $queryPermohonan->get();
 
         $queryKapal = Kapal::orderBy('nama_kapal');
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $queryKapal->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $this->kapals = $queryKapal->get();
@@ -127,7 +127,7 @@ class LaporanPengisianBBM extends Component
     {
         $query = PengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal', 'suratPermohonan', 'soundingAwal', 'soundingAkhir', 'approverNakhoda', 'approverPenyedia']);
 
-        if (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'penyedia') {
+        if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 

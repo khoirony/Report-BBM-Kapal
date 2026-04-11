@@ -37,7 +37,7 @@ class LaporanSisaBBM extends Component
     {
         $query = SisaBBM::with(['sounding.kapal.ukpd', 'ukpd']);
 
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
@@ -82,7 +82,7 @@ class LaporanSisaBBM extends Component
         $laporans = $query->paginate(10);
         
         $kapals = Kapal::query();
-        if (auth()->user()->role !== 'superadmin') {
+        if (auth()->user()?->role?->slug !== 'superadmin') {
             $kapals->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();

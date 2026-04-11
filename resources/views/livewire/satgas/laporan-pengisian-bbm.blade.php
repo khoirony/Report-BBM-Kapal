@@ -58,7 +58,7 @@
             </div>
         
             <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-slate-100 transition-all duration-200">
-                @if (auth()->user()->role == 'superadmin')
+                @if (auth()->user()?->role?->slug == 'superadmin')
                 <div class="relative w-full">
                     <select wire:model.live="filterUkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full cursor-pointer">
                         <option value="">Semua SKPD/UKPD</option>
@@ -242,14 +242,14 @@
                                         <span>PDF</span>
                                     </a>
         
-                                    @if(in_array(auth()->user()->role, ['nakhoda', 'superadmin']) && !$item->disetujui_nakhoda_at)
+                                    @if(in_array(auth()->user()?->role?->slug, ['nakhoda', 'superadmin']) && !$item->disetujui_nakhoda_at)
                                         <button wire:click="approveNakhoda({{ $item->id }})" wire:confirm="Setujui laporan ini sebagai Nakhoda?" class="w-full justify-center inline-flex items-center text-emerald-700 font-semibold bg-emerald-50 hover:bg-emerald-600 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-emerald-200 shadow-sm text-xs">
                                             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             Approve Nakhoda
                                         </button>
                                     @endif
         
-                                    @if(in_array(auth()->user()->role, ['penyedia', 'superadmin']) && !$item->disetujui_penyedia_at)
+                                    @if(in_array(auth()->user()?->role?->slug, ['penyedia', 'superadmin']) && !$item->disetujui_penyedia_at)
                                         <button wire:click="approvePenyedia({{ $item->id }})" wire:confirm="Setujui laporan ini sebagai Penyedia?" class="w-full justify-center inline-flex items-center text-emerald-700 font-semibold bg-emerald-50 hover:bg-emerald-600 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-emerald-200 shadow-sm text-xs">
                                             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             Approve Penyedia

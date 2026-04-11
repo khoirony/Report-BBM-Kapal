@@ -35,8 +35,11 @@ class Login extends Component
             
             session()->regenerate();
             
-            $role = Auth::user()->role;
-            return redirect()->intended('/dashboard-' . $role);
+            // AMBIL SLUG ROLE DARI RELASI DAN UBAH FORMATNYA
+            $roleSlug = Auth::user()->role->slug;
+            $dashboardRoute = '/dashboard-' . str_replace('_', '-', $roleSlug);
+            
+            return redirect()->intended($dashboardRoute);
         }
 
         RateLimiter::hit($throttleKey);

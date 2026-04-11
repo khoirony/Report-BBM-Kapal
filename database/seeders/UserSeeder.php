@@ -6,111 +6,103 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil ID UKPD untuk memudahkan mapping
-        $bpp = DB::table('ukpds')->where('singkatan', 'BPP')->value('id');
-        $upap      = DB::table('ukpds')->where('singkatan', 'UPAP')->value('id');
-        $uppd      = DB::table('ukpds')->where('singkatan', 'UPPD')->value('id');
-        $sudinhub  = DB::table('ukpds')->where('singkatan', 'Sudinhub Kep. 1000')->value('id');
+        // 1. Ambil ID UKPD dan masukkan ke dalam array
+        $ukpds = [
+            'bpp'      => DB::table('ukpds')->where('singkatan', 'BPP')->value('id'),
+            'upap'     => DB::table('ukpds')->where('singkatan', 'UPAP')->value('id'),
+            'uppd'     => DB::table('ukpds')->where('singkatan', 'UPPD')->value('id'),
+            'sudinhub' => DB::table('ukpds')->where('singkatan', 'Sudinhub Kep. 1000')->value('id'),
+        ];
 
-        // 1. Superadmin (Biasanya tanpa UKPD/null)
+        // 2. Ambil ID Roles berdasarkan slug (agar query lebih efisien)
+        // Formatnya akan menjadi array: ['superadmin' => 1, 'admin_ukpd' => 2, ...]
+        $roleIds = DB::table('roles')->pluck('id', 'slug')->toArray();
+
+        $defaultPassword = Hash::make('password1234');
+
+        // =========================================================================
+        // AKUN PENGECUALIAN (Tidak di-looping per UKPD)
+        // =========================================================================
+
+        // 1. Superadmin (Tanpa UKPD/null)
         User::updateOrCreate(
             ['email' => 'superadmin@gmail.com'],
             [
-                'name' => 'Super Administrator',
+                'name'              => 'Super Administrator',
                 'email_verified_at' => now(),
-                'password' => Hash::make('password1234'),
-                'role' => 'superadmin',
-                'ukpd_id' => null, 
+                'password'          => $defaultPassword,
+                'role_id'           => $roleIds['superadmin'] ?? null, // GANTI: role menjadi role_id
+                'ukpd_id'           => null, 
             ]
         );
 
-        // 2. Sounding Man (Contoh di bpp)
-        User::updateOrCreate(
-            ['email' => 'sounding@gmail.com'],
-            [
-                'name' => 'Sounding Man',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password1234'),
-                'role' => 'sounding',
-                'ukpd_id' => $bpp,
-            ]
-        );
+        // 2. Nahkoda sudah di-handle di KapalSeeder
 
-        // 3. Satgas BBM (Contoh di UPAP)
-        User::updateOrCreate(
-            ['email' => 'satgas@gmail.com'],
-            [
-                'name' => 'Satgas BBM',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password1234'),
-                'role' => 'satgas',
-                'ukpd_id' => $upap,
-            ]
-        );
+        // 3. Penyedia BBM (Daftar Perusahaan)
+        $daftarPenyedia = [
+            'PT Pertamina Patra Niaga',
+            'PT AKR Corporindo',
+            'PT Elnusa Petrofin',
+            'PT Sumber Migas Jakarta'
+        ];
 
-        // 4. Penyedia BBM (Contoh di UPPD)
-        User::updateOrCreate(
-            ['email' => 'penyedia@gmail.com'],
-            [
-                'name' => 'Penyedia BBM',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password1234'),
-                'role' => 'penyedia',
-                'ukpd_id' => $uppd,
-            ]
-        );
+        foreach ($daftarPenyedia as $perusahaan) {
+            $emailPenyedia = Str::slug($perusahaan, '_') . '@gmail.com';
 
-        // 5. Nahkoda (Contoh di Sudinhub)
-        User::updateOrCreate(
-            ['email' => 'nahkoda@gmail.com'],
-            [
-                'name' => 'Nahkoda',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password1234'),
-                'role' => 'nahkoda',
-                'ukpd_id' => $sudinhub,
-            ]
-        );
+            User::updateOrCreate(
+                ['email' => $emailPenyedia],
+                [
+                    'name'              => $perusahaan,
+                    'email_verified_at' => now(),
+                    'password'          => $defaultPassword,
+                    'role_id'           => $roleIds['penyedia'] ?? null, // GANTI: role menjadi role_id
+                    'ukpd_id'           => null, 
+                ]
+            );
+        }
 
-        // 6. Pengawas (Contoh di bpp)
-        User::updateOrCreate(
-            ['email' => 'pengawas@gmail.com'],
-            [
-                'name' => 'Pengawas',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password1234'),
-                'role' => 'pengawas',
-                'ukpd_id' => $bpp,
-            ]
-        );
+        // =========================================================================
+        // AKUN PER UKPD (Di-looping otomatis)
+        // =========================================================================
 
-        // 7. Sounding Man V2 (Contoh di UPAP)
-        User::updateOrCreate(
-            ['email' => 'sounding02@gmail.com'],
-            [
-                'name' => 'Sounding Man V2',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password1234'),
-                'role' => 'sounding',
-                'ukpd_id' => $upap,
-            ]
-        );
+        // Daftar role (pastikan string ini sama dengan kolom "slug" di tabel roles)
+        $rolesPerUkpd = [
+            'admin_ukpd', 
+            'sounding', 
+            'satgas', 
+            'pengawas', 
+            'pptk', 
+            'kepala_ukpd'
+        ];
 
-        // 8. Satgas BBM V2 (Contoh di UPPD)
-        User::updateOrCreate(
-            ['email' => 'satgas02@gmail.com'],
-            [
-                'name' => 'Satgas BBM V2',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password1234'),
-                'role' => 'satgas',
-                'ukpd_id' => $uppd,
-            ]
-        );
+        // Lakukan perulangan untuk setiap UKPD
+        foreach ($ukpds as $ukpdName => $ukpdId) {
+            
+            if (!$ukpdId) continue; 
+
+            // Lakukan perulangan untuk setiap role di dalam UKPD tersebut
+            foreach ($rolesPerUkpd as $roleSlug) {
+                
+                $email = "{$roleSlug}_{$ukpdName}@gmail.com"; 
+                $name  = ucwords(str_replace('_', ' ', $roleSlug)) . ' ' . strtoupper($ukpdName); 
+
+                User::updateOrCreate(
+                    ['email' => $email],
+                    [
+                        'name'              => $name,
+                        'email_verified_at' => now(),
+                        'password'          => $defaultPassword,
+                        'role_id'           => $roleIds[$roleSlug] ?? null, // GANTI: role menjadi role_id
+                        'ukpd_id'           => $ukpdId,
+                    ]
+                );
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@
      x-data="{ show: false }" 
      x-init="setTimeout(() => show = true, 100)">
     
-    <div class="max-w-xl w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100"
+    <div class="max-w-2xl w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100"
          x-show="show"
          x-transition:enter="transition ease-out duration-700 transform"
          x-transition:enter-start="opacity-0 translate-y-10"
@@ -21,18 +21,20 @@
         <form class="mt-8 space-y-6" wire:submit.prevent="register">
             <div class="space-y-5">
                 
-                <div>
-                    <label class="text-sm font-medium text-gray-700">Nama Lengkap</label>
-                    <input wire:model.blur="name" type="text" required 
-                           class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200 outline-none">
-                    @error('name') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Nama Lengkap</label>
+                        <input wire:model.blur="name" type="text" required 
+                               class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200 outline-none">
+                        @error('name') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
 
-                <div>
-                    <label class="text-sm font-medium text-gray-700">Email Address</label>
-                    <input wire:model.blur="email" type="email" required 
-                           class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200 outline-none">
-                    @error('email') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Email Address</label>
+                        <input wire:model.blur="email" type="email" required 
+                               class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200 outline-none">
+                        @error('email') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div x-data="{ showPassword: false }">
@@ -49,18 +51,21 @@
                 </div>
 
                 <div x-data="{ 
-                        selectedRole: @entangle('role'),
+                        selectedRole: @entangle('role_slug'),
                         roles: [
+                            { id: 'admin_ukpd', label: 'Admin UKPD', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
                             { id: 'sounding', label: 'Sounding', icon: 'M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z' },
                             { id: 'satgas', label: 'Satgas', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
-                            { id: 'penyedia', label: 'Penyedia', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+                            { id: 'pengawas', label: 'Pengawas', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' },
+                            { id: 'pptk', label: 'PPTK', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
+                            { id: 'kepala_ukpd', label: 'K. UKPD', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
                             { id: 'nahkoda', label: 'Nahkoda', icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-                            { id: 'pengawas', label: 'Pengawas', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' }
+                            { id: 'penyedia', label: 'Penyedia', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' }
                         ]
                     }">
                     <label class="text-sm font-medium text-gray-700 mb-3 block">Daftar Sebagai:</label>
                     
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <template x-for="role in roles" :key="role.id">
                             <div @click="selectedRole = role.id" 
                                  class="cursor-pointer border rounded-2xl p-4 flex flex-col items-center justify-center transition-all duration-300 ease-out transform hover:-translate-y-1 hover:shadow-lg"
@@ -68,17 +73,17 @@
                                     ? 'border-indigo-500 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-500 shadow-md' 
                                     : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:border-indigo-300 hover:text-indigo-500'">
                                 
-                                <svg class="w-7 h-7 mb-2 transition-colors duration-300" 
+                                <svg class="w-6 h-6 mb-2 transition-colors duration-300" 
                                      :class="selectedRole === role.id ? 'text-indigo-600' : 'text-gray-400'" 
                                      fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="role.icon"></path>
                                 </svg>
                                 
-                                <span class="block text-xs font-bold tracking-wide uppercase" x-text="role.label"></span>
+                                <span class="block text-[10px] sm:text-xs font-bold tracking-wide uppercase text-center" x-text="role.label"></span>
                             </div>
                         </template>
                     </div>
-                    @error('role') <span class="text-xs text-red-500 mt-2 block">{{ $message }}</span> @enderror
+                    @error('role_slug') <span class="text-xs text-red-500 mt-2 block">{{ $message }}</span> @enderror
                 </div>
 
             </div>

@@ -5,7 +5,8 @@
 </div>
 
 @php
-    $role = auth()->user()->role;
+    // UPDATE: Ambil slug dari relasi role
+    $role = auth()->user()?->role?->slug ?? null;
     $baseClass = "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors duration-200";
     $activeClass = "bg-indigo-50 text-indigo-700";
     $inactiveClass = "text-gray-600 hover:bg-gray-50 hover:text-indigo-600";
@@ -28,7 +29,8 @@
 
     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
         
-        <a href="{{ route('dashboard.' . $role) }}" 
+        {{-- UPDATE: Penyesuaian nama route dinamis jika nama role memiliki underscore (contoh admin_ukpd jadi admin-ukpd) --}}
+        <a href="{{ route('dashboard.' . str_replace('_', '-', $role)) }}" 
            class="{{ $baseClass }} {{ request()->routeIs('dashboard.*') ? $activeClass : $inactiveClass }}">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="14" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>
@@ -36,6 +38,7 @@
             Dashboard
         </a>
 
+        {{-- SUPERADMIN ONLY --}}
         @if($role === 'superadmin')
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Manajemen Sistem</h3>
             <a href="{{ route('superadmin.kelola-user') }}" 
@@ -50,7 +53,8 @@
             </a>
         @endif
 
-        @if(in_array($role, ['superadmin', 'satgas']))
+        {{-- DATA KAPAL: Diakses oleh Superadmin, Satgas, Admin UKPD --}}
+        @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd']))
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Data Master</h3>
             <a href="{{ route('data-kapal') }}" 
                class="{{ $baseClass }} {{ request()->routeIs('data-kapal') ? $activeClass : $inactiveClass }}">
@@ -61,6 +65,7 @@
             </a>
         @endif
 
+        {{-- SOUNDING BBM: Diakses oleh Superadmin & Sounding --}}
         @if(in_array($role, ['superadmin', 'sounding']))
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Modul Sounding</h3>
             <a href="{{ route('sounding.sounding-bbm') }}" 
@@ -72,7 +77,8 @@
             </a>
         @endif
         
-        @if(in_array($role, ['superadmin', 'satgas']))
+        {{-- ADMINISTRASI SATGAS: Superadmin, Satgas, Admin UKPD (Sesuai route web.php) --}}
+        @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd']))
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Administrasi Satgas</h3>
             
             <a href="{{ route('satgas.laporan-sisa-bbm') }}" 
@@ -109,7 +115,8 @@
             $isPengisianActive = request()->routeIs($pengisianRoutes);
         @endphp
 
-        @if(in_array($role, ['superadmin', 'satgas', 'abk']))
+        {{-- OPERASIONAL KAPAL: Superadmin, Satgas, Admin UKPD, Nahkoda --}}
+        @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd', 'nahkoda']))
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Operasional Kapal</h3>
             
             <div x-data="{ dropdownOpen: {{ $isPengisianActive ? 'true' : 'false' }} }" class="space-y-1">
@@ -131,14 +138,15 @@
                     class="pl-11 pr-2 py-1 space-y-1"
                     x-cloak>
                     
-                    @if(in_array($role, ['superadmin', 'abk']))
+                    {{-- Pencatatan Hasil (Nahkoda ikut akses, sebelumnya abk) --}}
+                    @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd', 'nahkoda']))
                         <a href="{{ route('satgas.pencatatan-pengisian') }}" 
                         class="block px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200 {{ request()->routeIs('satgas.pencatatan-pengisian') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700' }}">
                             Pencatatan Hasil Pengisian
                         </a>
                     @endif
                     
-                    @if(in_array($role, ['superadmin', 'satgas']))
+                    @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd']))
                         <a href="{{ route('satgas.laporan-pengisian') }}" 
                         class="block px-4 py-2 text-sm font-medium rounded-xl transition-colors duration-200 {{ request()->routeIs('satgas.laporan-pengisian') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700' }}">
                             Laporan Pengisian BBM
@@ -154,6 +162,7 @@
             </div>
         @endif
 
+        {{-- PENYEDIA ONLY --}}
         @if(in_array($role, ['superadmin','penyedia']))
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Portal Penyedia</h3>
             <a href="{{ route('penyedia.pesanan-bbm') }}" 

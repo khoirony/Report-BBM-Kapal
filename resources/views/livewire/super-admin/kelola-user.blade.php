@@ -60,14 +60,13 @@
             <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-slate-100 transition-all duration-200">
                 <div class="relative w-full">
                     <label class="absolute -top-2 left-2 inline-block bg-white px-1 text-[10px] font-semibold text-indigo-600 z-10">Role User</label>
+                    
+                    {{-- UPDATE: Looping role dinamis dari database --}}
                     <select wire:model.live="filterRole" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full relative z-0 cursor-pointer">
                         <option value="">Semua Role</option>
-                        <option value="superadmin">Superadmin</option>
-                        <option value="sounding">Sounding</option>
-                        <option value="satgas">Satgas</option>
-                        <option value="penyedia">Penyedia</option>
-                        <option value="nahkoda">Nahkoda</option>
-                        <option value="pengawas">Pengawas</option>
+                        @foreach($roles as $r)
+                            <option value="{{ $r->id }}">{{ $r->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 
@@ -112,9 +111,9 @@
                                 Profil Pengguna
                                 @if($sortBy === 'name') <span class="ml-1 text-indigo-500">{!! $sortDirection === 'asc' ? '&#8593;' : '&#8595;' !!}</span> @endif
                             </th>
-                            <th wire:click="sortByField('role')" class="px-6 py-5 font-bold tracking-wider w-[20%] cursor-pointer hover:text-indigo-600 transition-colors">
+                            <th wire:click="sortByField('role_id')" class="px-6 py-5 font-bold tracking-wider w-[20%] cursor-pointer hover:text-indigo-600 transition-colors">
                                 Hak Akses
-                                @if($sortBy === 'role') <span class="ml-1 text-indigo-500">{!! $sortDirection === 'asc' ? '&#8593;' : '&#8595;' !!}</span> @endif
+                                @if($sortBy === 'role_id') <span class="ml-1 text-indigo-500">{!! $sortDirection === 'asc' ? '&#8593;' : '&#8595;' !!}</span> @endif
                             </th>
                             <th class="px-6 py-5 font-bold tracking-wider w-[20%]">Penempatan UKPD</th>
                             <th class="px-6 py-5 font-bold tracking-wider text-right w-[25%]">Aksi</th>
@@ -159,21 +158,14 @@
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-middle">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase lg:hidden mb-2 block mt-2">Hak Akses</span>
                                 
+                                {{-- UPDATE: Render warna badge secara dinamis dari database --}}
                                 @php
-                                    $roleColors = [
-                                        'superadmin' => 'bg-rose-50 text-rose-700 border-rose-200',
-                                        'sounding'   => 'bg-blue-50 text-blue-700 border-blue-200',
-                                        'satgas'     => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                                        'penyedia'   => 'bg-amber-50 text-amber-700 border-amber-200',
-                                        'nahkoda'    => 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                                        'pengawas'   => 'bg-purple-50 text-purple-700 border-purple-200',
-                                    ];
-                                    $roleColor = $roleColors[$user->role] ?? 'bg-slate-50 text-slate-700 border-slate-200';
+                                    $theme = $user->role->color ?? 'slate';
                                 @endphp
 
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase border shadow-sm {{ $roleColor }}">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase border shadow-sm bg-{{ $theme }}-50 text-{{ $theme }}-700 border-{{ $theme }}-200">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                                    {{ $user->role }}
+                                    {{ $user->role->name ?? 'Belum Diatur' }}
                                 </span>
                             </td>
         
@@ -282,15 +274,15 @@
                         <div class="grid grid-cols-1 gap-5 bg-slate-50 p-4 rounded-xl border border-slate-100">
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Role Sistem <span class="text-rose-500">*</span></label>
-                                <select wire:model="role" class="w-full px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer shadow-sm" required>
-                                    <option value="superadmin">Superadmin</option>
-                                    <option value="sounding">Sounding</option>
-                                    <option value="satgas">Satgas</option>
-                                    <option value="penyedia">Penyedia</option>
-                                    <option value="nahkoda">Nahkoda</option>
-                                    <option value="pengawas">Pengawas</option>
+                                
+                                {{-- UPDATE: Looping role dinamis dari database untuk dropdown form --}}
+                                <select wire:model="role_id" class="w-full px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer shadow-sm" required>
+                                    <option value="">-- Pilih Role --</option>
+                                    @foreach($roles as $r)
+                                        <option value="{{ $r->id }}">{{ $r->name }}</option>
+                                    @endforeach
                                 </select>
-                                @error('role') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                @error('role_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
