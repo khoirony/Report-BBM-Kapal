@@ -5,28 +5,37 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\SuratPermohonanPengisian;
 use App\Models\SuratTugasPengisian;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class SuratPermohonanPengisianSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil semua data surat tugas agar bisa mengakses ukpd_id-nya
+        // 1. Ambil semua data surat tugas
         $suratTugasList = SuratTugasPengisian::all(); 
 
-        // Jika tabel surat tugas kosong, hentikan seeder agar tidak error
         if ($suratTugasList->isEmpty()) {
             $this->command->info('Tidak ada data Surat Tugas. Seeder dibatalkan.');
             return;
         }
 
-        // Siapkan 6 data dummy
+        // 2. Ambil data User yang memiliki role penyedia
+        $rolePenyediaId = DB::table('roles')->where('slug', 'penyedia')->value('id');
+        $penyediaList = User::where('role_id', $rolePenyediaId)->get();
+
+        if ($penyediaList->isEmpty()) {
+            $this->command->info('Tidak ada data User Penyedia. Seeder dibatalkan.');
+            return;
+        }
+
+        // 3. Siapkan data dummy (tanpa 'nama_perusahaan')
         $dataPermohonan = [
             [
                 'nomor_surat'              => '001/PH.12.00',
                 'tanggal_surat'            => '2026-04-01',
                 'klasifikasi'              => 'Biasa',
                 'lampiran'                 => '1 (satu) berkas',
-                'nama_perusahaan'          => 'PT Pertamina Retail',
                 'jenis_penyedia_bbm'       => 'Stasiun Pengisian Bahan Bakar Umum (SPBU)',
                 'tempat_pengambilan_bbm'   => 'SPBU 31.102.02 Muara Angke',
                 'metode_pengiriman'        => 'Ambil ditempat',
@@ -40,7 +49,6 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'tanggal_surat'            => '2026-04-02',
                 'klasifikasi'              => 'Penting',
                 'lampiran'                 => '1 (satu) berkas',
-                'nama_perusahaan'          => 'PT Pertamina Patra Niaga',
                 'jenis_penyedia_bbm'       => 'Agen BBM',
                 'tempat_pengambilan_bbm'   => 'Depot Pertamina Plumpang',
                 'metode_pengiriman'        => 'Pengiriman Jalur Darat',
@@ -54,11 +62,10 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'tanggal_surat'            => '2026-04-03',
                 'klasifikasi'              => 'Segera',
                 'lampiran'                 => '2 (dua) berkas',
-                'nama_perusahaan'          => 'PT AKR Corporindo Tbk',
                 'jenis_penyedia_bbm'       => 'Agen BBM',
                 'tempat_pengambilan_bbm'   => 'Pelabuhan Tanjung Priok',
                 'metode_pengiriman'        => 'Pengiriman Jalur Laut',
-                'jenis_bbm'                => 'Biosolar', // Contoh inputan "Lainnya"
+                'jenis_bbm'                => 'Biosolar',
                 'jumlah_bbm'               => 5000.00,
                 'user_id'                  => 3,
                 'progress'                 => 'not started',
@@ -68,7 +75,6 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'tanggal_surat'            => '2026-04-04',
                 'klasifikasi'              => 'Biasa',
                 'lampiran'                 => '1 (satu) berkas',
-                'nama_perusahaan'          => 'PT Pertamina Retail',
                 'jenis_penyedia_bbm'       => 'Stasiun Pengisian Bahan Bakar Umum (SPBU)',
                 'tempat_pengambilan_bbm'   => 'SPBU 34.144.15 Pluit',
                 'metode_pengiriman'        => 'Ambil ditempat',
@@ -82,7 +88,6 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'tanggal_surat'            => '2026-04-05',
                 'klasifikasi'              => 'Penting',
                 'lampiran'                 => '1 (satu) berkas',
-                'nama_perusahaan'          => 'PT Elnusa Petrofin',
                 'jenis_penyedia_bbm'       => 'Lainnya',
                 'tempat_pengambilan_bbm'   => 'Terminal BBM Jakarta Group',
                 'metode_pengiriman'        => 'Pengiriman Jalur Darat',
@@ -96,7 +101,6 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'tanggal_surat'            => '2026-04-06',
                 'klasifikasi'              => 'Biasa',
                 'lampiran'                 => '1 (satu) berkas',
-                'nama_perusahaan'          => 'PT Pertamina Patra Niaga',
                 'jenis_penyedia_bbm'       => 'Agen BBM',
                 'tempat_pengambilan_bbm'   => 'Dermaga Marina Ancol',
                 'metode_pengiriman'        => 'Pengiriman Jalur Laut',
@@ -107,18 +111,18 @@ class SuratPermohonanPengisianSeeder extends Seeder
             ]
         ];
 
-        // Lakukan perulangan untuk menyimpan ke database
+        // 4. Lakukan perulangan untuk menyimpan ke database
         foreach ($dataPermohonan as $item) {
-            // Pilih satu object Surat Tugas secara acak dari collection
             $randomSuratTugas = $suratTugasList->random();
+            $randomPenyedia   = $penyediaList->random(); // Ambil 1 user penyedia acak
             
-            // Masukkan id dan ukpd_id dari Surat Tugas yang terpilih
             $item['surat_tugas_id'] = $randomSuratTugas->id;
             $item['ukpd_id']        = $randomSuratTugas->ukpd_id;
+            $item['penyedia_id']    = $randomPenyedia->id; // Assign ID penyedia
             
             SuratPermohonanPengisian::create($item);
         }
 
-        $this->command->info('Data Surat Permohonan Pengisian (dengan data BBM) berhasil di-seed beserta UKPD ID!');
+        $this->command->info('Data Surat Permohonan Pengisian berhasil di-seed beserta Penyedia ID!');
     }
 }

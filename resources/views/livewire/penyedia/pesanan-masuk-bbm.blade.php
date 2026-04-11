@@ -59,17 +59,19 @@
             <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-4 border-t border-slate-100 transition-all duration-200">
                 
                 @if (auth()->user()?->role?->slug == 'superadmin')
-                <div class="relative w-full">
-                    <select wire:model.live="filterUkpd" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-amber-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
-                        <option value="">Semua SKPD/UKPD</option>
-                        @if(isset($ukpds))
-                            @foreach($ukpds as $ukpd)
-                                <option value="{{ $ukpd->id }}">{{ $ukpd->singkatan ?? $ukpd->nama }}</option>
-                            @endforeach
-                        @endif
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
-                </div>
+                    <div class="relative w-full">
+                        <select wire:model.live="filterPenyedia" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-amber-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
+                            <option value="">Semua Perusahaan / Penyedia</option>
+                            @if(isset($penyedias))
+                                @foreach($penyedias as $penyedia)
+                                    <option value="{{ $penyedia->id }}">{{ $penyedia->name }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
                 @endif
         
                 <div class="relative w-full">

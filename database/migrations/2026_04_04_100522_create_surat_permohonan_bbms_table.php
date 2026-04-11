@@ -22,7 +22,11 @@ return new class extends Migration
             $table->date('tanggal_surat');
             $table->string('klasifikasi')->nullable();
             $table->string('lampiran')->default('1 (satu) berkas');
-            $table->string('nama_perusahaan')->nullable();
+            $table->foreignId('penyedia_id')
+                  ->nullable()
+                  ->constrained('users')
+                  ->onDelete('set null')
+                  ->comment('Relasi ke tabel users dengan role penyedia');
             $table->string('jenis_penyedia_bbm')->nullable(); 
             $table->string('tempat_pengambilan_bbm')->nullable();
             $table->enum('metode_pengiriman', [

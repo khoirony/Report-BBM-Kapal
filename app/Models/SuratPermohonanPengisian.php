@@ -30,4 +30,9 @@ class SuratPermohonanPengisian extends Model
     {
         return $this->hasOne(ProsesPenyediaBbm::class, 'surat_permohonan_id');
     }
+
+    public function penyedia()
+    {
+        return $this->belongsTo(User::class, 'penyedia_id');
+    }
 }
