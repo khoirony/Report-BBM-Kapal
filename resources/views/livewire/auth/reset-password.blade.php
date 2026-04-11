@@ -1,32 +1,40 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 py-12" 
+<div class="min-h-screen flex items-center justify-center bg-slate-100 px-4 sm:px-6 lg:px-8 py-12 relative overflow-hidden" 
      x-data="{ show: false }" x-init="setTimeout(() => show = true, 100)">
     
-    <div class="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100"
+    <div class="absolute top-0 left-0 w-full h-2 bg-blue-900"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+
+    <div class="max-w-md w-full space-y-8 bg-white/95 backdrop-blur-sm p-8 sm:p-10 rounded-2xl shadow-2xl border border-blue-100 z-10"
          x-show="show" x-transition:enter="transition ease-out duration-700 transform"
          x-transition:enter-start="opacity-0 translate-y-10" x-transition:enter-end="opacity-100 translate-y-0" x-cloak>
          
-        <div>
-            <h2 class="mt-2 text-center text-3xl font-extrabold text-gray-900 tracking-tight">Buat Password Baru</h2>
-            <p class="mt-2 text-center text-sm text-gray-500">Silakan masukkan password baru untuk akun Anda.</p>
+        <div class="text-center">
+            <div class="flex justify-center gap-4 mb-6">
+                <img src="https://dishub.jakarta.go.id/wp-content/uploads/2026/03/cropped-logo-dishub-jakarta-300x130.webp" alt="Logo Dishub" class="h-16 w-auto object-contain">
+            </div>
+            <h2 class="text-2xl font-black text-blue-900 tracking-tight uppercase">PEMBARUAN SANDI</h2>
+            <p class="text-xs font-semibold text-blue-700 uppercase tracking-widest mt-1">Keamanan Akun SI-BBM Kapal</p>
+            <div class="mt-4 h-1 w-20 bg-yellow-400 mx-auto rounded-full"></div>
         </div>
         
-        <form class="mt-8 space-y-6" wire:submit.prevent="resetPassword">
+        <form class="mt-8 space-y-5" wire:submit.prevent="resetPassword">
             <input type="hidden" wire:model="token">
 
-            <div class="space-y-5">
+            <div class="space-y-4">
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Email Address</label>
-                    <input wire:model="email" type="email" readonly 
-                           class="mt-1 block w-full px-4 py-3 bg-gray-100 text-gray-500 border border-gray-200 rounded-xl sm:text-sm outline-none cursor-not-allowed">
-                    @error('email') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    <label class="text-[11px] font-bold text-blue-900 uppercase tracking-wider ml-1">Email Terverifikasi</label>
+                    <div class="mt-1 relative">
+                        <input wire:model="email" type="email" readonly 
+                               class="block w-full px-4 py-3 bg-gray-100 text-gray-500 border border-gray-200 rounded-xl sm:text-sm outline-none cursor-not-allowed italic font-medium">
+                    </div>
                 </div>
 
                 <div x-data="{ showPassword: false }">
-                    <label class="text-sm font-medium text-gray-700">Password Baru</label>
-                    <div class="relative">
-                        <input wire:model="password" :type="showPassword ? 'text' : 'password'" required 
-                               class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200 outline-none">
-                        <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-500 mt-1">
+                    <label class="text-[11px] font-bold text-blue-900 uppercase tracking-wider ml-1">Password Baru</label>
+                    <div class="relative mt-1">
+                        <input wire:model="password" :type="showPassword ? 'text' : 'password'" required placeholder="••••••••"
+                               class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm transition duration-200 shadow-sm">
+                        <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600">
                             <svg x-show="!showPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                             <svg x-show="showPassword" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
                         </button>
@@ -35,11 +43,11 @@
                 </div>
 
                 <div x-data="{ showPasswordConf: false }">
-                    <label class="text-sm font-medium text-gray-700">Konfirmasi Password Baru</label>
-                    <div class="relative">
-                        <input wire:model="password_confirmation" :type="showPasswordConf ? 'text' : 'password'" required 
-                               class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200 outline-none">
-                        <button type="button" @click="showPasswordConf = !showPasswordConf" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-500 mt-1">
+                    <label class="text-[11px] font-bold text-blue-900 uppercase tracking-wider ml-1">Konfirmasi Password Baru</label>
+                    <div class="relative mt-1">
+                        <input wire:model="password_confirmation" :type="showPasswordConf ? 'text' : 'password'" required placeholder="••••••••"
+                               class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm transition duration-200 shadow-sm">
+                        <button type="button" @click="showPasswordConf = !showPasswordConf" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600">
                             <svg x-show="!showPasswordConf" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                             <svg x-show="showPasswordConf" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
                         </button>
@@ -47,10 +55,13 @@
                 </div>
             </div>
 
-            <div class="pt-2">
-                <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
-                    <span wire:loading.remove wire:target="resetPassword">Simpan Password Baru</span>
-                    <span wire:loading wire:target="resetPassword">Menyimpan...</span>
+            <div class="pt-4">
+                <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 shadow-lg shadow-blue-200 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 uppercase">
+                    <span wire:loading.remove wire:target="resetPassword">SIMPAN PERUBAHAN</span>
+                    <span wire:loading wire:target="resetPassword" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        MENYIMPAN...
+                    </span>
                 </button>
             </div>
         </form>
