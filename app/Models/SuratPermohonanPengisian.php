@@ -35,4 +35,8 @@ class SuratPermohonanPengisian extends Model
     {
         return $this->belongsTo(User::class, 'penyedia_id');
     }
+
+    public function invoice() {
+        return $this->belongsTo(RekonsiliasiInvoice::class, 'rekonsiliasi_invoice_id');
+    }
 }

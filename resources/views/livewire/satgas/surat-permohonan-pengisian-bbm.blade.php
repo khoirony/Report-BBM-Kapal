@@ -186,7 +186,7 @@
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Rincian Penyedia BBM</span>
                                     
                                     <div class="mb-1.5">
-                                        <span class="text-xs font-bold text-slate-800 block line-clamp-1">{{ $item->nama_perusahaan ?? 'Penyedia Belum Diset' }}</span>
+                                        <span class="text-xs font-bold text-slate-800 block line-clamp-1">{{ $item->penyedia->name ?? 'Penyedia Belum Diset' }}</span>
                                         <span class="text-[10px] text-slate-500 font-medium">{{ $item->tempat_pengambilan_bbm ?? '-' }}</span>
                                     </div>
                                     
@@ -304,7 +304,13 @@
                             
                             <div class="col-span-1 md:col-span-2">
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Perusahaan (Penyedia BBM)</label>
-                                <input type="text" wire:model="nama_perusahaan" placeholder="Contoh: PT Pertamina Patra Niaga" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
+                                <select wire:model="penyedia_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors cursor-pointer">
+                                    <option value="">-- Pilih Perusahaan Penyedia --</option>
+                                    @foreach($penyediaList as $penyedia)
+                                        <option value="{{ $penyedia->id }}">{{ $penyedia->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('penyedia_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                             </div>
 
                             <div x-data="{ jenis_penyedia: @entangle('jenis_penyedia_bbm') }">

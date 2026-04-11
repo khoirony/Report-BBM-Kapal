@@ -87,8 +87,8 @@
             </a>
         @endif
         
-        {{-- ADMINISTRASI SATGAS: Superadmin, Satgas, Admin UKPD (Sesuai route web.php) --}}
-        @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd']))
+        {{-- ADMINISTRASI SATGAS: Superadmin, Satgas, Admin UKPD, PPTK --}}
+        @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd', 'pptk']))
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Administrasi Satgas</h3>
             
             <a href="{{ route('satgas.laporan-sisa-bbm') }}" 
@@ -122,6 +122,16 @@
                     <polyline points="14 2 14 8 20 8"></polyline>
                     <path d="M9 15l2 2 4-4"></path> </svg>
                 Surat SPJ
+            </a>
+
+            {{-- MENU BARU: Verifikasi Tagihan (Sisi Dishub) --}}
+            <a href="{{ route('satgas.verifikasi-tagihan') }}" 
+               class="{{ $baseClass }} {{ request()->routeIs('satgas.verifikasi-tagihan') ? $activeClass : $inactiveClass }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    <path d="M9 12l2 2 4-4"></path>
+                </svg>
+                Verifikasi Tagihan
             </a>
         @endif
 
@@ -187,6 +197,19 @@
                     <path d="M18 10a2 2 0 0 0-2-2V5.5A2.5 2.5 0 0 0 13.5 3h-.5"></path>
                 </svg>
                 Pemesanan BBM
+            </a>
+
+            {{-- MENU BARU: Tagihan & Rekonsiliasi (Sisi Penyedia) --}}
+            <a href="{{ route('penyedia.invoice-tagihan') }}" 
+            class="{{ $baseClass }} {{ request()->routeIs('penyedia.invoice-tagihan') ? $activeClass : $inactiveClass }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Tagihan & Rekonsil
             </a>
         @endif
 

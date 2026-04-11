@@ -11,12 +11,11 @@ use App\Livewire\Dashboard\PenyediaDashboard;
 use App\Livewire\Dashboard\SatgasDashboard;
 use App\Livewire\Dashboard\SoundingDashboard;
 use App\Livewire\Dashboard\SuperAdminDashboard;
-// Asumsi import komponen baru (sesuaikan jika file belum ada)
 use App\Livewire\Dashboard\AdminUkpdDashboard; 
 use App\Livewire\Dashboard\PptkDashboard;
 use App\Livewire\Dashboard\KepalaUkpdDashboard;
 use App\Livewire\Nahkoda\PencatatanHasilPengisian;
-// ... (import livewire lainnya tetap sama) ...
+use App\Livewire\Penyedia\InvoiceManager;
 use App\Livewire\Penyedia\PesananMasukBBM;
 use App\Livewire\Satgas\BeritaAcaraLaporanPengisian;
 use App\Livewire\Satgas\LaporanPengisianBBM;
@@ -24,6 +23,7 @@ use App\Livewire\Satgas\LaporanSisaBBM;
 use App\Livewire\Satgas\SuratPermohonanPengisianBBM;
 use App\Livewire\Satgas\SuratTugasPengisianBBM;
 use App\Livewire\Satgas\SuratSpj; // <-- IMPORT BARU UNTUK SPJ
+use App\Livewire\Satgas\VerifikasiInvoiceBBM;
 use App\Livewire\Sounding\SoundingBBM;
 use App\Livewire\SuperAdmin\DataKapal;
 use App\Livewire\SuperAdmin\KelolaUser;
@@ -124,6 +124,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/berita-acara-pengisian', BeritaAcaraLaporanPengisian::class)->name('satgas.berita-acara-pengisian');
         });
 
+        Route::middleware('role:superadmin,satgas,admin_ukpd,pptk')->group(function () {
+            Route::get('/verifikasi-tagihan', VerifikasiInvoiceBBM::class)->name('satgas.verifikasi-tagihan');
+        });
+
         // --- FITUR SURAT SPJ (Bisa diakses oleh pembuat dan approver) ---
         // Penambahan role pptk & kepala_ukpd agar mereka bisa mengakses view dan approve
         Route::middleware('role:superadmin,satgas,admin_ukpd,pptk,kepala_ukpd')->group(function () {
@@ -138,6 +142,7 @@ Route::middleware('auth')->group(function () {
         // --- FITUR PENYEDIA & SUPERADMIN ---
         Route::middleware('role:superadmin,penyedia')->group(function () {
             Route::get('/pesanan-bbm', PesananMasukBBM::class)->name('penyedia.pesanan-bbm');
+            Route::get('/tagihan-invoice', InvoiceManager::class)->name('penyedia.invoice-tagihan');
         });
 
         // --- CETAK PDF ---

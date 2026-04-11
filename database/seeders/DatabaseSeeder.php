@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             LaporanPengisianBbmSeeder::class,
             BaPengisianBBMSeeder::class,
             SpjSeeder::class,
+            RekonsiliasiSeeder::class,
         ]);
     }
 }

@@ -29,7 +29,11 @@ class SuratPermohonanPengisianSeeder extends Seeder
             return;
         }
 
-        // 3. Siapkan data dummy (tanpa 'nama_perusahaan')
+        $adminUser = User::whereHas('role', function($q) {
+            $q->whereIn('slug', ['superadmin', 'admin_ukpd', 'satgas']);
+        })->first();
+        $defaultUserId = $adminUser ? $adminUser->id : 1;
+
         $dataPermohonan = [
             [
                 'nomor_surat'              => '001/PH.12.00',
@@ -41,7 +45,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'metode_pengiriman'        => 'Ambil ditempat',
                 'jenis_bbm'                => 'Dexlite/sekelas',
                 'jumlah_bbm'               => 1500.00,
-                'user_id'                  => 3,
+                'user_id'                  => $defaultUserId,
                 'progress'                 => 'done',
             ],
             [
@@ -54,7 +58,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'metode_pengiriman'        => 'Pengiriman Jalur Darat',
                 'jenis_bbm'                => 'Pertamina Dex/sekelas',
                 'jumlah_bbm'               => 2500.50,
-                'user_id'                  => 3,
+                'user_id'                  => $defaultUserId,
                 'progress'                 => 'on progress',
             ],
             [
@@ -67,7 +71,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'metode_pengiriman'        => 'Pengiriman Jalur Laut',
                 'jenis_bbm'                => 'Biosolar',
                 'jumlah_bbm'               => 5000.00,
-                'user_id'                  => 3,
+                'user_id'                  => $defaultUserId,
                 'progress'                 => 'not started',
             ],
             [
@@ -80,7 +84,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'metode_pengiriman'        => 'Ambil ditempat',
                 'jenis_bbm'                => 'Pertamax/sekelas',
                 'jumlah_bbm'               => 200.00,
-                'user_id'                  => 3,
+                'user_id'                  => $defaultUserId,
                 'progress'                 => 'on progress',
             ],
             [
@@ -93,7 +97,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'metode_pengiriman'        => 'Pengiriman Jalur Darat',
                 'jenis_bbm'                => 'Dexlite/sekelas',
                 'jumlah_bbm'               => 1000.00,
-                'user_id'                  => 3,
+                'user_id'                  => $defaultUserId,
                 'progress'                 => 'done',
             ],
             [
@@ -106,7 +110,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'metode_pengiriman'        => 'Pengiriman Jalur Laut',
                 'jenis_bbm'                => 'Pertamina Dex/sekelas',
                 'jumlah_bbm'               => 3000.00,
-                'user_id'                  => 3,
+                'user_id'                  => $defaultUserId,
                 'progress'                 => 'not started',
             ]
         ];

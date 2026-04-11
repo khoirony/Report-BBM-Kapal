@@ -8,6 +8,7 @@ use App\Models\SuratPermohonanPengisian;
 use App\Models\SuratTugasPengisian;
 use App\Models\Kapal;
 use App\Models\Ukpd; 
+use App\Models\User; 
 use Illuminate\Support\Facades\DB;
 
 class SuratPermohonanPengisianBBM extends Component
@@ -17,8 +18,7 @@ class SuratPermohonanPengisianBBM extends Component
     public $surat_tugas_list, $kapals;
     public $permohonan_id, $surat_tugas_id, $nomor_surat, $tanggal_surat, $klasifikasi, $lampiran;
     
-    // Properti Baru (Update Kolom BBM)
-    public $nama_perusahaan, $jenis_penyedia_bbm, $tempat_pengambilan_bbm, $metode_pengiriman, $jenis_bbm, $jumlah_bbm;
+    public $penyedia_id, $jenis_penyedia_bbm, $tempat_pengambilan_bbm, $metode_pengiriman, $jenis_bbm, $jumlah_bbm;
     
     // Properti Khusus "Lainnya"
     public $jenis_penyedia_bbm_lainnya = '';
@@ -93,7 +93,9 @@ class SuratPermohonanPengisianBBM extends Component
     public function render()
     {
         $query = SuratPermohonanPengisian::with([
-            'suratTugas.LaporanSisaBbm.sounding.kapal'
+            'suratTugas.LaporanSisaBbm.sounding.kapal',
+            'user',
+            'penyedia' 
         ]);
 
         if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
@@ -103,7 +105,9 @@ class SuratPermohonanPengisianBBM extends Component
         if (!empty($this->search)) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
-                  ->orWhere('nama_perusahaan', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('penyedia', function($qPenyedia) {
+                      $qPenyedia->where('name', 'like', '%' . $this->search . '%');
+                  })
                   ->orWhereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($qKapal) {
                       $qKapal->where('nama_kapal', 'like', '%' . $this->search . '%');
                   });
@@ -137,9 +141,14 @@ class SuratPermohonanPengisianBBM extends Component
 
         $ukpds = Ukpd::orderBy('nama', 'asc')->get();
 
+        $penyediaList = User::whereHas('role', function($q) {
+            $q->where('slug', 'penyedia');
+        })->orderBy('name', 'asc')->get();
+
         return view('livewire.satgas.surat-permohonan-pengisian-bbm', [
             'permohonans' => $query->paginate(10),
-            'ukpds' => $ukpds
+            'ukpds' => $ukpds,
+            'penyediaList' => $penyediaList
         ])->layout('layouts.app');
     }
 
@@ -168,7 +177,7 @@ class SuratPermohonanPengisianBBM extends Component
         $this->klasifikasi = $permohonan->klasifikasi;
         $this->lampiran = $permohonan->lampiran;
         
-        $this->nama_perusahaan = $permohonan->nama_perusahaan;
+        $this->penyedia_id = $permohonan->penyedia_id;
         $this->tempat_pengambilan_bbm = $permohonan->tempat_pengambilan_bbm;
         $this->metode_pengiriman = $permohonan->metode_pengiriman;
         $this->jumlah_bbm = $permohonan->jumlah_bbm;
@@ -202,7 +211,7 @@ class SuratPermohonanPengisianBBM extends Component
             'surat_tugas_id' => 'required',
             'nomor_surat' => 'required',
             'tanggal_surat' => 'required|date',
-            'nama_perusahaan' => 'nullable|string|max:255',
+            'penyedia_id' => 'nullable|exists:users,id',
             'tempat_pengambilan_bbm' => 'nullable|string|max:255',
             'metode_pengiriman' => 'nullable|in:Ambil ditempat,Pengiriman Jalur Darat,Pengiriman Jalur Laut',
             'jumlah_bbm' => 'nullable|numeric|min:0',
@@ -220,7 +229,7 @@ class SuratPermohonanPengisianBBM extends Component
             'tanggal_surat' => $this->tanggal_surat,
             'klasifikasi' => $this->klasifikasi,
             'lampiran' => $this->lampiran,
-            'nama_perusahaan' => $this->nama_perusahaan,
+            'penyedia_id' => $this->penyedia_id,
             'jenis_penyedia_bbm' => $finalJenisPenyedia,
             'tempat_pengambilan_bbm' => $this->tempat_pengambilan_bbm,
             'metode_pengiriman' => $this->metode_pengiriman,
@@ -247,7 +256,7 @@ class SuratPermohonanPengisianBBM extends Component
     {
         $this->reset([
             'permohonan_id', 'surat_tugas_id', 'nomor_surat', 'tanggal_surat', 'klasifikasi', 
-            'nama_perusahaan', 'jenis_penyedia_bbm', 'jenis_penyedia_bbm_lainnya', 
+            'penyedia_id', 'jenis_penyedia_bbm', 'jenis_penyedia_bbm_lainnya', 
             'tempat_pengambilan_bbm', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm'
         ]);
         $this->lampiran = '1 (satu) berkas';
