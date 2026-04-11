@@ -19,6 +19,7 @@ use App\Livewire\Satgas\SuratPermohonanPengisianBBM;
 use App\Livewire\Satgas\SuratTugasPengisianBBM;
 use App\Livewire\Sounding\SoundingBBM;
 use App\Livewire\SuperAdmin\DataKapal;
+use App\Livewire\SuperAdmin\KelolaUser;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -84,7 +85,10 @@ Route::middleware('auth')->group(function () {
     Route::middleware('verified')->group(function () {
         
         // --- DASHBOARD (Spesifik per Role) ---
-        Route::middleware('role:superadmin')->get('/dashboard-superadmin', SuperAdminDashboard::class)->name('dashboard.superadmin');
+        Route::middleware('role:superadmin')->group(function () {
+            Route::get('/dashboard-superadmin', SuperAdminDashboard::class)->name('dashboard.superadmin');
+            Route::get('/kelola-user', KelolaUser::class)->name('superadmin.kelola-user');
+        });
         Route::middleware('role:sounding')->get('/dashboard-sounding', SoundingDashboard::class)->name('dashboard.sounding');
         Route::middleware('role:satgas')->get('/dashboard-satgas', SatgasDashboard::class)->name('dashboard.satgas');
         Route::middleware('role:penyedia')->get('/dashboard-penyedia', PenyediaDashboard::class)->name('dashboard.penyedia');

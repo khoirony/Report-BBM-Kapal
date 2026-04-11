@@ -36,6 +36,20 @@
             Dashboard
         </a>
 
+        @if($role === 'superadmin')
+            <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Manajemen Sistem</h3>
+            <a href="{{ route('superadmin.kelola-user') }}" 
+               class="{{ $baseClass }} {{ request()->routeIs('superadmin.kelola-user') ? $activeClass : $inactiveClass }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Kelola User
+            </a>
+        @endif
+
         @if(in_array($role, ['superadmin', 'satgas']))
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Data Master</h3>
             <a href="{{ route('data-kapal') }}" 
