@@ -53,9 +53,9 @@ Route::get('/', function () {
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', Login::class)->name('login');
-    Route::get('/register', Register::class)->name('register');
-    Route::get('/forgot-password', ForgotPassword::class)->name('password.request');
-    Route::get('/reset-password/{token}', ResetPassword::class)->name('password.reset');
+    // Route::get('/register', Register::class)->name('register');
+    // Route::get('/forgot-password', ForgotPassword::class)->name('password.request');
+    // Route::get('/reset-password/{token}', ResetPassword::class)->name('password.reset');
 });
 
 // ====================================================================
@@ -63,20 +63,19 @@ Route::middleware('guest')->group(function () {
 // ====================================================================
 Route::middleware('auth')->group(function () {
     
-    Route::get('/email/verify', function () {
-        return view('auth.verify-email'); 
-    })->name('verification.notice');
+    // Route::get('/email/verify', function () {
+    //     return view('auth.verify-email'); 
+    // })->name('verification.notice');
 
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-        // UPDATE: Perbaikan pemanggilan role->slug
-        return redirect('/dashboard-' . str_replace('_', '-', auth()->user()?->role?->slug)); 
-    })->middleware('signed')->name('verification.verify');
+    // Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    //     $request->fulfill();
+    //     return redirect('/dashboard-' . str_replace('_', '-', auth()->user()?->role?->slug)); 
+    // })->middleware('signed')->name('verification.verify');
 
-    Route::post('/email/verification-notification', function (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-        return back()->with('message', 'Verification link sent!');
-    })->middleware('throttle:6,1')->name('verification.send');
+    // Route::post('/email/verification-notification', function (Request $request) {
+    //     $request->user()->sendEmailVerificationNotification();
+    //     return back()->with('message', 'Verification link sent!');
+    // })->middleware('throttle:6,1')->name('verification.send');
     
     Route::post('/logout', function () {
         auth()->logout();
@@ -85,9 +84,6 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('logout');
 
-    // ====================================================================
-    // ROUTE UTAMA: VERIFIED
-    // ====================================================================
     Route::middleware('verified')->group(function () {
         
         // --- DASHBOARD (Spesifik per Role) ---

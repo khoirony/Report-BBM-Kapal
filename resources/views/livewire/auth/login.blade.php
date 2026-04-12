@@ -74,9 +74,6 @@
                     <input id="remember" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                     <label for="remember" class="ml-2 block text-xs text-gray-600">Ingat Saya</label>
                 </div>
-                <a href="/forgot-password" class="text-xs font-bold text-blue-700 hover:text-blue-500 transition duration-200">
-                    Lupa Password?
-                </a>
             </div>
 
             <div>
