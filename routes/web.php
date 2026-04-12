@@ -22,7 +22,7 @@ use App\Livewire\Satgas\LaporanPengisianBBM;
 use App\Livewire\Satgas\LaporanSisaBBM;
 use App\Livewire\Satgas\SuratPermohonanPengisianBBM;
 use App\Livewire\Satgas\SuratTugasPengisianBBM;
-use App\Livewire\Satgas\SuratSpj; // <-- IMPORT BARU UNTUK SPJ
+use App\Livewire\Satgas\SuratSpj;
 use App\Livewire\Satgas\VerifikasiInvoiceBBM;
 use App\Livewire\Sounding\SoundingBBM;
 use App\Livewire\SuperAdmin\DataKapal;
@@ -36,7 +36,6 @@ Route::get('/', function () {
         return redirect()->route('login');
     }
 
-    // UPDATE: Perbaikan pemanggilan relasi role->slug (sebelumnya ->slug->slug)
     return match (auth()->user()?->role?->slug) {
         'superadmin'  => redirect()->route('dashboard.superadmin'),
         'admin_ukpd'  => redirect()->route('dashboard.admin_ukpd'), 
@@ -59,10 +58,10 @@ Route::middleware('guest')->group(function () {
 });
 
 // ====================================================================
-// ROUTE VERIFIKASI EMAIL
+// ROUTE VERIFIKASI EMAIL & AUTH
 // ====================================================================
 Route::middleware('auth')->group(function () {
-    
+
     // Route::get('/email/verify', function () {
     //     return view('auth.verify-email'); 
     // })->name('verification.notice');
@@ -85,60 +84,41 @@ Route::middleware('auth')->group(function () {
     })->name('logout');
 
     Route::middleware('verified')->group(function () {
+        // Route::get('/kelola-permohonan', SuratPermohonanPengisianBBM::class)->middleware('role:penyedia')->name('penyedia.surat-permohonan');
         
         // --- DASHBOARD (Spesifik per Role) ---
-        Route::middleware('role:superadmin')->group(function () {
-            Route::get('/dashboard-superadmin', SuperAdminDashboard::class)->name('dashboard.superadmin');
-            Route::get('/kelola-user', KelolaUser::class)->name('superadmin.kelola-user');
-        });
+        Route::get('/dashboard-superadmin', SuperAdminDashboard::class)->middleware('role:superadmin')->name('dashboard.superadmin');
+        Route::get('/dashboard-admin-ukpd', AdminUkpdDashboard::class)->middleware('role:admin_ukpd')->name('dashboard.admin-ukpd');
+        Route::get('/dashboard-sounding', SoundingDashboard::class)->middleware('role:sounding')->name('dashboard.sounding');
+        Route::get('/dashboard-satgas', SatgasDashboard::class)->middleware('role:satgas')->name('dashboard.satgas');
+        Route::get('/dashboard-pengawas', PengawasDashboard::class)->middleware('role:pengawas')->name('dashboard.pengawas');
+        Route::get('/dashboard-pptk', PptkDashboard::class)->middleware('role:pptk')->name('dashboard.pptk');
+        Route::get('/dashboard-kepala-ukpd', KepalaUkpdDashboard::class)->middleware('role:kepala_ukpd')->name('dashboard.kepala-ukpd');
+        Route::get('/dashboard-penyedia', PenyediaDashboard::class)->middleware('role:penyedia')->name('dashboard.penyedia');
+        Route::get('/dashboard-nahkoda', NahkodaDashboard::class)->middleware('role:nahkoda')->name('dashboard.nahkoda');
+
+        Route::get('/kelola-user', KelolaUser::class)->middleware('role:superadmin,admin_ukpd')->name('superadmin.kelola-user');
+        Route::get('/data-kapal', DataKapal::class)->middleware('role:superadmin,satgas,sounding,admin_ukpd,kepala_ukpd')->name('data-kapal');
+
+        Route::get('/sounding-bbm', SoundingBBM::class)->middleware('role:superadmin,sounding,admin_ukpd')->name('sounding.sounding-bbm');
+
+        Route::get('/laporan-sisa-bbm', LaporanSisaBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,pengawas')->name('satgas.laporan-sisa-bbm');
+        Route::get('/surat-tugas', SuratTugasPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd')->name('satgas.surat-tugas');
+        Route::get('/surat-permohonan', SuratPermohonanPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,pptk')->name('satgas.surat-permohonan');
         
-        // Tambahan Dashboard untuk Role Baru
-        Route::middleware('role:admin_ukpd')->get('/dashboard-admin-ukpd', AdminUkpdDashboard::class)->name('dashboard.admin_ukpd');
-        Route::middleware('role:sounding')->get('/dashboard-sounding', SoundingDashboard::class)->name('dashboard.sounding');
-        Route::middleware('role:satgas')->get('/dashboard-satgas', SatgasDashboard::class)->name('dashboard.satgas');
-        Route::middleware('role:pengawas')->get('/dashboard-pengawas', PengawasDashboard::class)->name('dashboard.pengawas');
-        Route::middleware('role:pptk')->get('/dashboard-pptk', PptkDashboard::class)->name('dashboard.pptk');
-        Route::middleware('role:kepala_ukpd')->get('/dashboard-kepala-ukpd', KepalaUkpdDashboard::class)->name('dashboard.kepala_ukpd');
-        Route::middleware('role:penyedia')->get('/dashboard-penyedia', PenyediaDashboard::class)->name('dashboard.penyedia');
-        Route::middleware('role:penyedia')->get('/kelola-permohonan', SuratPermohonanPengisianBBM::class)->name('penyedia.surat-permohonan');
-        Route::middleware('role:nahkoda')->get('/dashboard-nahkoda', NahkodaDashboard::class)->name('dashboard.nahkoda');
+        Route::get('/pencatatan-pengisian', PencatatanHasilPengisian::class)->middleware('role:superadmin,admin_ukpd,nahkoda,pengawas,penyedia,kepala_ukpd')->name('satgas.pencatatan-pengisian');
+        Route::get('/laporan-pengisian', LaporanPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd')->name('satgas.laporan-pengisian');
+        Route::get('/berita-acara-pengisian', BeritaAcaraLaporanPengisian::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,pptk')->name('satgas.berita-acara-pengisian');
 
-        // --- FITUR PENCATATAN HASIL (Akses Global untuk Kolaborasi) ---
-        Route::middleware('role:superadmin,satgas,admin_ukpd,nahkoda,pengawas,penyedia,kepala_ukpd')->group(function () {
-            Route::get('/pencatatan-pengisian', PencatatanHasilPengisian::class)->name('satgas.pencatatan-pengisian');
-        });
+        // --- FITUR VERIFIKASI TAGIHAN ---
+        Route::get('/verifikasi-tagihan', VerifikasiInvoiceBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,pptk')->name('satgas.verifikasi-tagihan');
 
-        // --- FITUR SATGAS, ADMIN UKPD, & SUPERADMIN ---
-        Route::middleware('role:superadmin,satgas,admin_ukpd')->group(function () {
-            Route::get('/data-kapal', DataKapal::class)->name('data-kapal');
-            Route::get('/laporan-sisa-bbm', LaporanSisaBBM::class)->name('satgas.laporan-sisa-bbm');
-            Route::get('/surat-tugas', SuratTugasPengisianBBM::class)->name('satgas.surat-tugas');
-            Route::get('/surat-permohonan', SuratPermohonanPengisianBBM::class)->name('satgas.surat-permohonan');
-
-            Route::get('/laporan-pengisian', LaporanPengisianBBM::class)->name('satgas.laporan-pengisian');
-            Route::get('/berita-acara-pengisian', BeritaAcaraLaporanPengisian::class)->name('satgas.berita-acara-pengisian');
-        });
-
-        Route::middleware('role:superadmin,satgas,admin_ukpd,pptk')->group(function () {
-            Route::get('/verifikasi-tagihan', VerifikasiInvoiceBBM::class)->name('satgas.verifikasi-tagihan');
-        });
-
-        // --- FITUR SURAT SPJ (Bisa diakses oleh pembuat dan approver) ---
-        // Penambahan role pptk & kepala_ukpd agar mereka bisa mengakses view dan approve
-        Route::middleware('role:superadmin,satgas,admin_ukpd,pptk,kepala_ukpd')->group(function () {
-            Route::get('/surat-spj', SuratSpj::class)->name('satgas.surat-spj');
-        });
-
-        // --- FITUR SOUNDING & SUPERADMIN ---
-        Route::middleware('role:superadmin,sounding')->group(function () {
-            Route::get('/sounding-bbm', SoundingBBM::class)->name('sounding.sounding-bbm');
-        });
+        // --- FITUR SURAT SPJ ---
+        Route::get('/surat-spj', SuratSpj::class)->middleware('role:superadmin,satgas,admin_ukpd,pptk,kepala_ukpd')->name('satgas.surat-spj');
 
         // --- FITUR PENYEDIA & SUPERADMIN ---
-        Route::middleware('role:superadmin,penyedia')->group(function () {
-            Route::get('/pesanan-bbm', PesananMasukBBM::class)->name('penyedia.pesanan-bbm');
-            Route::get('/tagihan-invoice', InvoiceManager::class)->name('penyedia.invoice-tagihan');
-        });
+        Route::get('/pesanan-bbm', PesananMasukBBM::class)->middleware('role:superadmin,penyedia')->name('penyedia.pesanan-bbm');
+        Route::get('/tagihan-invoice', InvoiceManager::class)->middleware('role:superadmin,penyedia')->name('penyedia.invoice-tagihan');
 
         // --- CETAK PDF ---
         Route::get('/laporan-bbm/{id}/pdf', [PdfController::class, 'previewLaporan'])->name('laporan.pdf.preview');

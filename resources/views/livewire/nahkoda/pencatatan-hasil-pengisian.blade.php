@@ -10,7 +10,7 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Pencatatan Hasil Pengisian</h1>
-                    <p class="text-sm text-gray-500 mt-1 font-medium">Rekam foto bukti pengisian dan data operasional (Mendukung Scan Barcode).</p>
+                    <p class="text-sm text-gray-500 mt-1 font-medium">Rekam foto bukti pengisian dan data operasional.</p>
                 </div>
             </div>
             
