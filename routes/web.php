@@ -94,15 +94,14 @@ Route::middleware('auth')->group(function () {
         
         // Tambahan Dashboard untuk Role Baru
         Route::middleware('role:admin_ukpd')->get('/dashboard-admin-ukpd', AdminUkpdDashboard::class)->name('dashboard.admin_ukpd');
-        Route::middleware('role:pptk')->get('/dashboard-pptk', PptkDashboard::class)->name('dashboard.pptk');
-        Route::middleware('role:kepala_ukpd')->get('/dashboard-kepala-ukpd', KepalaUkpdDashboard::class)->name('dashboard.kepala_ukpd');
-        
         Route::middleware('role:sounding')->get('/dashboard-sounding', SoundingDashboard::class)->name('dashboard.sounding');
         Route::middleware('role:satgas')->get('/dashboard-satgas', SatgasDashboard::class)->name('dashboard.satgas');
+        Route::middleware('role:pengawas')->get('/dashboard-pengawas', PengawasDashboard::class)->name('dashboard.pengawas');
+        Route::middleware('role:pptk')->get('/dashboard-pptk', PptkDashboard::class)->name('dashboard.pptk');
+        Route::middleware('role:kepala_ukpd')->get('/dashboard-kepala-ukpd', KepalaUkpdDashboard::class)->name('dashboard.kepala_ukpd');
         Route::middleware('role:penyedia')->get('/dashboard-penyedia', PenyediaDashboard::class)->name('dashboard.penyedia');
         Route::middleware('role:penyedia')->get('/kelola-permohonan', SuratPermohonanPengisianBBM::class)->name('penyedia.surat-permohonan');
         Route::middleware('role:nahkoda')->get('/dashboard-nahkoda', NahkodaDashboard::class)->name('dashboard.nahkoda');
-        Route::middleware('role:pengawas')->get('/dashboard-pengawas', PengawasDashboard::class)->name('dashboard.pengawas');
 
         // --- FITUR PENCATATAN HASIL (Akses Global untuk Kolaborasi) ---
         Route::middleware('role:superadmin,satgas,admin_ukpd,nahkoda,pengawas,penyedia,kepala_ukpd')->group(function () {
