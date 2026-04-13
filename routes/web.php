@@ -100,7 +100,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/kelola-ukpd', KelolaUkpd::class)->middleware('role:superadmin')->name('superadmin.kelola-ukpd');
         Route::get('/kelola-user', KelolaUser::class)->middleware('role:superadmin,admin_ukpd')->name('superadmin.kelola-user');
-        Route::get('/data-kapal', DataKapal::class)->middleware('role:superadmin,satgas,sounding,admin_ukpd,kepala_ukpd')->name('data-kapal');
+        Route::get('/data-kapal', DataKapal::class)->middleware('role:superadmin,satgas,sounding,admin_ukpd,kepala_ukpd,nahkoda')->name('data-kapal');
 
         Route::get('/sounding-bbm', SoundingBBM::class)->middleware('role:superadmin,sounding,admin_ukpd')->name('sounding.sounding-bbm');
 

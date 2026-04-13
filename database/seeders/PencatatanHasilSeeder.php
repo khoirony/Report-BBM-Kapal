@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Models\PencatatanHasil;
 use App\Models\Kapal;
 use App\Models\User;
-use App\Models\SuratPermohonanPengisian; // <-- Tambahkan import ini
+use App\Models\SuratPermohonanPengisian;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 
@@ -22,20 +22,23 @@ class PencatatanHasilSeeder extends Seeder
         if (!$nahkoda) {
             $nahkoda = User::first(); 
         }
-
-        // Ambil beberapa kapal
-        $kapals = Kapal::take(3)->get();
         
-        // Ambil beberapa surat permohonan yang ada di database
-        $permohonans = SuratPermohonanPengisian::take(3)->get();
+        // UPDATE: Gunakan eager loading (with) agar relasi terdalamnya ikut ditarik ke memory
+        $permohonans = SuratPermohonanPengisian::with('suratTugas.LaporanSisaBbm.sounding')->take(3)->get();
 
-        // Pastikan ada data kapal DAN surat permohonan di database untuk diikat
-        if ($kapals->count() > 0 && $permohonans->count() > 0) {
+        if ($permohonans->count() > 0) {
+            
+            // Tentukan objek permohonan untuk masing-masing skenario dengan aman
+            $p1 = $permohonans[0];
+            $p2 = $permohonans->count() > 1 ? $permohonans[1] : $permohonans[0];
+            $p3 = $permohonans->count() > 2 ? $permohonans[2] : $permohonans[0];
+
             $data = [
                 // 1. Skenario: Baru diinput, belum ada yang menyetujui
                 [
-                    'surat_permohonan_id'      => $permohonans[0]->id, // <-- Tautkan ke permohonan
-                    'kapal_id'                 => $kapals[0]->id,
+                    'surat_permohonan_id'      => $p1->id,
+                    // UPDATE: Tarik kapal_id langsung dari sounding milik permohonan ke-1
+                    'kapal_id'                 => $p1->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id,
                     'tanggal_pengisian'        => Carbon::now()->subDays(1)->format('Y-m-d'),
                     'jumlah_pengisian'         => 5000.00,
                     'foto_proses'              => 'uploads/evidence/dummy_proses.jpg',
@@ -49,8 +52,9 @@ class PencatatanHasilSeeder extends Seeder
                 ],
                 // 2. Skenario: Baru disetujui Pengawas
                 [
-                    'surat_permohonan_id'      => $permohonans->count() > 1 ? $permohonans[1]->id : $permohonans[0]->id,
-                    'kapal_id'                 => $kapals->count() > 1 ? $kapals[1]->id : $kapals[0]->id,
+                    'surat_permohonan_id'      => $p2->id,
+                    // UPDATE: Tarik kapal_id langsung dari sounding milik permohonan ke-2
+                    'kapal_id'                 => $p2->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id,
                     'tanggal_pengisian'        => Carbon::now()->subDays(3)->format('Y-m-d'),
                     'jumlah_pengisian'         => 4500.50,
                     'foto_proses'              => 'uploads/evidence/dummy_proses.jpg',
@@ -64,8 +68,9 @@ class PencatatanHasilSeeder extends Seeder
                 ],
                 // 3. Skenario: Sudah disetujui/diketahui semua pihak (Lengkap)
                 [
-                    'surat_permohonan_id'      => $permohonans->count() > 2 ? $permohonans[2]->id : $permohonans[0]->id,
-                    'kapal_id'                 => $kapals->count() > 2 ? $kapals[2]->id : $kapals[0]->id,
+                    'surat_permohonan_id'      => $p3->id,
+                    // UPDATE: Tarik kapal_id langsung dari sounding milik permohonan ke-3
+                    'kapal_id'                 => $p3->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id,
                     'tanggal_pengisian'        => Carbon::now()->subDays(7)->format('Y-m-d'),
                     'jumlah_pengisian'         => 8000.00,
                     'foto_proses'              => 'uploads/evidence/dummy_proses.jpg',
@@ -80,7 +85,10 @@ class PencatatanHasilSeeder extends Seeder
             ];
 
             foreach ($data as $item) {
-                PencatatanHasil::create($item);
+                // Skip pencatatan jika relasi kapal_id ternyata kosong (data tidak valid)
+                if ($item['kapal_id']) {
+                    PencatatanHasil::create($item);
+                }
             }
         }
     }

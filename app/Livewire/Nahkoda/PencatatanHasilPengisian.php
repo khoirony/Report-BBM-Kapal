@@ -19,9 +19,8 @@ class PencatatanHasilPengisian extends Component
     #[Url(as: 'kapal')]
     public $kapal_id = '';
     
-    // --- TAMBAHAN RELASI SURAT PERMOHONAN ---
     public $surat_permohonan_id = '';
-    public $nama_kapal_readonly = ''; // Untuk ditampilkan di form secara readonly
+    public $nama_kapal_readonly = '';
     
     public $tanggal_pengisian, $jumlah_pengisian;
     
@@ -49,7 +48,6 @@ class PencatatanHasilPengisian extends Component
         $this->resetPage();
     }
 
-    // --- HOOK: MENGISI OTOMATIS DATA KAPAL & TANGGAL SAAT PERMOHONAN DIPILIH ---
     public function updatedSuratPermohonanId($value)
     {
         if ($value) {
@@ -141,14 +139,12 @@ class PencatatanHasilPengisian extends Component
     public function store()
     {
         $rules = [
-            'surat_permohonan_id' => 'required|exists:surat_permohonan_pengisians,id', // <-- Validasi Baru
+            'surat_permohonan_id' => 'required|exists:surat_permohonan_pengisians,id',
             'kapal_id'            => 'required|exists:kapals,id',
             'tanggal_pengisian'   => 'required|date',
             'jumlah_pengisian'    => 'required|numeric|min:1',
         ];
 
-        // Jika mode edit, foto baru bersifat opsional (nullable)
-        // Jika mode tambah, foto baru bersifat wajib (required)
         if ($this->edit_id) {
             $rules['new_foto_proses']     = 'nullable|image|max:5120';
             $rules['new_foto_flow_meter'] = 'nullable|image|max:5120';
@@ -168,7 +164,6 @@ class PencatatanHasilPengisian extends Component
             'jumlah_pengisian'    => $this->jumlah_pengisian,
         ];
 
-        // Logika Upload & Ganti Foto
         if ($this->new_foto_proses) {
             $data['foto_proses'] = $this->new_foto_proses->store('uploads/evidence', 'public');
             if ($this->edit_id && $this->old_foto_proses) Storage::disk('public')->delete($this->old_foto_proses);
@@ -212,11 +207,12 @@ class PencatatanHasilPengisian extends Component
     {
         $user = Auth::user();
         
-        // Eager load data agar performa tidak lambat
         $query = PencatatanHasil::with(['suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal', 'creator'])->latest();
 
         if ($user->role->slug === 'nahkoda') {
-            $query->where('created_by', $user->id);
+            $query->whereHas('kapal', function($q) use ($user) {
+                $q->where('nahkoda_id', $user->id);
+            });
         }
 
         if (!empty($this->search)) {
@@ -231,10 +227,27 @@ class PencatatanHasilPengisian extends Component
             $query->whereBetween('tanggal_pengisian', [$this->filter_start_date, $this->filter_end_date]);
         }
 
-        // Menarik list Surat Permohonan beserta relasi terdalamnya untuk dikirim ke Dropdown Blade
         $permohonanQuery = SuratPermohonanPengisian::with('suratTugas.LaporanSisaBbm.sounding.kapal');
+        if ($user->role->slug === 'nahkoda') {
+            $permohonanQuery->whereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($q) use ($user) {
+                $q->where('nahkoda_id', $user->id);
+            });
+        }
         
-        // Jika awak kapal menscan barcode, hanya tampilkan permohonan yang ditujukan untuk kapal tersebut
+        $permohonanQuery->where(function($q) {
+            $q->doesntHave('pencatatanHasil'); 
+        
+            if ($this->edit_id && $this->surat_permohonan_id) {
+                $q->orWhere('id', $this->surat_permohonan_id);
+            }
+        });
+
+        if ($user->role->slug === 'nahkoda') {
+            $permohonanQuery->whereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($q) use ($user) {
+                $q->where('nahkoda_id', $user->id);
+            });
+        }
+        
         if ($this->kapal_id && !empty(request()->query('kapal'))) {
             $permohonanQuery->whereHas('suratTugas.LaporanSisaBbm.sounding', function($q) {
                 $q->where('kapal_id', $this->kapal_id);
@@ -244,7 +257,7 @@ class PencatatanHasilPengisian extends Component
         return view('livewire.nahkoda.pencatatan-hasil-pengisian', [
             'pencatatans' => $query->paginate(10),
             'permohonans' => $permohonanQuery->get(),
-            'kapals'      => Kapal::all(), // Tetap ditarik untuk filter dropdown
+            'kapals'      => Kapal::all(),
         ])->layout('layouts.app');
     }
 }

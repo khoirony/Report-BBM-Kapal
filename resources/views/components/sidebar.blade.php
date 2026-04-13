@@ -49,17 +49,8 @@
         </a>
 
         {{-- SUPERADMIN ONLY --}}
-        <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Manajemen Sistem</h3>
-        @if(in_array($role, ['superadmin']))
-            <a href="{{ route('superadmin.kelola-ukpd') }}" 
-               class="{{ $baseClass }} {{ request()->routeIs('superadmin.kelola-ukpd') ? $activeClass : $inactiveClass }}">
-               <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-                Kelola UKPD
-            </a>
-        @endif
         @if(in_array($role, ['superadmin', 'admin_ukpd']))
+            <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Manajemen Sistem</h3>
             <a href="{{ route('superadmin.kelola-user') }}" 
                class="{{ $baseClass }} {{ request()->routeIs('superadmin.kelola-user') ? $activeClass : $inactiveClass }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -72,8 +63,19 @@
             </a>
         @endif
 
+        @if(in_array($role, ['superadmin']))
+            
+            <a href="{{ route('superadmin.kelola-ukpd') }}" 
+               class="{{ $baseClass }} {{ request()->routeIs('superadmin.kelola-ukpd') ? $activeClass : $inactiveClass }}">
+               <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                Kelola UKPD
+            </a>
+        @endif
+
         {{-- DATA KAPAL: Diakses oleh Superadmin, Satgas, Admin UKPD --}}
-        @if(in_array($role, ['superadmin', 'satgas', 'sounding', 'admin_ukpd', 'kepala_ukpd']))
+        @if(in_array($role, ['superadmin', 'satgas', 'sounding', 'admin_ukpd', 'kepala_ukpd', 'nahkoda']))
             <h3 class="px-4 pt-4 pb-1 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Data Master</h3>
             <a href="{{ route('data-kapal') }}" 
                class="{{ $baseClass }} {{ request()->routeIs('data-kapal') ? $activeClass : $inactiveClass }}">

@@ -50,6 +50,10 @@ class DataKapal extends Component
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
+        if (auth()->user()?->role?->slug == 'nahkoda') {
+            $query->where('nahkoda_id', auth()->user()?->id);
+        }
+
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nama_kapal', 'like', '%' . $this->search . '%')
@@ -206,6 +210,9 @@ class DataKapal extends Component
 
     public function delete($id)
     {
+        if(auth()->user()?->role?->slug == 'nahkoda') {
+            return;
+        }
         $kapal = Kapal::find($id);
         
         if ($kapal->foto_kapal) {
