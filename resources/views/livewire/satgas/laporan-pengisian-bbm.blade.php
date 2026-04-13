@@ -18,10 +18,12 @@
                 </div>
             </div>
             
+            @if(!in_array(auth()->user()?->role?->slug, ['nahkoda']))
             <button wire:click="create()" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 w-full sm:w-auto focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
                 <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
                 Buat Laporan Baru
             </button>
+            @endif
         </div>
 
         @if (session()->has('message'))
@@ -242,7 +244,7 @@
                                         <span>PDF</span>
                                     </a>
         
-                                    @if(in_array(auth()->user()?->role?->slug, ['nakhoda', 'superadmin']) && !$item->disetujui_nakhoda_at)
+                                    @if(in_array(auth()->user()?->role?->slug, ['nahkoda', 'superadmin']) && !$item->disetujui_nakhoda_at)
                                         <button wire:click="approveNakhoda({{ $item->id }})" wire:confirm="Setujui laporan ini sebagai Nakhoda?" class="w-full justify-center inline-flex items-center text-emerald-700 font-semibold bg-emerald-50 hover:bg-emerald-600 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-emerald-200 shadow-sm text-xs">
                                             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             Approve Nakhoda
@@ -256,6 +258,7 @@
                                         </button>
                                     @endif
         
+                                    @if(!in_array(auth()->user()?->role?->slug, ['nahkoda']))
                                     <div class="flex gap-2">
                                         <button wire:click="edit({{ $item->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100 shadow-sm">
                                             <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -267,6 +270,7 @@
                                             <span class="lg:hidden ml-1">Hapus</span>
                                         </button>
                                     </div>
+                                    @endif
                                 </div>
                             </td>
         

@@ -109,7 +109,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/surat-permohonan', SuratPermohonanPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,pptk')->name('satgas.surat-permohonan');
         
         Route::get('/pencatatan-pengisian', PencatatanHasilPengisian::class)->middleware('role:superadmin,admin_ukpd,nahkoda,pengawas,penyedia,kepala_ukpd')->name('satgas.pencatatan-pengisian');
-        Route::get('/laporan-pengisian', LaporanPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd')->name('satgas.laporan-pengisian');
+        Route::get('/laporan-pengisian', LaporanPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,nahkoda')->name('satgas.laporan-pengisian');
         Route::get('/berita-acara-pengisian', BeritaAcaraLaporanPengisian::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,pptk')->name('satgas.berita-acara-pengisian');
 
         // --- FITUR VERIFIKASI TAGIHAN ---
