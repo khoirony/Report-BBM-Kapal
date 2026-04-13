@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('singkatan')->nullable();
+            $table->text('alamat')->nullable();
+            $table->string('email')->nullable();
+            $table->string('kode_pos', 10)->nullable();
             $table->timestamps();
         });
     }
