@@ -26,4 +26,9 @@ class Kapal extends Model
     {
         return $this->hasOne(Sounding::class);
     }
+
+    public function nahkoda()
+    {
+        return $this->belongsTo(User::class, 'nahkoda_id');
+    }
 }

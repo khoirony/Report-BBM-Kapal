@@ -99,7 +99,7 @@
 
         <div class="bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-hidden w-full relative">
     
-            <div wire:loading.delay.longest class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
+            <div wire:loading class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
                 <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
             </div>
         
@@ -262,9 +262,22 @@
                                 @error('email') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
-                            <div>
+                            <div x-data="{ showPassword: false }">
                                 <label class="block text-sm font-semibold text-slate-800 mb-2">Password {!! $modalMode === 'create' ? '<span class="text-rose-500">*</span>' : '' !!}</label>
-                                <input type="password" wire:model="password" placeholder="{{ $modalMode === 'edit' ? 'Abaikan jika tidak diubah' : 'Minimal 8 Karakter' }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all" {{ $modalMode === 'create' ? 'required' : '' }}>
+                                
+                                <div class="relative">
+                                    <input :type="showPassword ? 'text' : 'password'" wire:model="password" placeholder="{{ $modalMode === 'edit' ? 'Abaikan jika tidak diubah' : 'Minimal 8 Karakter' }}" class="w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all" {{ $modalMode === 'create' ? 'required' : '' }}>
+                                    
+                                    <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-indigo-600 focus:outline-none transition-colors" title="Tampilkan/Sembunyikan Password">
+                                        <svg x-show="!showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        <svg x-show="showPassword" style="display: none;" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                                 @error('password') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
                         </div>

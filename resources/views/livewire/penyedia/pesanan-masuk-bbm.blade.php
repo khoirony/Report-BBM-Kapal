@@ -106,7 +106,7 @@
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden relative w-full">
-            <div wire:loading.delay.longest class="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 hidden md:flex items-center justify-center">
+            <div wire:loading class="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 hidden md:flex items-center justify-center">
                 <div class="w-8 h-8 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
             </div>
 

@@ -14,7 +14,7 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Data Kapal</h1>
-                    <p class="text-sm text-gray-500 mt-1 font-medium">Kelola informasi, foto, dan sertifikasi seluruh armada kapal.</p>
+                    <p class="text-sm text-gray-500 mt-1 font-medium">Kelola informasi, foto, nahkoda, dan sertifikasi seluruh armada kapal.</p>
                 </div>
             </div>
             
@@ -136,162 +136,177 @@
 
         <div class="relative bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-visible w-full">
             
-            <div wire:loading class="absolute inset-0 bg-white/70 backdrop-blur-sm z-20 flex items-center justify-center rounded-2xl">
-                <div class="flex flex-col items-center">
-                    <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <span class="mt-2 text-sm font-semibold text-indigo-600">Memuat data...</span>
-                </div>
+            <div wire:loading class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
+                <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
             </div>
 
-            <table class="w-full text-sm text-left text-gray-600 block md:table">
-                <thead class="hidden md:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
-                    <tr>
-                        <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/3">Identitas & Foto Kapal</th>
-                        <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Spesifikasi Fisik</th>
-                        <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6">Performa Mesin</th>
-                        <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6 text-center">Operasional & Dokumen</th>
-                        <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6 text-right">Aksi</th>
-                    </tr>
-                </thead>
-                
-                <tbody class="block md:table-row-group space-y-6 md:space-y-0 md:divide-y md:divide-gray-50">
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-sm text-left text-gray-600 block lg:table">
+                    <thead class="hidden lg:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/3">Identitas & Foto Kapal</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Spesifikasi Fisik</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6">Performa Mesin</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6 text-center">Operasional & Dokumen</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6 text-right">Aksi</th>
+                        </tr>
+                    </thead>
                     
-                    @forelse($kapals as $kapal)
-                    <tr wire:key="kapal-{{ $kapal->id }}" class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none border border-gray-100 md:border-none hover:bg-slate-50/80 transition-colors duration-150">
+                    <tbody class="block md:table-row-group space-y-6 md:space-y-0 md:divide-y md:divide-gray-50">
                         
-                        <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
-                            <span class="text-xs font-bold text-indigo-500 uppercase md:hidden mb-3 block border-b border-indigo-50 pb-2">Identitas & Foto Kapal</span>
-                            <div class="flex items-start gap-4">
-                                <div class="flex flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 items-center justify-center bg-indigo-50 rounded-xl text-indigo-600 overflow-hidden border border-slate-200 shadow-sm">
-                                    @if($kapal->foto_kapal)
-                                        <img src="{{ asset('storage/' . $kapal->foto_kapal) }}" alt="Foto {{ $kapal->nama_kapal }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
-                                    @else
-                                        <svg class="w-8 h-8 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                    @endif
-                                </div>
-                                <div class="flex flex-col pt-1">
-                                    <h3 class="font-bold text-gray-900 text-base sm:text-lg">{{ $kapal->nama_kapal ?? '-' }}</h3>
-                                    <p class="text-sm text-gray-500 font-medium mt-0.5">{{ $kapal->ukpd->singkatan ?? $kapal->ukpd->nama ?? '-' }}</p>
-                                    
-                                    <div class="flex flex-wrap gap-2 mt-2">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-600 w-max">
-                                            Thn: {{ $kapal->tahun_pembuatan ?? '-' }}
-                                        </span>
-                                        {{-- UPDATE: Gunakan ->role->slug --}}
-                                        @if(auth()->user() && auth()->user()?->role?->slug === 'superadmin')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700 w-max border border-indigo-100" title="Ditambahkan oleh">
-                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                                {{ $kapal->user->name ?? 'Sistem' }}
-                                            </span>
+                        @forelse($kapals as $kapal)
+                        <tr wire:key="kapal-{{ $kapal->id }}" class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none border border-gray-100 md:border-none hover:bg-slate-50/80 transition-colors duration-150">
+                            
+                            <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
+                                <span class="text-xs font-bold text-indigo-500 uppercase md:hidden mb-3 block border-b border-indigo-50 pb-2">Identitas & Foto Kapal</span>
+                                <div class="flex items-start gap-4">
+                                    <div class="flex flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 items-center justify-center bg-indigo-50 rounded-xl text-indigo-600 overflow-hidden border border-slate-200 shadow-sm">
+                                        @if($kapal->foto_kapal)
+                                            <img src="{{ asset('storage/' . $kapal->foto_kapal) }}" alt="Foto {{ $kapal->nama_kapal }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+                                        @else
+                                            <svg class="w-8 h-8 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
                                         @endif
                                     </div>
-                                </div>
-                            </div>
-                        </td>
-                        
-                        <td class="flex flex-col md:table-cell px-4 py-3 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
-                            <span class="text-xs font-semibold text-gray-400 uppercase md:hidden mb-1">Spesifikasi Fisik</span>
-                            <div class="space-y-1 pt-1">
-                                <p class="text-sm"><span class="text-gray-400 mr-1">Jenis:</span> <span class="font-medium text-gray-800">{{ $kapal->jenis_dan_tipe ?? '-' }}</span></p>
-                                <p class="text-sm"><span class="text-gray-400 mr-1">Bahan:</span> <span class="font-medium text-gray-800">{{ $kapal->material ?? '-' }}</span></p>
-                                <p class="text-sm"><span class="text-gray-400 mr-1">Ukuran:</span> <span class="font-medium text-gray-800">{{ $kapal->ukuran ?? '-' }}</span></p>
-                            </div>
-                        </td>
-
-                        <td class="flex flex-col md:table-cell px-4 py-3 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
-                            <span class="text-xs font-semibold text-gray-400 uppercase md:hidden mb-1">Performa Mesin</span>
-                            <div class="space-y-2 mt-1 pt-1">
-                                <div class="flex items-center text-sm">
-                                    <div class="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mr-2 shadow-sm">
-                                        <span class="text-[10px] font-bold">GT</span>
-                                    </div>
-                                    <span class="font-bold text-gray-800">{{ $kapal->tonase_kotor_gt ?? '-' }}</span>
-                                </div>
-                                <div class="flex items-center text-sm">
-                                    <div class="w-6 h-6 rounded-md bg-orange-50 text-orange-600 flex items-center justify-center mr-2 shadow-sm">
-                                        <span class="text-[10px] font-bold">KW</span>
-                                    </div>
-                                    <span class="font-bold text-gray-800">{{ $kapal->tenaga_penggerak_kw ?? '-' }}</span>
-                                </div>
-                            </div>
-                        </td>
-
-                        <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-middle md:text-center">
-                            <div class="md:hidden flex flex-col space-y-4 w-full text-left">
-                                <div>
-                                    <span class="text-xs font-semibold text-gray-400 uppercase mb-1 block">Daerah Pelayaran</span>
-                                    <p class="text-sm text-gray-800 leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                        {{ $kapal->daerah_pelayaran ?: 'Belum ada data.' }}
-                                    </p>
-                                </div>
-                                <div>
-                                    <span class="text-xs font-semibold text-gray-400 uppercase mb-1 block">List Sertifikat</span>
-                                    <p class="text-sm text-gray-800 leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                        {{ $kapal->list_sertifikat_kapal ?: 'Belum ada data.' }}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="hidden md:flex flex-col justify-center items-center gap-3">
-                                <div class="relative group inline-block">
-                                    <button type="button" class="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors border border-teal-100 cursor-default">
-                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                        Rute
-                                    </button>
-                                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-10 text-left shadow-xl pointer-events-none">
-                                        <p class="font-bold text-gray-300 mb-1 border-b border-gray-700 pb-1">Daerah Pelayaran:</p>
-                                        <p class="whitespace-normal leading-relaxed">{{ $kapal->daerah_pelayaran ?: 'Belum ada data rute pelayaran.' }}</p>
-                                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                                    <div class="flex flex-col pt-1">
+                                        <h3 class="font-bold text-gray-900 text-base sm:text-lg">{{ $kapal->nama_kapal ?? '-' }}</h3>
+                                        <p class="text-sm text-gray-500 font-medium mt-0.5">{{ $kapal->ukpd->singkatan ?? $kapal->ukpd->nama ?? '-' }}</p>
+                                        
+                                        <div class="flex flex-wrap gap-2 mt-2">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-600 w-max">
+                                                Thn: {{ $kapal->tahun_pembuatan ?? '-' }}
+                                            </span>
+                                            
+                                            @if($kapal->nahkoda_id)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-emerald-50 text-emerald-700 w-max border border-emerald-100 shadow-sm" title="Akun Nahkoda Terhubung">
+                                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v14m0-14a3 3 0 110-6 3 3 0 010 6zM8 12h8M5 15a7 7 0 0014 0"></path>
+                                                    </svg>
+                                                    <span class="font-bold mr-1">Nahkoda:</span> <span class="font-medium">{{ $kapal->nahkoda->name ?? 'Akun Terhapus' }}</span>
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-50 text-rose-600 w-max border border-rose-100 shadow-sm" title="Belum Ada Nahkoda Terhubung">
+                                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                    Belum Ada Nahkoda
+                                                </span>
+                                            @endif
+                                            
+                                            @if(auth()->user() && auth()->user()?->role?->slug === 'superadmin')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-slate-50 text-slate-500 w-max border border-slate-200" title="Ditambahkan/Diedit oleh">
+                                                    <svg class="w-3.5 h-3.5 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    <span class="font-semibold mr-1">Input:</span> <span class="font-medium">{{ $kapal->user->name ?? 'Sistem' }}</span>
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
+                            </td>
+                            
+                            <td class="flex flex-col md:table-cell px-4 py-3 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
+                                <span class="text-xs font-semibold text-gray-400 uppercase md:hidden mb-1">Spesifikasi Fisik</span>
+                                <div class="space-y-1 pt-1">
+                                    <p class="text-sm"><span class="text-gray-400 mr-1">Jenis:</span> <span class="font-medium text-gray-800">{{ $kapal->jenis_dan_tipe ?? '-' }}</span></p>
+                                    <p class="text-sm"><span class="text-gray-400 mr-1">Bahan:</span> <span class="font-medium text-gray-800">{{ $kapal->material ?? '-' }}</span></p>
+                                    <p class="text-sm"><span class="text-gray-400 mr-1">Ukuran:</span> <span class="font-medium text-gray-800">{{ $kapal->ukuran ?? '-' }}</span></p>
+                                </div>
+                            </td>
 
-                                <div class="relative group inline-block">
-                                    <button type="button" class="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors border border-purple-100 cursor-default">
-                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                        Dokumen
-                                    </button>
-                                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-10 text-left shadow-xl pointer-events-none">
-                                        <p class="font-bold text-gray-300 mb-1 border-b border-gray-700 pb-1">List Sertifikat:</p>
-                                        <p class="whitespace-normal leading-relaxed">{{ $kapal->list_sertifikat_kapal ?: 'Belum ada data sertifikat.' }}</p>
-                                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                            <td class="flex flex-col md:table-cell px-4 py-3 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
+                                <span class="text-xs font-semibold text-gray-400 uppercase md:hidden mb-1">Performa Mesin</span>
+                                <div class="space-y-2 mt-1 pt-1">
+                                    <div class="flex items-center text-sm">
+                                        <div class="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mr-2 shadow-sm">
+                                            <span class="text-[10px] font-bold">GT</span>
+                                        </div>
+                                        <span class="font-bold text-gray-800">{{ $kapal->tonase_kotor_gt ?? '-' }}</span>
+                                    </div>
+                                    <div class="flex items-center text-sm">
+                                        <div class="w-6 h-6 rounded-md bg-orange-50 text-orange-600 flex items-center justify-center mr-2 shadow-sm">
+                                            <span class="text-[10px] font-bold">KW</span>
+                                        </div>
+                                        <span class="font-bold text-gray-800">{{ $kapal->tenaga_penggerak_kw ?? '-' }}</span>
                                     </div>
                                 </div>
-                            </div>
-                        </td>
-                        
-                        <td class="flex flex-row md:table-cell px-4 py-4 md:px-6 md:py-5 md:text-right gap-3 md:gap-0 space-x-0 md:space-x-2 bg-slate-50/50 md:bg-transparent rounded-b-2xl md:rounded-none align-middle">
-                            <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto">
-                                <div class="flex gap-2">
-                                    <button wire:click="edit({{ $kapal->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100">
-                                        <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                        <span class="lg:hidden">Edit</span>
-                                    </button>
-                                    
-                                    <button wire:click="delete({{ $kapal->id }})" onclick="confirm('Yakin ingin menghapus laporan ini?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100">
-                                        <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        <span class="lg:hidden">Hapus</span>
-                                    </button>
+                            </td>
+
+                            <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-middle md:text-center">
+                                <div class="md:hidden flex flex-col space-y-4 w-full text-left">
+                                    <div>
+                                        <span class="text-xs font-semibold text-gray-400 uppercase mb-1 block">Daerah Pelayaran</span>
+                                        <p class="text-sm text-gray-800 leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                            {{ $kapal->daerah_pelayaran ?: 'Belum ada data.' }}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-semibold text-gray-400 uppercase mb-1 block">List Sertifikat</span>
+                                        <p class="text-sm text-gray-800 leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                            {{ $kapal->list_sertifikat_kapal ?: 'Belum ada data.' }}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none border border-gray-100 md:border-none">
-                        <td colspan="5" class="block md:table-cell px-6 py-16 text-center text-gray-500">
-                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
-                                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-base font-semibold text-gray-900 mb-1">Data tidak ditemukan</h3>
-                            <p class="text-sm text-gray-500">Coba gunakan kata kunci atau filter yang berbeda.</p>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+
+                                <div class="hidden md:flex flex-col justify-center items-center gap-3">
+                                    <div class="relative group inline-block">
+                                        <button type="button" class="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors border border-teal-100 cursor-default">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            Rute
+                                        </button>
+                                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-10 text-left shadow-xl pointer-events-none">
+                                            <p class="font-bold text-gray-300 mb-1 border-b border-gray-700 pb-1">Daerah Pelayaran:</p>
+                                            <p class="whitespace-normal leading-relaxed">{{ $kapal->daerah_pelayaran ?: 'Belum ada data rute pelayaran.' }}</p>
+                                            <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="relative group inline-block">
+                                        <button type="button" class="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors border border-purple-100 cursor-default">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                            Dokumen
+                                        </button>
+                                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-10 text-left shadow-xl pointer-events-none">
+                                            <p class="font-bold text-gray-300 mb-1 border-b border-gray-700 pb-1">List Sertifikat:</p>
+                                            <p class="whitespace-normal leading-relaxed">{{ $kapal->list_sertifikat_kapal ?: 'Belum ada data sertifikat.' }}</p>
+                                            <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <td class="flex flex-row md:table-cell px-4 py-4 md:px-6 md:py-5 md:text-right gap-3 md:gap-0 space-x-0 md:space-x-2 bg-slate-50/50 md:bg-transparent rounded-b-2xl md:rounded-none align-middle">
+                                <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto">
+                                    <div class="flex gap-2">
+                                        <button wire:click="edit({{ $kapal->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100">
+                                            <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <span class="lg:hidden">Edit</span>
+                                        </button>
+                                        
+                                        <button wire:click="delete({{ $kapal->id }})" onclick="confirm('Yakin ingin menghapus laporan ini?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100">
+                                            <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <span class="lg:hidden">Hapus</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none border border-gray-100 md:border-none">
+                            <td colspan="5" class="block md:table-cell px-6 py-16 text-center text-gray-500">
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
+                                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-base font-semibold text-gray-900 mb-1">Data tidak ditemukan</h3>
+                                <p class="text-sm text-gray-500">Coba gunakan kata kunci atau filter yang berbeda.</p>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="mt-6">
@@ -369,22 +384,67 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jenis dan Tipe</label>
-                                <input type="text" wire:model="jenis_dan_tipe" placeholder="Contoh: Kapal Penumpang" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Akun Nahkoda Terhubung</label>
+                                <div class="relative">
+                                    <select wire:model="nahkoda_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors appearance-none cursor-pointer">
+                                        <option value="">-- Putuskan Hubungan / Kosongkan --</option>
+                                        @foreach($nahkodas as $nahkoda)
+                                            <option value="{{ $nahkoda->id }}">{{ $nahkoda->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-1 font-medium">Hanya menampilkan akun nahkoda yang belum terhubung dengan kapal manapun.</p>
                             </div>
 
+                            {{-- DIUBAH MENJADI DROPDOWN --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jenis dan Tipe</label>
+                                <div class="relative">
+                                    <select wire:model="jenis_dan_tipe" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors appearance-none cursor-pointer">
+                                        <option value="">-- Pilih Jenis Kapal --</option>
+                                        <option value="Kapal Penumpang">Kapal Penumpang</option>
+                                        <option value="Kapal Patroli">Kapal Patroli</option>
+                                        <option value="Kapal Kerja">Kapal Kerja</option>
+                                        <option value="Kapal Barang">Kapal Barang</option>
+                                        <option value="Kapal Penangkap Ikan">Kapal Penangkap Ikan</option>
+                                        <option value="Kapal Tunda (Tugboat)">Kapal Tunda (Tugboat)</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- DIUBAH MENJADI DROPDOWN --}}
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Material</label>
-                                <input type="text" wire:model="material" placeholder="Contoh: Baja / Fiber" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Pembuatan</label>
-                                <input type="number" wire:model="tahun_pembuatan" placeholder="YYYY" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors">
+                                <div class="relative">
+                                    <select wire:model="material" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors appearance-none cursor-pointer">
+                                        <option value="">-- Pilih Material --</option>
+                                        <option value="Fiberglass">Fiberglass</option>
+                                        <option value="Baja">Baja</option>
+                                        <option value="Alumunium">Alumunium</option>
+                                        <option value="Kayu">Kayu</option>
+                                        <option value="Besi">Besi</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="space-y-4 sm:space-y-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Pembuatan</label>
+                                <input type="number" wire:model="tahun_pembuatan" placeholder="YYYY" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors">
+                            </div>
+                            
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Ukuran (PxLxD)</label>
                                 <input type="text" wire:model="ukuran" placeholder="Contoh: 10m x 5m x 3m" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors">
