@@ -2,11 +2,10 @@
     
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800">Dashboard Super Admin</h1>
+            <h1 class="text-2xl font-bold text-slate-800">Dashboard PPTK</h1>
             <div class="flex gap-4 mt-2 border-b border-slate-200">
                 <button @click="tab = 'dashboard'" :class="tab === 'dashboard' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition">Dashboard Utama</button>
                 <button @click="tab = 'laporan'" :class="tab === 'laporan' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition">Laporan Transaksi</button>
-                <button @click="tab = 'pagu'" :class="tab === 'pagu' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition">Manajemen Pagu</button>
             </div>
         </div>
         
@@ -116,79 +115,6 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
-    </div>
-
-    <div x-show="tab === 'pagu'" class="space-y-6" style="display: none;" x-transition>
-        
-        @if($isPaguModalOpen)
-        <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-            <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-                <h3 class="text-lg font-bold mb-4">{{ $pagu_id ? 'Edit' : 'Tambah' }} Pagu Anggaran</h3>
-                <form wire:submit.prevent="storePagu">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">UKPD</label>
-                        <select wire:model="ukpd_id" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">Pilih UKPD...</option>
-                            @foreach($ukpds as $u)
-                                <option value="{{ $u->id }}">{{ $u->nama }} ({{ $u->singkatan }})</option>
-                            @endforeach
-                        </select>
-                        @error('ukpd_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Tahun</label>
-                        <input type="number" wire:model="tahun" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Contoh: 2024">
-                        @error('tahun') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Nominal Pagu (Rp)</label>
-                        <input type="number" wire:model="nominal" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Tanpa titik/koma">
-                        @error('nominal') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="flex justify-end gap-3">
-                        <button type="button" wire:click="closePaguModal" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm hover:bg-slate-300">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">Simpan Data</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        @endif
-
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="font-bold text-slate-800 text-lg">Daftar Pagu Anggaran UKPD per Tahun</h3>
-                <button wire:click="openPaguModal" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
-                    + Tambah Pagu Anggaran
-                </button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm whitespace-nowrap">
-                    <thead class="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold">
-                        <tr>
-                            <th class="px-6 py-4">Tahun</th>
-                            <th class="px-6 py-4">Nama UKPD</th>
-                            <th class="px-6 py-4">Nominal Pagu (Rp)</th>
-                            <th class="px-6 py-4 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @forelse($pagus as $p)
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-6 py-4 font-bold text-slate-800">{{ $p->tahun }}</td>
-                                <td class="px-6 py-4 font-medium text-slate-700">{{ $p->nama_ukpd }}</td>
-                                <td class="px-6 py-4 text-indigo-600 font-semibold">Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
-                                <td class="px-6 py-4 text-right">
-                                    <button wire:click="editPagu({{ $p->id }})" class="text-blue-600 hover:text-blue-800 font-medium mr-3">Edit</button>
-                                    <button wire:click="deletePagu({{ $p->id }})" class="text-red-600 hover:text-red-800 font-medium" onclick="confirm('Yakin ingin menghapus pagu ini?') || event.stopImmediatePropagation()">Hapus</button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="4" class="px-6 py-12 text-center text-slate-400">Belum ada data pagu anggaran. Silakan tambahkan.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 

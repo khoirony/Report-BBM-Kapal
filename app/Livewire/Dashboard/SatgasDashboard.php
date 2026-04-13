@@ -3,166 +3,255 @@
 namespace App\Livewire\Dashboard;
 
 use Livewire\Component;
-use App\Models\Kapal;
-use App\Models\LaporanSisaBbm;
-use App\Models\Sounding;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\PaguAnggaran;
 
 class SatgasDashboard extends Component
 {
-    // Properti Filter
-    public $filterBulan;
-    public $filterTahun;
-
-    // Properti untuk menyimpan data grafik (dikirim ke JS)
+    // --- Properti Filter & Data Grafik ---
+    public $startDate;
+    public $endDate;
     public $chartParams = [];
+    public $reportData = [];
+
+    // --- Properti CRUD Pagu Anggaran ---
+    public $isPaguModalOpen = false;
+    public $pagu_id, $ukpd_id, $tahun, $nominal;
 
     public function mount()
     {
-        // Set default filter ke bulan dan tahun saat ini
-        $this->filterBulan = Carbon::now()->format('m');
-        $this->filterTahun = Carbon::now()->format('Y');
-
-        // Ambil data awal saat halaman dimuat
-        $this->updateAllCharts();
+        $this->startDate = Carbon::now()->startOfQuarter()->format('Y-m-d');
+        $this->endDate = Carbon::now()->format('Y-m-d');
+        $this->updateAllData();
     }
 
-    // Lifecycle hook: dijalankan otomatis saat properti filter berubah
-    public function updatedFilterBulan() { $this->updateAllCharts(); }
-    public function updatedFilterTahun() { $this->updateAllCharts(); }
+    public function updatedStartDate() { $this->updateAllData(); }
+    public function updatedEndDate() { $this->updateAllData(); }
 
-    public function updateAllCharts()
+    public function updateAllData()
     {
-        // Kumpulkan semua data grafik ke dalam satu array
         $this->chartParams = [
-            'anggaran'      => $this->generateAnggaranData(),
-            'biayaKapal'    => $this->generateBiayaKapalData(),
-            'konsumsi'      => $this->generateKonsumsiData(),
-            'pembelian'     => $this->generatePembelianData(),
-            'jenisBbm'      => $this->generateJenisBbmData(),
+            'anggaranUkpd'   => $this->generateAnggaranUkpdData(),
+            'anggaranKapal'  => $this->generateAnggaranKapalData(),
+            'konsumsiHarian' => $this->generateKonsumsiHarianData(), 
+            'konsumsiKapal'  => $this->generateKonsumsiKapalData(),  
+            'pembelian'      => $this->generatePembelianData(),      
+            'jenisBbm'       => $this->generateJenisBbmData(),
         ];
 
-        // Emit event browser agar JavaScript tahu data sudah update dan grafik perlu dirender ulang
+        $this->reportData = $this->fetchQuarterlyReport();
         $this->dispatch('chartsUpdated', $this->chartParams);
+    }
+
+    private function generateAnggaranUkpdData()
+    {
+        $tahunFilter = Carbon::parse($this->startDate)->format('Y');
+        $userUkpdId = Auth::user()->ukpd_id;
+
+        $data = DB::table('ukpds')
+            ->when($userUkpdId, fn($q) => $q->where('ukpds.id', $userUkpdId))
+            ->leftJoin('rekonsiliasi_invoices', function($join) {
+                $join->on('ukpds.id', '=', 'rekonsiliasi_invoices.ukpd_id')
+                     ->whereBetween('rekonsiliasi_invoices.tanggal_invoice', [$this->startDate, $this->endDate]);
+            })
+            ->leftJoin('pagu_anggarans', function($join) use ($tahunFilter) {
+                $join->on('ukpds.id', '=', 'pagu_anggarans.ukpd_id')
+                     ->where('pagu_anggarans.tahun', '=', $tahunFilter);
+            })
+            ->selectRaw('ukpds.singkatan, SUM(rekonsiliasi_invoices.total_tagihan) as realisasi, MAX(pagu_anggarans.nominal) as pagu')
+            ->groupBy('ukpds.id', 'ukpds.singkatan')->get();
+
+        return [
+            'labels' => $data->pluck('singkatan'),
+            'series' => [
+                ['name' => 'Pagu Anggaran', 'data' => $data->pluck('pagu')->map(fn($v) => (float)$v ?: 0)], 
+                ['name' => 'Penggunaan (Realisasi)', 'data' => $data->pluck('realisasi')->map(fn($v) => (float)$v ?: 0)]
+            ]
+        ];
+    }
+
+    private function generateAnggaranKapalData()
+    {
+        $userUkpdId = Auth::user()->ukpd_id;
+
+        $data = DB::table('pencatatan_hasils')
+            ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
+            ->leftJoin('proses_penyedia_bbms', 'pencatatan_hasils.id', '=', 'proses_penyedia_bbms.id') 
+            ->when($userUkpdId, fn($q) => $q->where('kapals.ukpd_id', $userUkpdId))
+            ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
+            ->selectRaw('kapals.nama_kapal, SUM(proses_penyedia_bbms.total_harga) as total_biaya')
+            ->groupBy('kapals.id', 'kapals.nama_kapal')
+            ->orderByDesc('total_biaya')->get();
+
+        return [
+            'labels' => $data->pluck('nama_kapal')->toArray(),
+            'series' => [['name' => 'Total Rupiah', 'data' => $data->pluck('total_biaya')->map(fn($v) => (float)$v)->toArray()]]
+        ];
+    }
+
+    private function generateKonsumsiHarianData()
+    {
+        $userUkpdId = Auth::user()->ukpd_id;
+
+        $dbData = DB::table('soundings')
+            ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id') // Tambah Join untuk filter UKPD
+            ->when($userUkpdId, fn($q) => $q->where('kapals.ukpd_id', $userUkpdId))
+            ->whereBetween('soundings.tanggal_sounding', [$this->startDate, $this->endDate])
+            ->selectRaw('DATE(soundings.tanggal_sounding) as tanggal, SUM(soundings.pemakaian) as total_pemakaian')
+            ->groupBy('tanggal')
+            ->pluck('total_pemakaian', 'tanggal')->toArray();
+
+        $labels = []; $seriesData = [];
+        $currentDate = Carbon::parse($this->startDate);
+        $endDateObj = Carbon::parse($this->endDate);
+
+        while ($currentDate->lte($endDateObj)) {
+            $dateString = $currentDate->format('Y-m-d');
+            $labels[] = $currentDate->format('d M');
+            $seriesData[] = isset($dbData[$dateString]) ? (float)$dbData[$dateString] : 0;
+            $currentDate->addDay();
+        }
+
+        return ['labels' => $labels, 'series' => [['name' => 'Total Liter', 'data' => $seriesData]]];
+    }
+
+    private function generateKonsumsiKapalData()
+    {
+        $userUkpdId = Auth::user()->ukpd_id;
+
+        $data = DB::table('soundings')
+            ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id')
+            ->join('ukpds', 'kapals.ukpd_id', '=', 'ukpds.id')
+            ->when($userUkpdId, fn($q) => $q->where('ukpds.id', $userUkpdId))
+            ->whereBetween('soundings.tanggal_sounding', [$this->startDate, $this->endDate])
+            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, SUM(soundings.pemakaian) as total_liter')
+            ->groupBy('ukpd', 'kapals.nama_kapal')->get();
+
+        $ukpds = $data->pluck('ukpd')->unique()->values()->toArray();
+        $kapals = $data->pluck('nama_kapal')->unique()->values()->toArray();
+        $series = [];
+
+        foreach ($kapals as $kapal) {
+            $kapalData = [];
+            foreach ($ukpds as $ukpd) {
+                $record = $data->where('ukpd', $ukpd)->where('nama_kapal', $kapal)->first();
+                $kapalData[] = $record ? (float) $record->total_liter : 0;
+            }
+            $series[] = ['name' => $kapal, 'data' => $kapalData];
+        }
+
+        return ['labels' => $ukpds, 'series' => $series];
+    }
+
+    private function generatePembelianData()
+    {
+        $userUkpdId = Auth::user()->ukpd_id;
+
+        $data = DB::table('pencatatan_hasils')
+            ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
+            ->join('ukpds', 'kapals.ukpd_id', '=', 'ukpds.id')
+            ->when($userUkpdId, fn($q) => $q->where('ukpds.id', $userUkpdId))
+            ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
+            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, SUM(pencatatan_hasils.jumlah_pengisian) as total_liter')
+            ->groupBy('ukpd', 'kapals.nama_kapal')->get();
+
+        $ukpds = $data->pluck('ukpd')->unique()->values()->toArray();
+        $kapals = $data->pluck('nama_kapal')->unique()->values()->toArray();
+        $series = [];
+
+        foreach ($kapals as $kapal) {
+            $kapalData = [];
+            foreach ($ukpds as $ukpd) {
+                $record = $data->where('ukpd', $ukpd)->where('nama_kapal', $kapal)->first();
+                $kapalData[] = $record ? (float) $record->total_liter : 0;
+            }
+            $series[] = ['name' => $kapal, 'data' => $kapalData];
+        }
+
+        return ['labels' => $ukpds, 'series' => $series];
+    }
+
+    private function generateJenisBbmData()
+    {
+        $userUkpdId = Auth::user()->ukpd_id;
+
+        $data = DB::table('surat_permohonan_pengisians')
+            ->when($userUkpdId, function($q) use ($userUkpdId) {
+                $q->where('ukpd_id', $userUkpdId);
+            })
+            ->whereBetween('tanggal_surat', [$this->startDate, $this->endDate])
+            ->selectRaw('jenis_bbm, SUM(jumlah_bbm) as total')
+            ->groupBy('jenis_bbm')->get();
+
+        if ($data->isEmpty()) return ['labels' => ['Belum Ada Data'], 'data' => [0]];
+
+        return [
+            'labels' => $data->pluck('jenis_bbm'),
+            'data'   => $data->pluck('total')->map(fn($v) => (float)$v)
+        ];
+    }
+
+    public function fetchQuarterlyReport()
+    {
+        $userUkpdId = Auth::user()->ukpd_id;
+
+        return DB::table('pencatatan_hasils')
+            ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
+            ->join('ukpds', 'kapals.ukpd_id', '=', 'ukpds.id')
+            ->leftJoin('proses_penyedia_bbms', 'pencatatan_hasils.id', '=', 'proses_penyedia_bbms.id') 
+            ->when($userUkpdId, fn($q) => $q->where('ukpds.id', $userUkpdId))
+            ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
+            ->select('ukpds.singkatan as ukpd', 'kapals.nama_kapal', 'pencatatan_hasils.tanggal_pengisian', 'pencatatan_hasils.jumlah_pengisian as liter', 'proses_penyedia_bbms.harga_satuan', 'proses_penyedia_bbms.total_harga')
+            ->orderBy('ukpd')->orderBy('nama_kapal')->orderBy('tanggal_pengisian')
+            ->get();
     }
 
     public function render()
     {
-        // KPI Ringkas (Tetap menggunakan data asli database)
+        $tahunFilter = Carbon::parse($this->startDate)->format('Y');
+        $userUkpdId = Auth::user()->ukpd_id;
+
         $stats = [
-            'total_kapal'       => Kapal::count(),
-            'total_laporan'     => LaporanSisaBbm::count(),
-            'total_sounding'    => Sounding::count(),
-            'pagu_anggaran'     => 10000000000, // Dummy: 10 Milyar
-            'anggaran_terpakai' => 4500000000,  // Dummy: 4.5 Milyar
+            'pagu' => DB::table('pagu_anggarans')
+                        ->where('tahun', $tahunFilter)
+                        ->when($userUkpdId, fn($q) => $q->where('ukpd_id', $userUkpdId))
+                        ->sum('nominal') ?: 0,
+
+            'realisasi' => DB::table('rekonsiliasi_invoices')
+                        ->whereBetween('tanggal_invoice', [$this->startDate, $this->endDate])
+                        ->when($userUkpdId, fn($q) => $q->where('ukpd_id', $userUkpdId))
+                        ->sum('total_tagihan'),
+
+            'armada' => DB::table('kapals')
+                        ->when($userUkpdId, fn($q) => $q->where('ukpd_id', $userUkpdId))
+                        ->count(),
+
+            'liter' => DB::table('pencatatan_hasils')
+                        ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
+                        ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
+                        ->when($userUkpdId, fn($q) => $q->where('kapals.ukpd_id', $userUkpdId))
+                        ->sum('pencatatan_hasils.jumlah_pengisian'),
         ];
+
+        // Fetch data untuk tabel CRUD Pagu
+        $pagus = PaguAnggaran::join('ukpds', 'pagu_anggarans.ukpd_id', '=', 'ukpds.id')
+            ->select('pagu_anggarans.*', 'ukpds.singkatan as nama_ukpd')
+            ->when($userUkpdId, fn($q) => $q->where('pagu_anggarans.ukpd_id', $userUkpdId))
+            ->orderBy('tahun', 'desc')
+            ->orderBy('nama_ukpd', 'asc')
+            ->get();
+            
+        // Fetch UKPD untuk Dropdown modal
+        $ukpds = DB::table('ukpds')
+            ->when($userUkpdId, fn($q) => $q->where('id', $userUkpdId))
+            ->get();
 
         return view('livewire.dashboard.satgas-dashboard', [
             'stats' => $stats,
+            'pagus' => $pagus,
+            'ukpds' => $ukpds
         ])->layout('layouts.app');
-    }
-
-    // =========================================================================
-    // LOGIKA GENERATE DATA DUMMY (Ganti dengan Query DB Asli nanti)
-    // =========================================================================
-    
-    // 1. Pagu vs Realisasi per UKPD (Bar Chart)
-    private function generateAnggaranData()
-    {
-        // Contoh Query Asli: 
-        // return DB::table('ukpd')->select('nama', 'pagu', 'realisasi')->where('tahun', $this->filterTahun)->get();
-
-        $labels = ['Sudinhub Jabar', 'Sudinhub Jatim', 'Sudinhub DKI', 'UP Angkutan Perairan'];
-        $pagu = [];
-        $realisasi = [];
-
-        // Buat data acak berdasarkan filter agar grafik terlihat berubah saat difilter
-        $seed = $this->filterBulan + $this->filterTahun;
-        mt_srand($seed); 
-
-        foreach ($labels as $l) {
-            $p = mt_rand(20, 50) * 100000000; // 2 - 5 Milyar
-            $pagu[] = $p;
-            $realisasi[] = $p * (mt_rand(30, 90) / 100); // 30-90% dari pagu
-        }
-
-        return [
-            'labels' => $labels,
-            'series' => [
-                ['name' => 'Pagu Anggaran', 'data' => $pagu],
-                ['name' => 'Penggunaan', 'data' => $realisasi],
-            ]
-        ];
-    }
-
-    // 2. Biaya BBM Per Kapal (Horizontal Bar)
-    private function generateBiayaKapalData()
-    {
-        $kapal = ['KMC Trunojoyo', 'KMC Antasena', 'KMC Sangaji', 'Catamaran 01', 'Catamaran 02'];
-        $biaya = [];
-        mt_srand((int)$this->filterBulan * 2 + $this->filterTahun);
-
-        foreach ($kapal as $k) {
-            $biaya[] = mt_rand(50, 300) * 1000000; // 50 - 300 Juta
-        }
-
-        return [
-            'labels' => $kapal,
-            'data' => $biaya
-        ];
-    }
-
-    // 3. Konsumsi Sounding (Line Chart over Time)
-    private function generateKonsumsiData()
-    {
-        $daysInMonth = Carbon::create($this->filterTahun, $this->filterBulan)->daysInMonth;
-        $labels = [];
-        $totalCons = [];
-        $kapalA = [];
-
-        mt_srand((int)$this->filterBulan + $this->filterTahun);
-
-        for ($i = 1; $i <= $daysInMonth; $i++) {
-            $labels[] = "Tgl $i";
-            $ka = mt_rand(100, 300);
-            $kapalA[] = $ka;
-            $totalCons[] = $ka + mt_rand(200, 500); // Total = Kapal A + Lainnya
-        }
-
-        return [
-            'labels' => $labels,
-            'series' => [
-                ['name' => 'Total Liter (Semua)', 'data' => $totalCons],
-                ['name' => 'KMC Trunojoyo', 'data' => $kapalA],
-            ]
-        ];
-    }
-
-    // 4. Pembelian Rekon (Column Chart)
-    private function generatePembelianData()
-    {
-        $ukpd = ['Sudin DKI', 'UP Perairan'];
-        mt_srand((int)$this->filterBulan * 3 + $this->filterTahun);
-
-        return [
-            'labels' => $ukpd,
-            'series' => [
-                ['name' => 'Sudin DKI', 'data' => [mt_rand(5000, 15000), mt_rand(7000, 12000), mt_rand(9000, 20000)]], // 3 Kapal
-                ['name' => 'UP Perairan', 'data' => [mt_rand(3000, 8000), mt_rand(4000, 10000)]], // 2 Kapal
-            ],
-            'kapal_labels' => [['Kapal A1', 'Kapal A2', 'Kapal A3'], ['Kapal B1', 'Kapal B2']]
-        ];
-    }
-
-    // 5. Jenis BBM (Donut Chart - Total Keseluruhan)
-    private function generateJenisBbmData()
-    {
-        mt_srand((int)$this->filterBulan + $this->filterTahun);
-        
-        return [
-            'labels' => ['Pertamax / Sekelas', 'Pertamina Dex / Sekelas'],
-            'data' => [mt_rand(50000, 100000), mt_rand(30000, 80000)]
-        ];
     }
 }

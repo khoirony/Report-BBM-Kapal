@@ -2,7 +2,7 @@
     
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800">Dashboard Super Admin</h1>
+            <h1 class="text-2xl font-bold text-slate-800">Dashboard Kepala UKPD</h1>
             <div class="flex gap-4 mt-2 border-b border-slate-200">
                 <button @click="tab = 'dashboard'" :class="tab === 'dashboard' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition">Dashboard Utama</button>
                 <button @click="tab = 'laporan'" :class="tab === 'laporan' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition">Laporan Transaksi</button>
@@ -126,16 +126,6 @@
             <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
                 <h3 class="text-lg font-bold mb-4">{{ $pagu_id ? 'Edit' : 'Tambah' }} Pagu Anggaran</h3>
                 <form wire:submit.prevent="storePagu">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">UKPD</label>
-                        <select wire:model="ukpd_id" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">Pilih UKPD...</option>
-                            @foreach($ukpds as $u)
-                                <option value="{{ $u->id }}">{{ $u->nama }} ({{ $u->singkatan }})</option>
-                            @endforeach
-                        </select>
-                        @error('ukpd_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-slate-700 mb-1">Tahun</label>
                         <input type="number" wire:model="tahun" class="w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Contoh: 2024">

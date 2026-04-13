@@ -111,10 +111,6 @@ class SuperAdminDashboard extends Component
         $this->nominal = '';
     }
 
-    // =========================================================================
-    // LOGIKA GRAFIK
-    // =========================================================================
-
     private function generateAnggaranUkpdData()
     {
         $tahunFilter = Carbon::parse($this->startDate)->format('Y');

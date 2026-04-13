@@ -1,27 +1,61 @@
-<div class="p-4 sm:p-6 lg:px-8 lg:py-6 bg-slate-50 min-h-screen">
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Dashboard Nahkoda</h1>
-        <p class="text-sm text-gray-500">Ringkasan aktivitas dan operasional Anda hari ini.</p>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center mb-6">
-        <h2 class="text-xl font-semibold text-gray-700 mb-2">Selamat Datang, {{ auth()->user()->name ?? 'User' }}!</h2>
-        <p class="text-gray-500">Ini adalah dashboard dinamis berbasis Livewire.</p>
+<div class="p-6 bg-slate-50 min-h-screen" x-data="{ tab: 'dashboard' }">
+    
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800">Dashboard Nahkoda</h1>
+        </div>
         
-        <button x-data @click="alert('Alpine Jalan Mantap!')" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-            Klik Saya (Test Alpine.js)
-        </button>
+        <div class="flex items-center bg-white p-2 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex items-center gap-2 px-2">
+                <span class="text-xs font-semibold text-slate-400 uppercase">Dari</span>
+                <input type="date" wire:model.live="startDate" class="text-sm border-none focus:ring-0 text-slate-600 cursor-pointer">
+            </div>
+            <div class="w-px h-5 bg-slate-200 mx-2"></div>
+            <div class="flex items-center gap-2 px-2">
+                <span class="text-xs font-semibold text-slate-400 uppercase">Sampai</span>
+                <input type="date" wire:model.live="endDate" class="text-sm border-none focus:ring-0 text-slate-600 cursor-pointer">
+            </div>
+        </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h3 class="text-lg font-bold mb-4">Data Terbaru (Contoh)</h3>
-        <ul class="divide-y divide-gray-200">
-            @forelse($data_dummy as $data)
-                <li class="py-3 text-gray-600">{{ $data->name }} - {{ $data->email }}</li>
-            @empty
-                <li class="py-3 text-gray-400">Belum ada data di database.</li>
-            @endforelse
-        </ul>
+    <div class="space-y-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 class="font-bold text-slate-700 mb-1">Tren Konsumsi BBM Harian (Liter)</h3>
+            <p class="text-xs text-slate-500 mb-4">Total pemakaian harian berdasarkan hasil sounding kapal Anda</p>
+            <div id="chartKonsumsiHarian" class="h-72"></div>
+        </div>
     </div>
 
+    <script>
+        let chartKonsumsiHarian;
+
+        const renderCharts = (data) => {
+            // Pastikan data tersedia sebelum dirender
+            if (!data || !data.konsumsiHarian) return;
+
+            const optKonsumsiHarian = {
+                chart: { type: 'area', height: 300, toolbar: { show: false } },
+                series: data.konsumsiHarian.series,
+                xaxis: { categories: data.konsumsiHarian.labels },
+                colors: ['#4f46e5'],
+                stroke: { curve: 'smooth', width: 2 },
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0.1 } },
+                dataLabels: { enabled: false },
+                tooltip: { y: { formatter: (val) => val.toLocaleString('id-ID') + ' Liter' } }
+            };
+            
+            if(chartKonsumsiHarian) chartKonsumsiHarian.destroy();
+            chartKonsumsiHarian = new ApexCharts(document.querySelector("#chartKonsumsiHarian"), optKonsumsiHarian);
+            chartKonsumsiHarian.render();
+        };
+
+        window.addEventListener('chartsUpdated', e => renderCharts(e.detail[0] || e.detail));
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialData = @json($chartParams);
+            if (initialData && initialData.konsumsiHarian) {
+                renderCharts(initialData);
+            }
+        });
+    </script>
 </div>

@@ -1,127 +1,211 @@
-<div class="p-4 sm:p-6 lg:px-8 lg:py-6 bg-slate-50 min-h-screen">
+<div class="p-6 bg-slate-50 min-h-screen" x-data="{ tab: 'dashboard' }">
     
-    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Dashboard Utama</h1>
-            <p class="text-sm text-slate-500 mt-1">Ringkasan operasional dan pemakaian bahan bakar kapal.</p>
-        </div>
-        <div class="mt-4 md:mt-0 flex space-x-3">
-            <a href="{{ route('sounding.sounding-bbm') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition shadow-sm shadow-indigo-200">
-                Kelola Data Sounding &rarr;
-            </a>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
-            <p class="text-sm font-medium text-slate-500 mb-1">Total Catatan</p>
-            <h3 class="text-2xl font-bold text-slate-800">{{ number_format($stats['total_transaksi']) }}</h3>
-            <p class="text-xs text-slate-400 mt-2">Seluruh riwayat sounding</p>
+            <h1 class="text-2xl font-bold text-slate-800">Dashboard Sounding BBM</h1>
+            <div class="flex gap-4 mt-2 border-b border-slate-200">
+                <button @click="tab = 'dashboard'" :class="tab === 'dashboard' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition">Dashboard Utama</button>
+                <button @click="tab = 'laporan'" :class="tab === 'laporan' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition">Laporan Transaksi</button>
+            </div>
         </div>
         
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
-            <p class="text-sm font-medium text-slate-500 mb-1">Total Kapal</p>
-            <h3 class="text-2xl font-bold text-slate-800">{{ number_format($stats['kapal_aktif']) }}</h3>
-            <p class="text-xs text-slate-400 mt-2">Kapal dengan riwayat BBM</p>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col relative overflow-hidden">
-            <div class="relative z-10">
-                <p class="text-sm font-medium text-slate-500 mb-1">Total Pengisian BBM</p>
-                <h3 class="text-2xl font-bold text-blue-600">{{ number_format($stats['total_pengisian'], 0, ',', '.') }} <span class="text-sm font-normal text-slate-400">Liter</span></h3>
+        <div class="flex items-center bg-white p-2 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex items-center gap-2 px-2">
+                <span class="text-xs font-semibold text-slate-400 uppercase">Dari</span>
+                <input type="date" wire:model.live="startDate" class="text-sm border-none focus:ring-0 text-slate-600 cursor-pointer">
             </div>
-            <div class="absolute -bottom-4 -right-4 opacity-10">
-                <svg class="w-24 h-24 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L3 9v11a2 2 0 002 2h14a2 2 0 002-2V9l-9-7z"></path></svg>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col relative overflow-hidden">
-            <div class="relative z-10">
-                <p class="text-sm font-medium text-slate-500 mb-1">Total Pemakaian BBM</p>
-                <h3 class="text-2xl font-bold text-orange-500">{{ number_format($stats['total_pemakaian'], 0, ',', '.') }} <span class="text-sm font-normal text-slate-400">Liter</span></h3>
-            </div>
-             <div class="absolute -bottom-4 -right-4 opacity-10">
-                <svg class="w-24 h-24 text-orange-500" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <div class="w-px h-5 bg-slate-200 mx-2"></div>
+            <div class="flex items-center gap-2 px-2">
+                <span class="text-xs font-semibold text-slate-400 uppercase">Sampai</span>
+                <input type="date" wire:model.live="endDate" class="text-sm border-none focus:ring-0 text-slate-600 cursor-pointer">
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <div class="lg:col-span-2">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="text-lg font-bold text-slate-800">Riwayat Sounding Terbaru</h3>
-                    <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">Lihat Semua &rarr;</a>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-                                <th class="px-6 py-4 font-semibold">Kapal & Lokasi</th>
-                                <th class="px-6 py-4 font-semibold text-right">Pengisian</th>
-                                <th class="px-6 py-4 font-semibold text-right">Pemakaian</th>
-                                <th class="px-6 py-4 font-semibold text-right">Sisa Akhir</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse($recent_soundings as $data)
-                                <tr class="hover:bg-slate-50 transition-colors text-sm">
-                                    <td class="px-6 py-4">
-                                        <div class="font-medium text-slate-800">{{ $data->kapal->nama_kapal ?? 'Kapal Tidak Diketahui' }}</div>
-                                        <div class="text-xs text-slate-500 mt-0.5">{{ $data->lokasi }} &bull; {{ $data->created_at->diffForHumans() }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <span class="text-blue-600 font-medium">+{{ number_format($data->pengisian, 0, ',', '.') }} L</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <span class="text-orange-500 font-medium">-{{ number_format($data->pemakaian, 0, ',', '.') }} L</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right font-bold text-slate-800">
-                                        {{ number_format($data->bbm_akhir, 0, ',', '.') }} L
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center text-slate-400">
-                                        <div class="flex flex-col items-center justify-center">
-                                            <svg class="w-10 h-10 mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                                            Belum ada data pencatatan sounding.
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+    <div x-show="tab === 'dashboard'" class="space-y-6" x-transition>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-1">Total Pagu Anggaran</p>
+                <p class="text-xl font-bold text-slate-800">Rp {{ number_format($stats['pagu'], 0, ',', '.') }}</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-1">Total Realisasi (Invoice)</p>
+                <p class="text-xl font-bold text-red-600">Rp {{ number_format($stats['realisasi'], 0, ',', '.') }}</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-1">Konsumsi Pengisian</p>
+                <p class="text-xl font-bold text-indigo-600">{{ number_format($stats['liter']) }} L</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-1">Total Armada Terdaftar</p>
+                <p class="text-xl font-bold text-slate-800">{{ number_format($stats['armada']) }} Unit</p>
             </div>
         </div>
 
-        <div class="lg:col-span-1 space-y-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 class="font-bold text-slate-700 mb-1">Tren Konsumsi BBM Harian (Liter)</h3>
+            <p class="text-xs text-slate-500 mb-4">Total pemakaian harian berdasarkan hasil sounding</p>
+            <div id="chartKonsumsiHarian" class="h-72"></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-700 mb-1">Penggunaan Anggaran Per UKPD</h3>
+                <p class="text-xs text-slate-500 mb-4">Pagu vs Realisasi Invoice (Rupiah)</p>
+                <div id="chartAnggaranUkpd"></div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-700 mb-1">Penggunaan Anggaran Per Kapal</h3>
+                <p class="text-xs text-slate-500 mb-4">Total rupiah yang dihabiskan berdasarkan masing-masing Kapal</p>
+                <div id="chartAnggaranKapal"></div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-700 mb-1">Konsumsi BBM Per Kapal (Sounding)</h3>
+                <p class="text-xs text-slate-500 mb-4">Pemakaian liter per UKPD (Stacked)</p>
+                <div id="chartKonsumsiKapal"></div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-700 mb-1">Pembelian BBM Per Kapal (Pengisian)</h3>
+                <p class="text-xs text-slate-500 mb-4">Volume liter yang diisi per UKPD (Stacked)</p>
+                <div id="chartPembelian"></div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 lg:col-span-2">
+                <h3 class="font-bold text-slate-700 mb-1">Pembelian per Jenis BBM</h3>
+                <p class="text-xs text-slate-500 mb-4">Distribusi BBM berdasarkan jenisnya (Liter)</p>
+                <div id="chartJenisBbm" class="flex justify-center"></div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="tab === 'laporan'" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" style="display: none;" x-transition>
+        <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h3 class="font-bold text-slate-800 text-lg">Laporan Pelaksanaan Kegiatan Penyediaan BBM KDO</h3>
+                <p class="text-xs text-slate-500 mt-1">Periode Transaksi: <span class="font-semibold">{{ Carbon\Carbon::parse($startDate)->format('d M Y') }}</span> s/d <span class="font-semibold">{{ Carbon\Carbon::parse($endDate)->format('d M Y') }}</span></p>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+                <thead class="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold tracking-wider">
+                    <tr>
+                        <th class="px-6 py-4 border-b border-slate-100">UKPD</th>
+                        <th class="px-6 py-4 border-b border-slate-100">Nama Kapal</th>
+                        <th class="px-6 py-4 border-b border-slate-100">Tgl Transaksi</th>
+                        <th class="px-6 py-4 border-b border-slate-100 text-right">Jml Liter</th>
+                        <th class="px-6 py-4 border-b border-slate-100 text-right">Harga Satuan</th>
+                        <th class="px-6 py-4 border-b border-slate-100 text-right">Total Biaya</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($reportData as $row)
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-6 py-4 font-medium text-slate-800">{{ $row->ukpd }}</td>
+                            <td class="px-6 py-4 text-slate-600">{{ $row->nama_kapal }}</td>
+                            <td class="px-6 py-4 text-slate-600">{{ date('d/m/Y', strtotime($row->tanggal_pengisian)) }}</td>
+                            <td class="px-6 py-4 text-right text-slate-800 font-medium">{{ number_format($row->liter) }} L</td>
+                            <td class="px-6 py-4 text-right text-slate-600">Rp {{ number_format((float)$row->harga_satuan, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 text-right text-indigo-600 font-bold">Rp {{ number_format((float)$row->total_harga, 0, ',', '.') }}</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="px-6 py-12 text-center text-slate-400">Tidak ada data transaksi.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let chartKonsumsiHarian, chartAnggaranUkpd, chartAnggaranKapal, chartKonsumsiKapal, chartPembelian, chartJenisBbm;
+        const formatterRupiah = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+
+        const renderCharts = (data) => {
             
-            <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl shadow-md p-6 text-white">
-                <h2 class="text-xl font-bold mb-2">Sistem Sounding Aktif 🚢</h2>
-                <p class="text-indigo-100 text-sm mb-6 leading-relaxed">
-                    Pantau pengisian dan pemakaian bahan bakar kapal secara *real-time* untuk memastikan efisiensi operasional.
-                </p>
-                
-                <a href="{{ route('sounding.sounding-bbm') }}" class="w-full bg-white text-indigo-700 hover:bg-slate-50 px-4 py-2.5 rounded-lg font-bold transition duration-200 shadow-sm flex items-center justify-center text-sm">
-                    Lakukan Sounding Sekarang
-                </a>
-            </div>
+            const optKonsumsiHarian = {
+                chart: { type: 'area', height: 300, toolbar: { show: false } },
+                series: data.konsumsiHarian.series,
+                xaxis: { categories: data.konsumsiHarian.labels },
+                colors: ['#4f46e5'],
+                stroke: { curve: 'smooth', width: 2 },
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0.1 } },
+                dataLabels: { enabled: false },
+                tooltip: { y: { formatter: (val) => val.toLocaleString('id-ID') + ' Liter' } }
+            };
+            if(chartKonsumsiHarian) chartKonsumsiHarian.destroy();
+            chartKonsumsiHarian = new ApexCharts(document.querySelector("#chartKonsumsiHarian"), optKonsumsiHarian);
+            chartKonsumsiHarian.render();
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">Informasi Tambahan</h3>
-                <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
-                    <p class="text-xs text-slate-500 mb-1">Status Database</p>
-                    <div class="flex items-center">
-                        <span class="w-2.5 h-2.5 bg-green-500 rounded-full mr-2"></span>
-                        <span class="text-sm font-medium text-slate-700">Terhubung & Stabil</span>
-                    </div>
-                </div>
-            </div>
+            const optAnggaranUkpd = {
+                chart: { type: 'bar', height: 320, toolbar: { show: false } },
+                series: data.anggaranUkpd.series,
+                xaxis: { categories: data.anggaranUkpd.labels },
+                colors: ['#cbd5e1', '#4f46e5'],
+                plotOptions: { bar: { borderRadius: 4, dataLabels: { position: 'top' } } },
+                dataLabels: { enabled: false },
+                tooltip: { y: { formatter: (val) => formatterRupiah.format(val) } },
+                legend: { position: 'bottom' }
+            };
+            if(chartAnggaranUkpd) chartAnggaranUkpd.destroy();
+            chartAnggaranUkpd = new ApexCharts(document.querySelector("#chartAnggaranUkpd"), optAnggaranUkpd);
+            chartAnggaranUkpd.render();
 
-        </div>
-    </div>
+            const optAnggaranKapal = {
+                chart: { type: 'bar', height: 320, toolbar: { show: false } },
+                series: data.anggaranKapal.series,
+                xaxis: { categories: data.anggaranKapal.labels },
+                colors: ['#e11d48'],
+                tooltip: { y: { formatter: (val) => formatterRupiah.format(val) } },
+                legend: { position: 'bottom' },
+                plotOptions: { bar: { borderRadius: 4 } }
+            };
+            if(chartAnggaranKapal) chartAnggaranKapal.destroy();
+            chartAnggaranKapal = new ApexCharts(document.querySelector("#chartAnggaranKapal"), optAnggaranKapal);
+            chartAnggaranKapal.render();
+
+            const optKonsumsiKapal = {
+                chart: { type: 'bar', height: 320, stacked: true, toolbar: { show: false } },
+                series: data.konsumsiKapal.series,
+                xaxis: { categories: data.konsumsiKapal.labels },
+                tooltip: { y: { formatter: (val) => val.toLocaleString('id-ID') + ' Liter' } },
+                legend: { position: 'bottom' },
+                plotOptions: { bar: { borderRadius: 2 } }
+            };
+            if(chartKonsumsiKapal) chartKonsumsiKapal.destroy();
+            chartKonsumsiKapal = new ApexCharts(document.querySelector("#chartKonsumsiKapal"), optKonsumsiKapal);
+            chartKonsumsiKapal.render();
+
+            const optPembelian = {
+                chart: { type: 'bar', height: 320, stacked: true, toolbar: { show: false } },
+                series: data.pembelian.series,
+                xaxis: { categories: data.pembelian.labels },
+                tooltip: { y: { formatter: (val) => val.toLocaleString('id-ID') + ' Liter' } },
+                legend: { position: 'bottom' },
+                plotOptions: { bar: { borderRadius: 2 } }
+            };
+            if(chartPembelian) chartPembelian.destroy();
+            chartPembelian = new ApexCharts(document.querySelector("#chartPembelian"), optPembelian);
+            chartPembelian.render();
+
+            const optJenis = {
+                chart: { type: 'donut', height: 320 },
+                labels: data.jenisBbm.labels,
+                series: data.jenisBbm.data,
+                colors: ['#f59e0b', '#ef4444', '#3b82f6', '#10b981'],
+                tooltip: { y: { formatter: (val) => val.toLocaleString('id-ID') + ' Liter' } },
+                legend: { position: 'right' }
+            };
+            if(chartJenisBbm) chartJenisBbm.destroy();
+            chartJenisBbm = new ApexCharts(document.querySelector("#chartJenisBbm"), optJenis);
+            chartJenisBbm.render();
+        };
+
+        window.addEventListener('chartsUpdated', e => renderCharts(e.detail[0] || e.detail));
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialData = @json($chartParams);
+            if (initialData && initialData.anggaranUkpd) renderCharts(initialData);
+        });
+    </script>
 </div>

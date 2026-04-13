@@ -107,7 +107,8 @@ class KapalSeeder extends Seeder
                 'tenaga_penggerak_kw'   => trim($data[9] ?? ''),
                 'daerah_pelayaran'      => trim($data[10] ?? ''),
                 'list_sertifikat_kapal' => trim($data[11] ?? ''),
-                'user_id'               => $nahkodaUser->id,
+                'user_id'               => 1,
+                'nahkoda_id'            => $nahkodaUser->id,
             ]);
         }
   
