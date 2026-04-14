@@ -11,4 +11,9 @@ class Ukpd extends Model
 
     // Mengizinkan semua kolom untuk diisi secara massal
     protected $guarded = ['id'];
+
+    public function kepalaUkpd()
+    {
+        return $this->hasOne(User::class, 'ukpd_id')->where('role_id', 3);
+    }
 }

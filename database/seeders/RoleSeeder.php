@@ -12,11 +12,11 @@ class RoleSeeder extends Seeder
         $roles = [
             ['name' => 'Super Admin', 'slug' => 'superadmin', 'color' => 'rose'],
             ['name' => 'Admin UKPD', 'slug' => 'admin_ukpd', 'color' => 'cyan'],
-            ['name' => 'Tim Sounding', 'slug' => 'sounding', 'color' => 'blue'],
-            ['name' => 'Satgas BBM', 'slug' => 'satgas', 'color' => 'emerald'],
+            ['name' => 'Kepala UKPD', 'slug' => 'kepala_ukpd', 'color' => 'orange'],
             ['name' => 'Pengawas', 'slug' => 'pengawas', 'color' => 'purple'],
             ['name' => 'PPTK', 'slug' => 'pptk', 'color' => 'teal'],
-            ['name' => 'Kepala UKPD', 'slug' => 'kepala_ukpd', 'color' => 'orange'],
+            ['name' => 'Tim Sounding', 'slug' => 'sounding', 'color' => 'blue'],
+            ['name' => 'Satgas BBM', 'slug' => 'satgas', 'color' => 'emerald'],
             ['name' => 'Nakhoda', 'slug' => 'nakhoda', 'color' => 'indigo'],
             ['name' => 'Penyedia BBM', 'slug' => 'penyedia', 'color' => 'amber'],
         ];

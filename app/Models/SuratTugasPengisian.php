@@ -31,4 +31,9 @@ class SuratTugasPengisian extends Model
     {
         return $this->hasMany(PetugasSuratTugas::class, 'surat_tugas_pengisian_id');
     }
+
+    public function ukpd() 
+    {
+        return $this->belongsTo(Ukpd::class);
+    }
 }
