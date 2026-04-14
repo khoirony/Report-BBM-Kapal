@@ -57,7 +57,7 @@
                     DINAS PERHUBUNGAN
                 </div>
                 <div class="instansi-utama" style="font-size: 14pt; font-weight: bold; margin: 0; white-space: nowrap;">
-                    {{ strtoupper($surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama) }}
+                    {{ strtoupper($surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '') }}
                 </div>
                 
                 <p style="font-size: 10pt; margin: 5px 0 0 0; line-height: 1.2;">
@@ -105,7 +105,7 @@
                 <table class="sub-header-right">
                     <tr>
                         <td style="width: 25%;">Jakarta,</td>
-                        <td>{{ \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') }}</td>
+                        <td>{{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '........................' }}</td>
                     </tr>
                     <tr>
                         <td colspan="2" style="padding-top: 10px;">Kepada</td>
@@ -184,7 +184,7 @@
                     KM. {{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '................' }}
                 </td>
                 <td style="width: 50%;">
-                    Jakarta, {{ \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') }}<br>
+                    Jakarta, {{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '........................' }}<br>
                     Pejabat Pelaksana Teknis Kegiatan<br>
                     {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama }}<br>
                     Dinas Perhubungan Provinsi DKI Jakarta
