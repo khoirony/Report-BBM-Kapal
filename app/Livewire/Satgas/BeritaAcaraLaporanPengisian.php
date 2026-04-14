@@ -2,256 +2,169 @@
 
 namespace App\Livewire\Satgas;
 
-use App\Models\Kapal;
 use App\Models\BaPengisianBbm;
-use App\Models\Sounding;
+use App\Models\Kapal;
+use App\Models\LaporanPengisianBbm;
+use App\Models\Ukpd;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class BeritaAcaraLaporanPengisian extends Component
 {
     use WithPagination;
 
-    // Properti Form Modal
-    public $laporan_id, $kapal_id, $hari, $tanggal, $dasar_hukum, $kegiatan, $tujuan, $lokasi;
-    public $petugas_list = []; 
-    public $isOpen = false;
-
-    // Properti Checklist Sounding
-    public $available_soundings = [];
-    public $selected_soundings = [];
-
-    // Properti Search, Filter, dan Sort
-    public $search = '';
-    public $sortBy = 'latest';
-    public $filterKapal = '';
+    // Properti Data Form
+    public $laporan_id, $laporan_pengisian_bbm_id, $kapal_id;
+    public $tanggal_ba; // Menggantikan hari, tgl, bulan, tahun
+    public $nomor_pks, $tanggal_pks;
     
-    // Properti Filter Tanggal Baru
-    public $filterTanggalDari = '';
-    public $filterTanggalSampai = '';
+    // Properti UI & Filter
+    public $isOpen = false;
+    public $search = '';
+    public $filterUkpd = '', $filterKapal = '', $filterTanggalAwal = '', $filterTanggalAkhir = '';
+    public $sortBy = 'latest';
+    public $pks_suggestions = [];
 
-    // Reset pagination ketika user melakukan pencarian atau filter
     public function updatingSearch() { $this->resetPage(); }
-    public function updatingSortBy() { $this->resetPage(); }
+    public function updatingFilterUkpd() { $this->resetPage(); }
     public function updatingFilterKapal() { $this->resetPage(); }
-    public function updatingFilterTanggalDari() { $this->resetPage(); }
-    public function updatingFilterTanggalSampai() { $this->resetPage(); }
 
-    public function resetFilters()
+    public function mount() 
     {
-        $this->search = '';
-        $this->filterKapal = '';
-        $this->filterTanggalDari = '';
-        $this->filterTanggalSampai = '';
-        $this->sortBy = 'latest';
-        $this->resetPage();
-    }
-
-    public function mount()
-    {
-        $this->initPetugas();
+        $this->pks_suggestions = BaPengisianBbm::whereNotNull('nomor_pks')
+                                    ->distinct()
+                                    ->pluck('nomor_pks')
+                                    ->toArray();
     }
 
     public function render()
     {
-        $query = BaPengisianBbm::with(['kapal', 'soundings', 'user']);
+        // Eager load relasi dalam untuk tabel utama
+        $query = BaPengisianBbm::with([
+            'kapal.ukpd', 
+            'laporanPengisian.suratPermohonan', 
+            'laporanPengisian.suratTugas.petugas',
+            'laporanPengisian.suratTugas.LaporanSisaBbm.sounding.kapal'
+        ]);
 
-        if (auth()->user()?->role?->slug !== 'superadmin') {
-            $query->where('user_id', auth()->id());
-        }
-
-        // 1. Fitur Search (Cari Lokasi, Kegiatan, atau Nama Kapal)
         if ($this->search) {
             $query->where(function($q) {
-                $q->where('lokasi', 'like', '%' . $this->search . '%')
-                  ->orWhere('kegiatan', 'like', '%' . $this->search . '%')
+                $q->where('nomor_pks', 'like', "%{$this->search}%")
                   ->orWhereHas('kapal', function($k) {
-                      $k->where('nama_kapal', 'like', '%' . $this->search . '%');
+                      $k->where('nama_kapal', 'like', "%{$this->search}%");
                   });
             });
         }
 
-        // 2. Fitur Filter Kapal
-        if ($this->filterKapal) {
-            $query->where('kapal_id', $this->filterKapal);
-        }
-        
-        // Fitur Filter Rentang Tanggal
-        if ($this->filterTanggalDari) {
-            $query->whereDate('tanggal', '>=', $this->filterTanggalDari);
-        }
-        if ($this->filterTanggalSampai) {
-            $query->whereDate('tanggal', '<=', $this->filterTanggalSampai);
-        }
+        if ($this->filterKapal) $query->where('kapal_id', $this->filterKapal);
+        if ($this->filterUkpd) $query->whereHas('kapal', fn($q) => $q->where('ukpd_id', $this->filterUkpd));
+        if ($this->filterTanggalAwal) $query->whereDate('created_at', '>=', $this->filterTanggalAwal);
+        if ($this->filterTanggalAkhir) $query->whereDate('created_at', '<=', $this->filterTanggalAkhir);
 
-        // 3. Fitur Sort
-        match($this->sortBy) {
-            'oldest' => $query->orderBy('tanggal', 'asc'),
-            default => $query->orderBy('tanggal', 'desc'), // 'latest'
-        };
-
-        // Paginasi & Data Relasi untuk Dropdown
-        $laporans = $query->paginate(10);
-        $kapals = Kapal::query();
-        if (auth()->user()?->role?->slug !== 'superadmin') {
-            $kapals->where('ukpd_id', auth()->user()?->ukpd_id);
-        }
-        $kapals = $kapals->orderBy('nama_kapal', 'asc')->get();
+        $query->orderBy('created_at', $this->sortBy === 'latest' ? 'desc' : 'asc');
 
         return view('livewire.satgas.berita-acara-laporan-pengisian', [
-            'laporans' => $laporans,
-            'kapals' => $kapals,
+            'laporans' => $query->paginate(10),
+            'kapals' => Kapal::orderBy('nama_kapal', 'asc')->get(),
+            'ukpds' => Ukpd::orderBy('nama', 'asc')->get(),
+            // Eager load relasi ke kapal lewat surat tugas untuk Data Master Dropdown
+            'laporan_pengisian_list' => LaporanPengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal'])->latest()->get(),
         ])->layout('layouts.app');
     }
 
-    public function downloadPdf($id)
+    public function resetFilters()
     {
-        $query = BaPengisianBbm::with(['kapal', 'soundings' => function($q) {
-            $q->orderBy('created_at', 'asc');
-        }]);
-
-        if (auth()->user()?->role?->slug !== 'superadmin') {
-            $query->where('user_id', auth()->id());
-        }
-
-        $laporan = $query->findOrFail($id);
-
-        $pdf = Pdf::loadView('pdf.laporan-pengisian-bbm', ['laporan' => $laporan]);
-        $pdf->setPaper('A4', 'portrait');
-
-        $namaFile = 'Laporan_BBM_' . str_replace(' ', '_', $laporan->kapal->nama_kapal) . '_' . $laporan->tanggal->format('d-m-Y') . '.pdf';
-
-        return response()->streamDownload(fn () => print($pdf->output()), $namaFile);
+        $this->search = ''; $this->filterUkpd = ''; $this->filterKapal = '';
+        $this->filterTanggalAwal = ''; $this->filterTanggalAkhir = '';
+        $this->sortBy = 'latest'; $this->resetPage();
     }
 
-    public function updatedKapalId() { $this->loadAvailableSoundings(); }
-    public function updatedTanggal() { $this->loadAvailableSoundings(); }
-
-    public function loadAvailableSoundings()
+    // Penarikan otomatis kapal dari Laporan Master yang bersarang
+    public function updatedLaporanPengisianBbmId($value)
     {
-        if ($this->kapal_id && $this->tanggal) {
-            $query = Sounding::where('kapal_id', $this->kapal_id)
-                ->whereDate('created_at', $this->tanggal);
-                
-            if (auth()->user()?->role?->slug !== 'superadmin') {
-                $query->whereHas('kapal', function ($q) {
-                    $q->where('ukpd_id', auth()->user()?->ukpd_id);
-                });
-            }
-
-            $this->available_soundings = $query->get();
+        $lp = LaporanPengisianBbm::with('suratTugas.LaporanSisaBbm.sounding')->find($value);
+        
+        if ($lp) {
+            // Ambil kapal_id dari relasi terdalam
+            $this->kapal_id = $lp->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id ?? '';
         } else {
-            $this->available_soundings = [];
+            $this->kapal_id = ''; 
         }
     }
 
-    public function create()
+    public function approve($id, $level)
     {
-        $this->resetInputFields();
-        $this->openModal();
+        $ba = BaPengisianBbm::findOrFail($id);
+        if ($level === 'penyedia_pptk') {
+            $ba->update(['disetujui_penyedia_at' => now(), 'disetujui_pptk_at' => now()]);
+        } elseif ($level === 'kepala_ukpd') {
+            $ba->update(['disetujui_kepala_ukpd_at' => now()]);
+        }
+        session()->flash('message', 'Persetujuan Berita Acara berhasil dicatat.');
     }
 
-    public function openModal() { $this->isOpen = true; }
+    public function create() { 
+        $this->resetFields(); 
+        $this->isOpen = true; 
+    }
+    
+    public function edit($id) {
+        $ba = BaPengisianBbm::findOrFail($id);
+        $this->laporan_id = $ba->id;
+        $this->laporan_pengisian_bbm_id = $ba->laporan_pengisian_bbm_id;
+        $this->kapal_id = $ba->kapal_id;
+        $this->nomor_pks = $ba->nomor_pks;
+        $this->tanggal_pks = $ba->tanggal_pks;
+
+        $months = ['Januari'=>'01', 'Februari'=>'02', 'Maret'=>'03', 'April'=>'04', 'Mei'=>'05', 'Juni'=>'06', 'Juli'=>'07', 'Agustus'=>'08', 'September'=>'09', 'Oktober'=>'10', 'November'=>'11', 'Desember'=>'12'];
+        $monthNum = $months[$ba->bulan_ba] ?? '01';
+        $this->tanggal_ba = $ba->tahun_ba . '-' . $monthNum . '-' . str_pad($ba->tgl_ba, 2, '0', STR_PAD_LEFT);
+
+        $this->isOpen = true;
+    }
+
     public function closeModal() { 
         $this->isOpen = false; 
-        $this->resetValidation();
     }
 
-    private function resetInputFields()
-    {
-        $this->laporan_id = '';
+    private function resetFields() {
+        $this->laporan_id = null;
+        $this->laporan_pengisian_bbm_id = '';
         $this->kapal_id = '';
-        $this->hari = '';
-        $this->tanggal = '';
-        $this->dasar_hukum = '';
-        $this->kegiatan = 'Pengisian BBM Kapal di Pelabuhan Sunda Kelapa';
-        $this->tujuan = 'Meningkatkan Ketersediaan BBM Kapal untuk Menunjang Kegiatan Operasional';
-        $this->lokasi = '';
-        $this->available_soundings = [];
-        $this->selected_soundings = [];
-        $this->initPetugas();
+        $this->tanggal_ba = date('Y-m-d');
+        $this->nomor_pks = '';
+        $this->tanggal_pks = '';
     }
 
-    private function initPetugas()
-    {
-        $this->petugas_list = [];
-        for ($i = 0; $i < 7; $i++) { $this->petugas_list[] = ['nama' => '', 'jabatan' => '']; }
-    }
-
-    public function store()
-    {
+    public function store() {
         $this->validate([
+            'laporan_pengisian_bbm_id' => 'required',
             'kapal_id' => 'required',
-            'tanggal' => 'required|date',
-            'dasar_hukum' => 'required',
-            'lokasi' => 'required',
+            'tanggal_ba' => 'required|date',
         ]);
 
-        $data = [
+        $parsedDate = Carbon::parse($this->tanggal_ba)->locale('id');
+
+        BaPengisianBbm::updateOrCreate(['id' => $this->laporan_id], [
+            'laporan_pengisian_bbm_id' => $this->laporan_pengisian_bbm_id,
             'kapal_id' => $this->kapal_id,
-            'tanggal' => $this->tanggal,
-            'dasar_hukum' => $this->dasar_hukum,
-            'petugas_list' => $this->petugas_list,
-            'kegiatan' => $this->kegiatan,
-            'tujuan' => $this->tujuan,
-            'lokasi' => $this->lokasi,
-        ];
+            'hari' => $parsedDate->isoFormat('dddd'),
+            'tgl_ba' => $parsedDate->format('d'),
+            'bulan_ba' => $parsedDate->isoFormat('MMMM'),
+            'tahun_ba' => $parsedDate->format('Y'),
+            'nomor_pks' => $this->nomor_pks,
+            'tanggal_pks' => $this->tanggal_pks ?: null,
+            'user_id' => auth()->id(),
+        ]);
 
-        if (!$this->laporan_id) {
-            $data['user_id'] = auth()->id();
-        }
-
-        $laporan = BaPengisianBbm::updateOrCreate(['id' => $this->laporan_id], $data);
-
-        $laporan->soundings()->sync($this->selected_soundings);
-
-        session()->flash('message', $this->laporan_id ? 'Laporan berhasil diperbarui.' : 'Laporan berhasil dibuat.');
+        session()->flash('message', $this->laporan_id ? 'Berita Acara berhasil diperbarui!' : 'Berita Acara berhasil dibuat!');
+        $this->mount();
         $this->closeModal();
-        $this->resetInputFields();
     }
 
-    public function edit($id)
-    {
-        $query = BaPengisianBbm::query();
-        
-        if (auth()->user()?->role?->slug !== 'superadmin') {
-            $query->where('user_id', auth()->id());
-        }
-        
-        $laporan = $query->findOrFail($id);
-        
-        $this->laporan_id = $id;
-        $this->kapal_id = $laporan->kapal_id;
-        $this->hari = $laporan->hari;
-        $this->tanggal = $laporan->tanggal->format('Y-m-d');
-        $this->dasar_hukum = $laporan->dasar_hukum;
-        $this->kegiatan = $laporan->kegiatan;
-        $this->tujuan = $laporan->tujuan;
-        $this->lokasi = $laporan->lokasi;
-        
-        $this->petugas_list = $laporan->petugas_list ?? [];
-        while(count($this->petugas_list) < 7) { $this->petugas_list[] = ['nama' => '', 'jabatan' => '']; }
-        
-        $this->loadAvailableSoundings();
-        $this->selected_soundings = $laporan->soundings->pluck('id')->toArray();
-
-        $this->openModal();
-    }
-
-    public function delete($id)
-    {
-        $query = BaPengisianBbm::query();
-        
-        if (auth()->user()?->role?->slug !== 'superadmin') {
-            $query->where('user_id', auth()->id());
-        }
-        
-        $laporan = $query->findOrFail($id);
-        
-        $laporan->soundings()->detach(); 
-        $laporan->delete();
-        
-        session()->flash('message', 'Laporan berhasil dihapus.');
+    public function delete($id) {
+        BaPengisianBbm::findOrFail($id)->delete();
+        session()->flash('message', 'Berita Acara berhasil dihapus.');
     }
 }

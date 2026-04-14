@@ -19,15 +19,19 @@ class BaPengisianBbm extends Model
         return $this->belongsTo(Kapal::class);
     }
 
-    // Relasi One-to-Many ke Sounding
-    public function soundings() 
-    {
-        return $this->belongsToMany(Sounding::class, 'laporan_sounding', 'ba_pengisian_bbm_id', 'sounding_id')->withTimestamps();
+    public function laporanPengisian() {
+        return $this->belongsTo(LaporanPengisianBbm::class, 'laporan_pengisian_bbm_id');
     }
 
-    public function suratTugas()
-    {
-        return $this->hasOne(SuratTugasPengisian::class, 'laporan_bbm_id');
+    public function suratPermohonan() {
+        return $this->hasOneThrough(
+            SuratPermohonanPengisian::class,
+            LaporanPengisianBbm::class,
+            'id', // Foreign key di LaporanPengisian
+            'id', // Foreign key di SuratPermohonan
+            'laporan_pengisian_bbm_id', // Local key di BA
+            'surat_permohonan_id' // Local key di LaporanPengisian
+        );
     }
 
     public function user()

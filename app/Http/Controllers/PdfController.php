@@ -12,20 +12,23 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PdfController extends Controller
 {
-    public function previewLaporan($id)
+    public function previewBeritaAcaraLaporanPengisian($id)
     {
         // Ambil data laporan beserta relasinya (Sama seperti logika di Livewire sebelumnya)
-        $laporan = BaPengisianBbm::with(['kapal', 'soundings' => function($q) {
-            $q->orderBy('created_at', 'asc');
-        }])->findOrFail($id);
+        $laporan = BaPengisianBbm::with([
+            'kapal.ukpd', 
+            'laporanPengisian.suratPermohonan', 
+            'laporanPengisian.suratTugas.petugas',
+            'laporanPengisian.suratTugas.LaporanSisaBbm.sounding.kapal'
+        ])->findOrFail($id);
 
         // Render view PDF
-        $pdf = Pdf::loadView('pdf.laporan-bbm-sebelum-pengisian', ['laporan' => $laporan]);
+        $pdf = Pdf::loadView('pdf.berita-acara-laporan-pengisian', ['laporan' => $laporan]);
 
         // Atur ukuran kertas ke A4 (Portrait)
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Laporan_BBM_' . str_replace(' ', '_', $laporan->kapal->nama_kapal ?? 'Kapal') . '_' . $laporan->tanggal->format('d-m-Y') . '.pdf';
+        $namaFile = 'Laporan_BBM_' . str_replace(' ', '_', $laporan->kapal->nama_kapal ?? 'Kapal') . '_' . $laporan->tgl_ba . '.pdf';
 
         // Gunakan stream() untuk menampilkan preview di browser, bukan download()
         return $pdf->stream($namaFile);
