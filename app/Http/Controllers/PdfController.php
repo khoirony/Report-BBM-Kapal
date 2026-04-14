@@ -6,6 +6,7 @@ use App\Models\BaPengisianBbm;
 use Illuminate\Http\Request;
 use App\Models\LaporanSebelumPengisian;
 use App\Models\LaporanSisaBbm;
+use App\Models\SuratPermohonanPengisian;
 use App\Models\SuratTugasPengisian;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -39,6 +40,19 @@ class PdfController extends Controller
 
         $namaKapal = $surat->laporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal';
         $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $namaKapal) . '.pdf';
+
+        return $pdf->stream($namaFile);
+    }
+
+    public function previewSuratPermohonan($id)
+    {
+        $surat = SuratPermohonanPengisian::with(['suratTugas.laporanSisaBbm.sounding.kapal', 'suratTugas.petugas'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('pdf.surat-permohonan-pengisian-bbm', ['surat' => $surat]);
+        $pdf->setPaper('A4', 'portrait');
+
+        $namaKapal = $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal';
+        $namaFile = 'Surat_Permohonan_BBM_' . str_replace(' ', '_', $namaKapal) . '.pdf';
 
         return $pdf->stream($namaFile);
     }
