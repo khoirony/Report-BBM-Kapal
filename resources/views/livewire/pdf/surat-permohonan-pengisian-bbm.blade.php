@@ -62,7 +62,7 @@
                 
                 <p style="font-size: 10pt; margin: 5px 0 0 0; line-height: 1.2;">
                     {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->alamat }}<br>
-                    Website: www.dishub.jakarta.go.id &nbsp; E-mail : {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->email }}
+                    Website: www.dishub.jakarta.go.id &nbsp;&nbsp;&nbsp; E-mail : {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->email }}
                 </p>
     
                 <table style="width: 100%; font-size: 10pt; margin-top: 0;">
