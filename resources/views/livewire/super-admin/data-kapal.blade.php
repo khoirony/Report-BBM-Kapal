@@ -14,11 +14,11 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Data Kapal</h1>
-                    <p class="text-sm text-gray-500 mt-1 font-medium">Kelola informasi, foto, nahkoda, dan sertifikasi seluruh armada kapal.</p>
+                    <p class="text-sm text-gray-500 mt-1 font-medium">Kelola informasi, foto, nakhoda, dan sertifikasi seluruh armada kapal.</p>
                 </div>
             </div>
             
-            @if (auth()->user() && !in_array(auth()->user()?->role?->slug, ['nahkoda']))
+            @if (auth()->user() && !in_array(auth()->user()?->role?->slug, ['nakhoda']))
             <button wire:click="create()" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 w-full sm:w-auto focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
                 <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"></path>
@@ -180,17 +180,17 @@
                                                 Thn: {{ $kapal->tahun_pembuatan ?? '-' }}
                                             </span>
                                             
-                                            @if($kapal->nahkoda_id)
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-emerald-50 text-emerald-700 w-max border border-emerald-100 shadow-sm" title="Akun Nahkoda Terhubung">
+                                            @if($kapal->nakhoda_id)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-emerald-50 text-emerald-700 w-max border border-emerald-100 shadow-sm" title="Akun nakhoda Terhubung">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v14m0-14a3 3 0 110-6 3 3 0 010 6zM8 12h8M5 15a7 7 0 0014 0"></path>
                                                     </svg>
-                                                    <span class="font-bold mr-1">Nahkoda:</span> <span class="font-medium">{{ $kapal->nahkoda->name ?? 'Akun Terhapus' }}</span>
+                                                    <span class="font-bold mr-1">Nakhoda:</span> <span class="font-medium">{{ $kapal->nakhoda->name ?? 'Akun Terhapus' }}</span>
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-50 text-rose-600 w-max border border-rose-100 shadow-sm" title="Belum Ada Nahkoda Terhubung">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-50 text-rose-600 w-max border border-rose-100 shadow-sm" title="Belum Ada nakhoda Terhubung">
                                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                                    Belum Ada Nahkoda
+                                                    Belum Ada Nakhoda
                                                 </span>
                                             @endif
                                             
@@ -285,7 +285,7 @@
                                             <span class="lg:hidden">Edit</span>
                                         </button>
                                         
-                                        @if (auth()->user() && !in_array(auth()->user()?->role?->slug, ['nahkoda']))
+                                        @if (auth()->user() && !in_array(auth()->user()?->role?->slug, ['nakhoda']))
                                         <button wire:click="delete({{ $kapal->id }})" onclick="confirm('Yakin ingin menghapus laporan ini?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100">
                                             <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             <span class="lg:hidden">Hapus</span>
@@ -388,19 +388,19 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Akun Nahkoda Terhubung</label>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Akun Nakhoda Terhubung</label>
                                 <div class="relative">
-                                    <select wire:model="nahkoda_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors appearance-none cursor-pointer">
+                                    <select wire:model="nakhoda_id" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full transition-colors appearance-none cursor-pointer">
                                         <option value="">-- Putuskan Hubungan / Kosongkan --</option>
-                                        @foreach($nahkodas as $nahkoda)
-                                            <option value="{{ $nahkoda->id }}">{{ $nahkoda->name }}</option>
+                                        @foreach($nakhodas as $nakhoda)
+                                            <option value="{{ $nakhoda->id }}">{{ $nakhoda->name }}</option>
                                         @endforeach
                                     </select>
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                     </div>
                                 </div>
-                                <p class="text-xs text-slate-500 mt-1 font-medium">Hanya menampilkan akun nahkoda yang belum terhubung dengan kapal manapun.</p>
+                                <p class="text-xs text-slate-500 mt-1 font-medium">Hanya menampilkan akun nakhoda yang belum terhubung dengan kapal manapun.</p>
                             </div>
 
                             {{-- DIUBAH MENJADI DROPDOWN --}}

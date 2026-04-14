@@ -325,7 +325,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Klasifikasi</label>
-                                    <input type="text" wire:model="klasifikasi" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
+                                    <input type="text" wire:model="klasifikasi" placeholder="Biasa/Penting/Rahasia" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Lampiran</label>
@@ -371,7 +371,7 @@
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Pengawas UPAP <span class="text-rose-500">*</span></label>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Pengawas <span class="text-rose-500">*</span></label>
                                     <input type="text" wire:model="nama_pengawas" placeholder="Masukkan Nama Pengawas..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
                                     @error('nama_pengawas') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 </div>

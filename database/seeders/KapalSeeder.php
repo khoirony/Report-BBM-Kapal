@@ -14,10 +14,10 @@ class KapalSeeder extends Seeder
     public function run()
     {
         $ukpds = DB::table('ukpds')->get();
-        $nahkodaRoleId = DB::table('roles')->where('slug', 'nahkoda')->value('id');
+        $nakhodaRoleId = DB::table('roles')->where('slug', 'nakhoda')->value('id');
 
-        if (!$nahkodaRoleId) {
-            $this->command->error("Role 'nahkoda' tidak ditemukan. Pastikan RoleSeeder sudah dijalankan.");
+        if (!$nakhodaRoleId) {
+            $this->command->error("Role 'nakhoda' tidak ditemukan. Pastikan RoleSeeder sudah dijalankan.");
             return;
         }
 
@@ -62,22 +62,19 @@ class KapalSeeder extends Seeder
             $ukpdIdFinal = $ukpdId ?? 4;
             
             $safeKapalName = Str::slug($namaKapal, '_');
-            $nahkodaEmail = "nahkoda_{$safeKapalName}@gmail.com";
+            $nakhodaEmail = "nakhoda_{$safeKapalName}@gmail.com";
 
-            $nahkodaUser = User::updateOrCreate(
-                ['email' => $nahkodaEmail], 
+            $nakhodaUser = User::updateOrCreate(
+                ['email' => $nakhodaEmail], 
                 [
-                    'name'              => 'Nahkoda ' . $namaKapal,
+                    'name'              => 'Nakhoda ' . $namaKapal,
                     'email_verified_at' => now(),
                     'password'          => $defaultPassword,
-                    'role_id'           => $nahkodaRoleId,
+                    'role_id'           => $nakhodaRoleId,
                     'ukpd_id'           => $ukpdIdFinal,
                 ]
             );
 
-            // =====================================================================
-            // 4. MEMASUKKAN DATA KAPAL KE DB & HUBUNGKAN DENGAN NAHKODA
-            // =====================================================================
             Kapal::create([
                 'nama_kapal'            => $namaKapal,
                 'ukpd_id'               => $ukpdIdFinal,
@@ -90,12 +87,12 @@ class KapalSeeder extends Seeder
                 'daerah_pelayaran'      => trim($data[10] ?? ''),
                 'list_sertifikat_kapal' => trim($data[11] ?? ''),
                 'user_id'               => 1,
-                'nahkoda_id'            => $nahkodaUser->id,
+                'nakhoda_id'            => $nakhodaUser->id,
             ]);
         }
   
         fclose($csvFile);
         
-        $this->command->info('Data kapal beserta akun Nahkoda-nya berhasil di-seed!');
+        $this->command->info('Data kapal beserta akun Nakhoda-nya berhasil di-seed!');
     }
 }

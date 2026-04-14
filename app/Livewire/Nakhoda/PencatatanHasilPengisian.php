@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Nahkoda;
+namespace App\Livewire\Nakhoda;
 
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -209,9 +209,9 @@ class PencatatanHasilPengisian extends Component
         
         $query = PencatatanHasil::with(['suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal', 'creator'])->latest();
 
-        if ($user->role->slug === 'nahkoda') {
+        if ($user->role->slug === 'nakhoda') {
             $query->whereHas('kapal', function($q) use ($user) {
-                $q->where('nahkoda_id', $user->id);
+                $q->where('nakhoda_id', $user->id);
             });
         }
 
@@ -228,9 +228,9 @@ class PencatatanHasilPengisian extends Component
         }
 
         $permohonanQuery = SuratPermohonanPengisian::with('suratTugas.LaporanSisaBbm.sounding.kapal');
-        if ($user->role->slug === 'nahkoda') {
+        if ($user->role->slug === 'nakhoda') {
             $permohonanQuery->whereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($q) use ($user) {
-                $q->where('nahkoda_id', $user->id);
+                $q->where('nakhoda_id', $user->id);
             });
         }
         
@@ -242,9 +242,9 @@ class PencatatanHasilPengisian extends Component
             }
         });
 
-        if ($user->role->slug === 'nahkoda') {
+        if ($user->role->slug === 'nakhoda') {
             $permohonanQuery->whereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($q) use ($user) {
-                $q->where('nahkoda_id', $user->id);
+                $q->where('nakhoda_id', $user->id);
             });
         }
         
@@ -254,7 +254,7 @@ class PencatatanHasilPengisian extends Component
             });
         }
 
-        return view('livewire.nahkoda.pencatatan-hasil-pengisian', [
+        return view('livewire.nakhoda.pencatatan-hasil-pengisian', [
             'pencatatans' => $query->paginate(10),
             'permohonans' => $permohonanQuery->get(),
             'kapals'      => Kapal::all(),

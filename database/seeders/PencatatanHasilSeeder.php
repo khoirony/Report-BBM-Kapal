@@ -13,14 +13,14 @@ class PencatatanHasilSeeder extends Seeder
 {
     public function run(): void
     {
-        // Cari user Nahkoda (sebagai pembuat/penginput data)
-        $nahkoda = User::whereHas('role', function ($query) {
-            $query->where('slug', 'nahkoda');
+        // Cari user Nakhoda (sebagai pembuat/penginput data)
+        $nakhoda = User::whereHas('role', function ($query) {
+            $query->where('slug', 'nakhoda');
         })->first();
 
-        // Jika tidak ada nahkoda, ambil user satgas atau superadmin
-        if (!$nahkoda) {
-            $nahkoda = User::first(); 
+        // Jika tidak ada nakhoda, ambil user satgas atau superadmin
+        if (!$nakhoda) {
+            $nakhoda = User::first(); 
         }
         
         // UPDATE: Gunakan eager loading (with) agar relasi terdalamnya ikut ditarik ke memory
@@ -46,7 +46,7 @@ class PencatatanHasilSeeder extends Seeder
                     'foto_struk'               => 'uploads/evidence/dummy_struk.jpg',
                     'disetujui_pengawas_at'    => null,
                     'disetujui_penyedia_at'    => null,
-                    'created_by'               => $nahkoda->id,
+                    'created_by'               => $nakhoda->id,
                     'created_at'               => now(),
                     'updated_at'               => now(),
                 ],
@@ -62,7 +62,7 @@ class PencatatanHasilSeeder extends Seeder
                     'foto_struk'               => 'uploads/evidence/dummy_struk.jpg',
                     'disetujui_pengawas_at'    => now(),
                     'disetujui_penyedia_at'    => null,
-                    'created_by'               => $nahkoda->id,
+                    'created_by'               => $nakhoda->id,
                     'created_at'               => now(),
                     'updated_at'               => now(),
                 ],
@@ -78,7 +78,7 @@ class PencatatanHasilSeeder extends Seeder
                     'foto_struk'               => 'uploads/evidence/dummy_struk.jpg',
                     'disetujui_pengawas_at'    => Carbon::now()->subDays(6),
                     'disetujui_penyedia_at'    => Carbon::now()->subDays(5),
-                    'created_by'               => $nahkoda->id,
+                    'created_by'               => $nakhoda->id,
                     'created_at'               => now(),
                     'updated_at'               => now(),
                 ],

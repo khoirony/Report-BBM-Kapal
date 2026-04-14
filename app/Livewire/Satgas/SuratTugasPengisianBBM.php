@@ -151,8 +151,9 @@ class SuratTugasPengisianBBM extends Component
         $this->tanggal_dikeluarkan = date('Y-m-d');
         
         $this->petugasList = [
-            ['nama_petugas' => '', 'jabatan' => 'Supir'],
-            ['nama_petugas' => '', 'jabatan' => 'Pendamping']
+            ['nama_petugas' => '', 'jabatan' => 'Nakhoda'],
+            ['nama_petugas' => '', 'jabatan' => 'KKM'],
+            ['nama_petugas' => '', 'jabatan' => 'ABK']
         ];
         
         // Memuat list Laporan yang murni belum terpakai

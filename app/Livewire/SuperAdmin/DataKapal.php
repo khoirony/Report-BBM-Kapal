@@ -17,7 +17,7 @@ class DataKapal extends Component
 
     // Properti Form Modal
     public $kapal_id;
-    public $nama_kapal, $ukpd_id, $nahkoda_id, $jenis_dan_tipe, $material, $tahun_pembuatan, $ukuran, $tonase_kotor_gt, $tenaga_penggerak_kw, $daerah_pelayaran, $list_sertifikat_kapal;
+    public $nama_kapal, $ukpd_id, $nakhoda_id, $jenis_dan_tipe, $material, $tahun_pembuatan, $ukuran, $tonase_kotor_gt, $tenaga_penggerak_kw, $daerah_pelayaran, $list_sertifikat_kapal;
     
     // Properti Gambar
     public $foto_kapal;
@@ -44,14 +44,14 @@ class DataKapal extends Component
 
     public function render()
     {
-        $query = Kapal::with(['user', 'ukpd', 'nahkoda']);
+        $query = Kapal::with(['user', 'ukpd', 'nakhoda']);
 
         if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
-        if (auth()->user()?->role?->slug == 'nahkoda') {
-            $query->where('nahkoda_id', auth()->user()?->id);
+        if (auth()->user()?->role?->slug == 'nakhoda') {
+            $query->where('nakhoda_id', auth()->user()?->id);
         }
 
         if ($this->search) {
@@ -82,17 +82,17 @@ class DataKapal extends Component
 
         $ukpds = Ukpd::orderBy('nama', 'asc')->get(); 
         
-        $usedNahkodaIds = Kapal::whereNotNull('nahkoda_id')
+        $usedNakhodaIds = Kapal::whereNotNull('nakhoda_id')
             ->when($this->kapal_id, function($query) {
                 $query->where('id', '!=', $this->kapal_id);
             })
-            ->pluck('nahkoda_id')
+            ->pluck('nakhoda_id')
             ->toArray();
 
-        $nahkodas = User::whereHas('role', function($q) {
-            $q->where('slug', 'nahkoda');
+        $nakhodas = User::whereHas('role', function($q) {
+            $q->where('slug', 'nakhoda');
         })
-        ->whereNotIn('id', $usedNahkodaIds)
+        ->whereNotIn('id', $usedNakhodaIds)
         ->orderBy('name', 'asc')
         ->get();
 
@@ -104,7 +104,7 @@ class DataKapal extends Component
         return view('livewire.super-admin.data-kapal', [
             'kapals' => $kapals,
             'ukpds' => $ukpds,
-            'nahkodas' => $nahkodas,
+            'nakhodas' => $nakhodas,
             'jenisList' => $jenisList,
             'materials' => $materials,
             'tahunList' => $tahunList,
@@ -135,7 +135,7 @@ class DataKapal extends Component
         $this->kapal_id = '';
         $this->nama_kapal = '';
         $this->ukpd_id = ''; 
-        $this->nahkoda_id = ''; 
+        $this->nakhoda_id = ''; 
         $this->jenis_dan_tipe = '';
         $this->material = '';
         $this->tahun_pembuatan = '';
@@ -160,7 +160,7 @@ class DataKapal extends Component
         $data = [
             'nama_kapal' => $this->nama_kapal,
             'ukpd_id' => $this->ukpd_id, 
-            'nahkoda_id' => empty($this->nahkoda_id) ? null : $this->nahkoda_id, 
+            'nakhoda_id' => empty($this->nakhoda_id) ? null : $this->nakhoda_id, 
             'jenis_dan_tipe' => $this->jenis_dan_tipe,
             'material' => $this->material,
             'tahun_pembuatan' => $this->tahun_pembuatan,
@@ -193,7 +193,7 @@ class DataKapal extends Component
         $this->kapal_id = $id;
         $this->nama_kapal = $kapal->nama_kapal;
         $this->ukpd_id = $kapal->ukpd_id; 
-        $this->nahkoda_id = $kapal->nahkoda_id; 
+        $this->nakhoda_id = $kapal->nakhoda_id; 
         $this->jenis_dan_tipe = $kapal->jenis_dan_tipe;
         $this->material = $kapal->material;
         $this->tahun_pembuatan = $kapal->tahun_pembuatan;
@@ -210,7 +210,7 @@ class DataKapal extends Component
 
     public function delete($id)
     {
-        if(auth()->user()?->role?->slug == 'nahkoda') {
+        if(auth()->user()?->role?->slug == 'nakhoda') {
             return;
         }
         $kapal = Kapal::find($id);

@@ -5,7 +5,7 @@ use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\ResetPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
-use App\Livewire\Dashboard\NahkodaDashboard;
+use App\Livewire\Dashboard\NakhodaDashboard;
 use App\Livewire\Dashboard\PengawasDashboard;
 use App\Livewire\Dashboard\PenyediaDashboard;
 use App\Livewire\Dashboard\SatgasDashboard;
@@ -14,7 +14,7 @@ use App\Livewire\Dashboard\SuperAdminDashboard;
 use App\Livewire\Dashboard\AdminUkpdDashboard; 
 use App\Livewire\Dashboard\PptkDashboard;
 use App\Livewire\Dashboard\KepalaUkpdDashboard;
-use App\Livewire\Nahkoda\PencatatanHasilPengisian;
+use App\Livewire\Nakhoda\PencatatanHasilPengisian;
 use App\Livewire\Penyedia\InvoiceManager;
 use App\Livewire\Penyedia\PesananMasukBBM;
 use App\Livewire\Satgas\BeritaAcaraLaporanPengisian;
@@ -45,7 +45,7 @@ Route::get('/', function () {
         'pengawas'    => redirect()->route('dashboard.pengawas'),
         'pptk'        => redirect()->route('dashboard.pptk'),       
         'kepala_ukpd' => redirect()->route('dashboard.kepala_ukpd'),
-        'nahkoda'     => redirect()->route('dashboard.nahkoda'),
+        'nakhoda'     => redirect()->route('dashboard.nakhoda'),
         'penyedia'    => redirect()->route('dashboard.penyedia'),
         default       => abort(403, 'Unauthorized action.'),
     };
@@ -100,11 +100,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard-pptk', PptkDashboard::class)->middleware('role:pptk')->name('dashboard.pptk');
         Route::get('/dashboard-kepala-ukpd', KepalaUkpdDashboard::class)->middleware('role:kepala_ukpd')->name('dashboard.kepala-ukpd');
         Route::get('/dashboard-penyedia', PenyediaDashboard::class)->middleware('role:penyedia')->name('dashboard.penyedia');
-        Route::get('/dashboard-nahkoda', NahkodaDashboard::class)->middleware('role:nahkoda')->name('dashboard.nahkoda');
+        Route::get('/dashboard-nakhoda', NakhodaDashboard::class)->middleware('role:nakhoda')->name('dashboard.nakhoda');
 
         Route::get('/kelola-ukpd', KelolaUkpd::class)->middleware('role:superadmin')->name('superadmin.kelola-ukpd');
         Route::get('/kelola-user', KelolaUser::class)->middleware('role:superadmin,admin_ukpd')->name('superadmin.kelola-user');
-        Route::get('/data-kapal', DataKapal::class)->middleware('role:superadmin,satgas,sounding,admin_ukpd,kepala_ukpd,nahkoda')->name('data-kapal');
+        Route::get('/data-kapal', DataKapal::class)->middleware('role:superadmin,satgas,sounding,admin_ukpd,kepala_ukpd,nakhoda')->name('data-kapal');
 
         Route::get('/sounding-bbm', SoundingBBM::class)->middleware('role:superadmin,sounding,admin_ukpd')->name('sounding.sounding-bbm');
 
@@ -112,8 +112,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/surat-tugas', SuratTugasPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd')->name('satgas.surat-tugas');
         Route::get('/surat-permohonan', SuratPermohonanPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,pptk')->name('satgas.surat-permohonan');
         
-        Route::get('/pencatatan-pengisian', PencatatanHasilPengisian::class)->middleware('role:superadmin,admin_ukpd,nahkoda,pengawas,penyedia,kepala_ukpd')->name('satgas.pencatatan-pengisian');
-        Route::get('/laporan-pengisian', LaporanPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,nahkoda')->name('satgas.laporan-pengisian');
+        Route::get('/pencatatan-pengisian', PencatatanHasilPengisian::class)->middleware('role:superadmin,admin_ukpd,nakhoda,pengawas,penyedia,kepala_ukpd')->name('satgas.pencatatan-pengisian');
+        Route::get('/laporan-pengisian', LaporanPengisianBBM::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,nakhoda')->name('satgas.laporan-pengisian');
         Route::get('/berita-acara-pengisian', BeritaAcaraLaporanPengisian::class)->middleware('role:superadmin,satgas,admin_ukpd,kepala_ukpd,pptk')->name('satgas.berita-acara-pengisian');
 
         // --- FITUR VERIFIKASI TAGIHAN ---

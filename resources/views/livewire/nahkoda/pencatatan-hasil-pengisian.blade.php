@@ -14,7 +14,7 @@
                 </div>
             </div>
             
-            @if(in_array(auth()->user()?->role?->slug, ['nahkoda', 'satgas', 'superadmin']))
+            @if(in_array(auth()->user()?->role?->slug, ['nakhoda', 'satgas', 'superadmin']))
             <button wire:click="openModal()" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 w-full sm:w-auto focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
                 <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
                 Catat Pengisian Baru
@@ -171,8 +171,8 @@
                                     
                                     @php $role = auth()->user()?->role?->slug; @endphp
                                     
-                                    {{-- Tombol Edit (Nahkoda / Superadmin) --}}
-                                    @if(in_array($role, ['nahkoda', 'superadmin']))
+                                    {{-- Tombol Edit (Nakhoda / Superadmin) --}}
+                                    @if(in_array($role, ['nakhoda', 'superadmin']))
                                         <button wire:click="edit({{ $item->id }})" class="w-full justify-center inline-flex items-center text-indigo-600 font-semibold bg-indigo-50 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-200 shadow-sm text-xs">
                                             <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             Edit Data & Foto
@@ -201,7 +201,7 @@
                                             <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             Proses Selesai
                                         </div>
-                                    @elseif(!in_array($role, ['pengawas', 'penyedia', 'nahkoda', 'superadmin']))
+                                    @elseif(!in_array($role, ['pengawas', 'penyedia', 'nakhoda', 'superadmin']))
                                         <span class="text-xs text-slate-400 font-medium italic lg:text-right block">Hanya melihat</span>
                                     @endif
                                     

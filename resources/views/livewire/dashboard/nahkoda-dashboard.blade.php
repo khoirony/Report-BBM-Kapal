@@ -2,7 +2,7 @@
     
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800">Dashboard Nahkoda</h1>
+            <h1 class="text-2xl font-bold text-slate-800">Dashboard Nakhoda</h1>
         </div>
         
         <div class="flex items-center bg-white p-2 rounded-xl shadow-sm border border-slate-200">

@@ -27,8 +27,8 @@ class Kapal extends Model
         return $this->hasOne(Sounding::class);
     }
 
-    public function nahkoda()
+    public function nakhoda()
     {
-        return $this->belongsTo(User::class, 'nahkoda_id');
+        return $this->belongsTo(User::class, 'nakhoda_id');
     }
 }

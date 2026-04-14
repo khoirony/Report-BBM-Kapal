@@ -28,7 +28,7 @@ return new class extends Migration
             $table->text('list_sertifikat_kapal')->nullable();
             $table->string('foto_kapal')->nullable();
             $table->integer('user_id')->nullable();
-            $table->foreignId('nahkoda_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('nakhoda_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

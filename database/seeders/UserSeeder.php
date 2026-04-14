@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // 2. Nahkoda sudah di-handle di KapalSeeder
+        // 2. Nakhoda sudah di-handle di KapalSeeder
 
         // 3. Penyedia BBM (Daftar Perusahaan)
         $daftarPenyedia = [

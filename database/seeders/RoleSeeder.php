@@ -17,7 +17,7 @@ class RoleSeeder extends Seeder
             ['name' => 'Pengawas', 'slug' => 'pengawas', 'color' => 'purple'],
             ['name' => 'PPTK', 'slug' => 'pptk', 'color' => 'teal'],
             ['name' => 'Kepala UKPD', 'slug' => 'kepala_ukpd', 'color' => 'orange'],
-            ['name' => 'Nahkoda', 'slug' => 'nahkoda', 'color' => 'indigo'],
+            ['name' => 'Nakhoda', 'slug' => 'nakhoda', 'color' => 'indigo'],
             ['name' => 'Penyedia BBM', 'slug' => 'penyedia', 'color' => 'amber'],
         ];
 

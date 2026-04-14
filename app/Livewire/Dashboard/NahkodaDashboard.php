@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class NahkodaDashboard extends Component
+class NakhodaDashboard extends Component
 {
     // --- Properti Filter & Data Grafik ---
     public $startDate;
@@ -35,12 +35,12 @@ class NahkodaDashboard extends Component
 
     private function generateKonsumsiHarianData()
     {
-        // 1. Ambil ID Nahkoda yang sedang login
+        // 1. Ambil ID Nakhoda yang sedang login
         $userId = Auth::id();
 
         $dbData = DB::table('soundings')
             ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id')
-            ->where('kapals.nahkoda_id', $userId) 
+            ->where('kapals.nakhoda_id', $userId) 
             ->whereBetween('soundings.tanggal_sounding', [$this->startDate, $this->endDate])
             ->selectRaw('DATE(soundings.tanggal_sounding) as tanggal, SUM(soundings.pemakaian) as total_pemakaian')
             ->groupBy('tanggal')
@@ -64,6 +64,6 @@ class NahkodaDashboard extends Component
     public function render()
     {
         // Semua fetching data statistik dan Pagu Anggaran yang tidak perlu sudah dihilangkan
-        return view('livewire.dashboard.nahkoda-dashboard')->layout('layouts.app');
+        return view('livewire.dashboard.nakhoda-dashboard')->layout('layouts.app');
     }
 }

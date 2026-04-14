@@ -335,7 +335,7 @@
                                         </div>
                                         <div class="w-full sm:w-2/5">
                                             <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Jabatan</label>
-                                            <input type="text" wire:model="petugasList.{{ $index }}.jabatan" placeholder="Contoh: Supir, Pendamping" class="px-3 py-2 bg-white border border-slate-200 text-sm rounded-lg w-full focus:ring-2 focus:ring-indigo-500" required>
+                                            <input type="text" wire:model="petugasList.{{ $index }}.jabatan" placeholder="Contoh: Nakhoda, KKM, ABK, dll" class="px-3 py-2 bg-white border border-slate-200 text-sm rounded-lg w-full focus:ring-2 focus:ring-indigo-500" required>
                                         </div>
                                         <div class="w-full sm:w-auto">
                                             <button type="button" wire:click="removePetugas({{ $index }})" class="w-full justify-center inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg text-rose-600 bg-white hover:bg-rose-50 border border-rose-200 transition-colors" title="Hapus Baris">
