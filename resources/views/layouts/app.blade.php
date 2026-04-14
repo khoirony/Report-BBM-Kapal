@@ -7,7 +7,7 @@
 
     <title>{{ config('app.name', 'BBM Kapal') }}</title>
 
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
