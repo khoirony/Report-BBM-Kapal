@@ -15,7 +15,7 @@
          
         <div class="text-center">
             <div class="flex justify-center gap-4 mb-6">
-                <img src="https://dishub.jakarta.go.id/wp-content/uploads/2026/03/cropped-logo-dishub-jakarta-300x130.webp" alt="Logo Dishub" class="h-16 w-auto object-contain">
+                <img src="img/logo-dishub.webp" alt="Logo Dishub" class="h-16 w-auto object-contain">
             </div>
             
             <h2 class="text-2xl font-black text-blue-900 tracking-tight uppercase">
