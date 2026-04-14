@@ -376,7 +376,6 @@
                                         <input type="text" wire:model="jumlah_bbm" placeholder="Contoh: 1500.50" class="pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
                                         <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-gray-500 font-bold">L</span>
                                     </div>
-                                    <p class="text-[10px] text-gray-400 mt-1">Kosongkan jika ingin mengikuti jumlah dari Data Sounding.</p>
                                     @error('jumlah_bbm') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                                 </div>
                             </div>
