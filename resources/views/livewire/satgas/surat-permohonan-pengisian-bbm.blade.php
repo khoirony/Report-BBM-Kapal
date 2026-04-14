@@ -273,7 +273,11 @@
                             <select wire:model.live="surat_tugas_id" class="px-4 py-3 bg-white border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm cursor-pointer" required>
                                 <option value="">-- Pilih Surat Tugas --</option>
                                 @foreach($surat_tugas_list as $st)
-                                    <option value="{{ $st->id }}">{{ $st->nomor_surat }} (Kapal: {{ $st->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})</option>
+                                    <option value="{{ $st->id }}">
+                                        {{ $st->nomor_surat }} | 
+                                        {{ \Carbon\Carbon::parse($st->tanggal_dikeluarkan)->locale('id')->translatedFormat('l, d/M/Y') }} 
+                                        (Kapal: {{ $st->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})
+                                    </option>
                                 @endforeach
                             </select>
                             @error('surat_tugas_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror

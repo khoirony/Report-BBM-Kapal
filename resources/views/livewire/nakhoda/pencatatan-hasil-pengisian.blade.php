@@ -264,9 +264,9 @@
                                     <option value="">-- Pilih Surat Permohonan BBM --</option>
                                     @foreach($permohonans as $pm)
                                         <option value="{{ $pm->id }}">
-                                            {{ $pm->nomor_surat ?? 'No. Surat Belum Ada' }} 
-                                            (Tgl: {{ \Carbon\Carbon::parse($pm->tanggal_surat)->format('d/m') }} | 
-                                            Kapal: {{ $pm->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})
+                                            {{ $pm->nomor_surat ?? 'No. Surat Belum Ada' }} | 
+                                            {{ \Carbon\Carbon::parse($pm->tanggal_surat)->locale('id')->translatedFormat('l, d/M/Y') }}
+                                            (Kapal: {{ $pm->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})
                                         </option>
                                     @endforeach
                                 </select>

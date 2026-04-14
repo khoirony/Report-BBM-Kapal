@@ -279,7 +279,7 @@
                                     <select wire:model="laporan_pengisian_id" class="px-4 py-2.5 bg-white border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer" required>
                                         <option value="">-- Pilih Laporan BBM --</option>
                                         @foreach($laporanList as $lap)
-                                            <option value="{{ $lap->id }}">Lap #{{ $lap->nomor ?? $lap->id }} - {{ $lap->sounding->kapal->nama_kapal ?? 'Kapal' }} (Tgl: {{ \Carbon\Carbon::parse($lap->tanggal_surat)->format('d/m/Y') }})</option>
+                                            <option value="{{ $lap->id }}">Lap #{{ $lap->nomor ?? $lap->id }} | {{ \Carbon\Carbon::parse($lap->tanggal_surat)->locale('id')->translatedFormat('l, d/M/Y') }} (Kapal: {{ $lap->sounding->kapal->nama_kapal ?? '-' }})</option>
                                         @endforeach
                                     </select>
 

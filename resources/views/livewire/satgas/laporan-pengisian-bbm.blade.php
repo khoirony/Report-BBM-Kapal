@@ -327,7 +327,12 @@
                             <select wire:model.live="surat_permohonan_id" class="w-full px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl outline-none focus:ring-2 focus:ring-indigo-200 transition-all cursor-pointer shadow-sm" required>
                                 <option value="">-- Pilih Surat Permohonan yang Disetujui --</option>
                                 @foreach($permohonan_list as $pm)
-                                    <option value="{{ $pm->id }}">{{ $pm->nomor_surat }} (Kapal: {{ $pm->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }} | Isi: {{ floatval($pm->jumlah_bbm) }} L)</option>
+                                    <option value="{{ $pm->id }}">
+                                        {{ $pm->nomor_surat }} | 
+                                        {{ \Carbon\Carbon::parse($pm->tanggal_surat)->locale('id')->translatedFormat('l, d/M/Y') }} 
+                                        (Kapal: {{ $pm->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }} | 
+                                        Isi: {{ floatval($pm->jumlah_bbm) }} L)
+                                    </option>
                                 @endforeach
                             </select>
                             <p class="text-[10.5px] text-slate-500 mt-2 flex items-center">
