@@ -95,117 +95,55 @@
         </div>
 
         <div class="bg-transparent md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 overflow-hidden w-full relative">
+    
             <div wire:loading class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 hidden md:flex items-center justify-center rounded-2xl">
                 <div class="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
             </div>
         
             <div class="overflow-x-auto w-full">
-                <table class="w-full text-sm text-left text-gray-600 block xl:table">
-                    <thead class="hidden xl:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
+                <table class="w-full text-sm text-left text-gray-600 block lg:table">
+                    <thead class="hidden lg:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
                         <tr>
-                            <th class="px-5 py-4 font-bold tracking-wider w-[20%]">Info Kapal & Waktu BA</th>
-                            <th class="px-5 py-4 font-bold tracking-wider w-[25%]">Referensi Dokumen & Kontrak</th>
-                            <th class="px-5 py-4 font-bold tracking-wider w-[25%]">Daftar Awak Kapal (Petugas)</th>
-                            <th class="px-5 py-4 font-bold tracking-wider w-[18%]">Status Persetujuan</th>
-                            <th class="px-5 py-4 font-bold tracking-wider text-right w-[12%]">Aksi</th>
+                            <th class="px-6 py-5 font-bold tracking-wider w-[24%]">Info BA, Kapal & Status</th>
+                            <th class="px-6 py-5 font-bold tracking-wider w-[26%]">Referensi Dokumen & Awak</th>
+                            <th class="px-6 py-5 font-bold tracking-wider w-[36%]">Rekapitulasi BBM</th>
+                            <th class="px-6 py-5 font-bold tracking-wider text-right w-[14%]">Aksi</th>
                         </tr>
                     </thead>
                     
-                    <tbody class="block xl:table-row-group md:divide-y md:divide-gray-50 space-y-4 xl:space-y-0">
+                    <tbody class="block lg:table-row-group md:divide-y md:divide-gray-50 space-y-4 lg:space-y-0">
                         @forelse($laporans as $item)
-                        <tr class="block xl:table-row bg-white rounded-2xl xl:rounded-none shadow-sm xl:shadow-none border border-gray-100 xl:border-none hover:bg-slate-50/50 p-4 xl:p-0 transition-colors">
+                        <tr class="block lg:table-row bg-white rounded-2xl lg:rounded-none shadow-sm lg:shadow-none border border-gray-100 lg:border-none hover:bg-slate-50/50 p-4 lg:p-0 transition-colors">
                             
-                            <td class="block xl:table-cell px-2 py-3 xl:px-5 xl:py-4 border-b border-gray-50 xl:border-none align-top">
-                                <span class="text-[10px] font-bold text-indigo-500 uppercase xl:hidden mb-2 block tracking-wider">Info Kapal & Waktu</span>
+                            <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
+                                <span class="text-[10px] font-bold text-indigo-500 uppercase lg:hidden mb-2 block tracking-wider">Info BA & Kapal</span>
                                 
-                                <div class="font-bold text-slate-900 text-sm tracking-tight mb-2">
-                                    {{ $item->kapal?->nama_kapal ?? 'Kapal Terhapus' }}
-                                </div>
-                                <div class="flex items-center text-[11px] text-slate-600 bg-slate-100 border border-slate-200 rounded px-2 py-1 font-semibold w-fit">
+                                <div class="flex items-center text-xs text-slate-500 font-medium mb-1.5">
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    {{ isset($item->tgl_ba) ? \Carbon\Carbon::parse($item->tgl_ba)->locale('id')->format('l, d-M-Y') : '-' }}
+                                    {{ isset($item->tgl_ba) ? \Carbon\Carbon::parse($item->tgl_ba)->locale('id')->format('d M Y') : '-' }}
                                 </div>
-                            </td>
-
-                            <td class="block xl:table-cell px-2 py-3 xl:px-5 xl:py-4 border-b border-gray-50 xl:border-none align-top">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase xl:hidden mb-2 block mt-2">Referensi & Kontrak</span>
+                                <div class="font-bold text-slate-900 text-sm tracking-tight mb-1" title="Nomor PKS">
+                                    {{ $item->nomor_pks ?? 'Tanpa Referensi PKS' }}
+                                </div>
                                 
-                                <div class="space-y-2">
-                                    @if($item->nomor_pks)
-                                    <div class="bg-emerald-50/50 p-2.5 rounded-lg border border-emerald-100">
-                                        <span class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider block mb-1">Data Kontrak / PKS</span>
-                                        <div class="text-[11px] font-bold text-emerald-700">{{ $item->nomor_pks }}</div>
-                                        @if($item->tanggal_pks)
-                                            <div class="text-[9px] text-slate-500 mt-1">Tgl: {{ \Carbon\Carbon::parse($item->tanggal_pks)->format('d/m/Y') }}</div>
-                                        @endif
-                                    </div>
-                                    @endif
-
-                                    <div class="bg-blue-50/50 p-2.5 rounded-lg border border-blue-100">
-                                        <span class="text-[9px] text-blue-500 font-bold uppercase tracking-wider block mb-1">Ref. Laporan Pengisian</span>
-                                        <div class="flex items-center text-[11px] text-slate-700 mb-0.5">
-                                            <span class="w-12 font-semibold">Tgl Isi</span>: {{ isset($item->laporanPengisian?->tanggal) ? \Carbon\Carbon::parse($item->laporanPengisian->tanggal)->format('d/m/Y') : '-' }}
-                                        </div>
-                                        <div class="flex items-center text-[11px] text-slate-700">
-                                            <span class="w-12 font-semibold">Volume</span>: <span class="font-bold text-blue-700 ml-1">{{ floatval($item->laporanPengisian?->jumlah_bbm_pengisian ?? 0) }} L</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="bg-indigo-50/50 p-2.5 rounded-lg border border-indigo-100">
-                                        <span class="text-[9px] text-indigo-400 font-bold uppercase tracking-wider block mb-1">Surat Permohonan</span>
-                                        <div class="text-[11px] font-bold text-indigo-700 break-words leading-tight">
-                                            {{ $item->laporanPengisian?->suratPermohonan?->nomor_surat ?? 'Tidak ada referensi surat' }}
-                                        </div>
+                                <div class="bg-indigo-50/50 border border-indigo-100 rounded-lg p-2 mt-2 w-fit pr-4">
+                                    <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider block mb-0.5">Armada Kapal</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-bold text-indigo-900">{{ $item->kapal?->nama_kapal ?? 'Kapal Terhapus' }}</span>
+                                        <span class="text-[9px] bg-indigo-200/50 text-indigo-700 px-1 rounded font-bold">{{ $item->kapal?->ukpd?->singkatan ?? '-' }}</span>
                                     </div>
                                 </div>
-                            </td>
-
-                            <td class="block xl:table-cell px-2 py-3 xl:px-5 xl:py-4 border-b border-gray-50 xl:border-none align-top">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase xl:hidden mb-2 block mt-2">Daftar Awak Kapal</span>
-                                
-                                @php
-                                    $petugasList = $item->laporanPengisian?->suratTugas?->petugas ?? [];
-                                @endphp
-
-                                @if(count($petugasList) > 0)
-                                    <div class="space-y-1.5 max-h-[140px] overflow-y-auto custom-scrollbar pr-1">
-                                        @foreach($petugasList as $petugas)
-                                        <div class="flex items-center justify-between bg-slate-50 border border-slate-100 px-2 py-1.5 rounded-md">
-                                            <div class="flex items-center gap-2 overflow-hidden">
-                                                <div class="w-5 h-5 shrink-0 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-[9px] font-bold">
-                                                    {{ substr($petugas->nama_petugas ?? 'U', 0, 1) }}
-                                                </div>
-                                                <div class="flex flex-col truncate">
-                                                    <span class="text-[11px] font-bold text-slate-700 truncate" title="{{ $petugas->nama_petugas ?? '-' }}">{{ $petugas->nama_petugas ?? '-' }}</span>
-                                                    <span class="text-[9px] text-slate-500 truncate" title="{{ $petugas->jabatan ?? '-' }}">{{ $petugas->jabatan ?? '-' }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="flex items-center justify-center p-3 border border-dashed border-slate-200 rounded-lg bg-slate-50 text-slate-400 text-[10px] italic">
-                                        Belum ada data petugas tertaut
-                                    </div>
-                                @endif
-                            </td>
-
-                            <td class="block xl:table-cell px-2 py-3 xl:px-5 xl:py-4 border-b border-gray-50 xl:border-none align-top">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase xl:hidden mb-2 block mt-2">Status Persetujuan</span>
-                                
-                                <div class="flex flex-col gap-2.5">
+        
+                                <div class="mt-3 flex flex-col gap-2.5">
                                     <div>
                                         @if($item->disetujui_pptk_at)
-                                            <div class="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-emerald-50 border border-emerald-200 text-[10px] font-bold text-emerald-700 shadow-sm w-full">
-                                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                Penyedia & PPTK OK
-                                            </div>
-                                            <div class="text-[9px] text-slate-500 font-medium ml-1 mt-0.5">
-                                                {{ \Carbon\Carbon::parse($item->disetujui_pptk_at)->format('d/m/y H:i') }}
+                                            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-[10px] font-bold text-emerald-700 w-fit shadow-sm">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                Penyedia & PPTK (OK)
                                             </div>
                                         @else
-                                            <button wire:click="approve({{ $item->id }}, 'penyedia_pptk')" wire:confirm="Setujui BA ini atas nama Penyedia dan PPTK?" class="w-full inline-flex justify-center items-center gap-1.5 px-2 py-1.5 rounded-md bg-amber-50 border border-amber-200 text-[10px] font-bold text-amber-700 shadow-sm hover:bg-amber-100 transition-colors">
-                                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            <button wire:click="approve({{ $item->id }}, 'penyedia_pptk')" wire:confirm="Setujui BA ini atas nama Penyedia dan PPTK?" class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 border border-amber-200 hover:bg-amber-100 text-[10px] font-bold text-amber-700 w-fit shadow-sm transition-colors">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                                 Pending PPTK
                                             </button>
                                         @endif
@@ -213,48 +151,110 @@
                                     
                                     <div>
                                         @if($item->disetujui_kepala_ukpd_at)
-                                            <div class="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-blue-50 border border-blue-200 text-[10px] font-bold text-blue-700 shadow-sm w-full">
-                                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                Kepala UKPD OK
-                                            </div>
-                                            <div class="text-[9px] text-slate-500 font-medium ml-1 mt-0.5">
-                                                {{ \Carbon\Carbon::parse($item->disetujui_kepala_ukpd_at)->format('d/m/y H:i') }}
+                                            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 border border-blue-200 text-[10px] font-bold text-blue-700 w-fit shadow-sm">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                Kepala UKPD (OK)
                                             </div>
                                         @else
-                                            <button @if(!$item->disetujui_pptk_at) disabled @endif wire:click="approve({{ $item->id }}, 'kepala_ukpd')" wire:confirm="Setujui BA ini sebagai Kepala UKPD?" class="w-full inline-flex justify-center items-center gap-1.5 px-2 py-1.5 rounded-md text-[10px] font-bold shadow-sm transition-colors {{ $item->disetujui_pptk_at ? 'bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100' : 'bg-slate-50 border border-slate-200 text-slate-400 cursor-not-allowed' }}">
-                                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            <button @if(!$item->disetujui_pptk_at) disabled @endif wire:click="approve({{ $item->id }}, 'kepala_ukpd')" wire:confirm="Setujui BA ini sebagai Kepala UKPD?" class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold w-fit shadow-sm transition-colors {{ $item->disetujui_pptk_at ? 'bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100' : 'bg-slate-50 border border-slate-200 text-slate-400 cursor-not-allowed' }}">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                                 Pending Ka. UKPD
                                             </button>
                                         @endif
                                     </div>
                                 </div>
                             </td>
-
-                            <td class="block xl:table-cell px-2 py-4 xl:px-5 xl:py-4 xl:text-right align-middle">
-                                <div class="flex flex-col gap-2 w-full xl:max-w-[120px] xl:ml-auto">
+        
+                            <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase lg:hidden mb-1 block mt-2">Referensi & Awak</span>
+                                
+                                <div class="mb-3">
+                                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Surat Permohonan Laporan</span>
+                                    <div class="text-xs font-bold text-slate-800 line-clamp-2 leading-tight">
+                                        {{ $item->laporanPengisian?->suratPermohonan?->nomor_surat ?? '-' }}
+                                    </div>
+                                </div>
+        
+                                <div class="flex items-center text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 shadow-sm inline-flex px-2 py-1 rounded-md mb-3 w-fit">
+                                    <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    Tgl Isi: {{ isset($item->laporanPengisian?->tanggal) ? \Carbon\Carbon::parse($item->laporanPengisian->tanggal)->format('d/m/Y') : '-' }}
+                                </div>
+        
+                                @php $petugasList = $item->laporanPengisian?->suratTugas?->petugas ?? []; @endphp
+                                <div>
+                                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">Awak Kapal (SPT)</span>
+                                    <div class="flex flex-wrap gap-1">
+                                        @forelse($petugasList as $p)
+                                            <div class="flex items-center gap-1 text-[10px] font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                                                <div class="w-3 h-3 bg-indigo-200 text-indigo-700 rounded-full flex items-center justify-center text-[7px]">{{ substr($p->nama_petugas, 0, 1) }}</div>
+                                                {{ explode(' ', $p->nama_petugas)[0] }}
+                                            </div>
+                                        @empty
+                                            <span class="text-[10px] text-slate-400 italic">Belum ada awak</span>
+                                        @endforelse
+                                    </div>
+                                </div>
+                            </td>
+        
+                            <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase lg:hidden mb-2 block mt-2">Rekapitulasi BBM</span>
+                                
+                                <div class="grid grid-cols-4 gap-0 text-sm bg-slate-50 lg:bg-transparent rounded-xl lg:rounded-none border border-slate-200/60 lg:border-none overflow-hidden mt-1 lg:mt-0">
+                                    <div class="flex flex-col p-2 lg:p-0 lg:pr-2 border-r border-slate-200/60 lg:border-none">
+                                        <span class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Awal</span>
+                                        <span class="font-semibold text-slate-700">{{ floatval($item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->bbm_awal ?? 0) }}</span>
+                                    </div>
+                                    <div class="flex flex-col p-2 lg:p-0 lg:pr-2 border-r border-slate-200/60 lg:border-none bg-emerald-50/30 lg:bg-transparent">
+                                        <span class="text-[9px] text-emerald-500 uppercase font-bold tracking-wider">Isi</span>
+                                        <span class="font-bold text-emerald-600">+{{ floatval($item->laporanPengisian?->jumlah_bbm_pengisian ?? 0) }}</span>
+                                    </div>
+                                    <div class="flex flex-col p-2 lg:p-0 lg:pr-2 border-r border-slate-200/60 lg:border-none bg-rose-50/30 lg:bg-transparent">
+                                        <span class="text-[9px] text-rose-400 uppercase font-bold tracking-wider">Pakai</span>
+                                        <span class="font-bold text-rose-500">-{{ floatval($item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->pemakaian_bbm ?? 0) }}</span>
+                                    </div>
+                                    <div class="flex flex-col p-2 lg:p-0 bg-blue-50/50 lg:bg-transparent">
+                                        <span class="text-[9px] text-blue-500 uppercase font-bold tracking-wider">Akhir</span>
+                                        <span class="font-extrabold text-blue-600">{{ floatval($item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->bbm_akhir ?? 0) }}</span>
+                                    </div>
+                                </div>
+        
+                                <div class="mt-3 space-y-1.5 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                    <div class="flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <span class="text-[10px] text-slate-600 font-medium">Jam: 
+                                            <span class="font-bold">{{ $item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->jam_berangkat ?? '-' }}</span> s.d 
+                                            <span class="font-bold">{{ $item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->jam_kembali ?? '-' }}</span> WIB
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+        
+                            <td class="block lg:table-cell px-2 py-4 lg:px-6 lg:py-5 lg:text-right align-middle">
+                                <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto mt-2 lg:mt-0">
                                     
                                     <a href="{{ route('berita-acara.pdf.preview', $item->id) }}" target="_blank" class="w-full justify-center inline-flex items-center text-slate-700 font-semibold bg-slate-100 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-slate-200 hover:border-slate-800 shadow-sm text-xs">
-                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                        <span>CETAK PDF</span>
+                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        <span>PDF</span>
                                     </a>
-
+        
                                     <div class="flex gap-2">
                                         <button wire:click="edit({{ $item->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100 shadow-sm">
-                                            <svg class="w-3.5 h-3.5 xl:mr-0 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                            <span class="xl:hidden ml-1 text-xs">Edit</span>
+                                            <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <span class="lg:hidden ml-1">Edit</span>
                                         </button>
                                         
-                                        <button wire:click="delete({{ $item->id }})" onclick="confirm('Yakin ingin menghapus BA ini?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100 shadow-sm">
-                                            <svg class="w-3.5 h-3.5 xl:mr-0 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            <span class="xl:hidden ml-1 text-xs">Hapus</span>
+                                        <button wire:click="delete({{ $item->id }})" onclick="confirm('Yakin ingin menghapus Berita Acara ini?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100 shadow-sm">
+                                            <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <span class="lg:hidden ml-1">Hapus</span>
                                         </button>
                                     </div>
                                 </div>
                             </td>
+        
                         </tr>
                         @empty
-                        <tr class="block xl:table-row bg-white rounded-2xl xl:rounded-none shadow-sm xl:shadow-none border border-gray-100 xl:border-none">
-                            <td colspan="5" class="block xl:table-cell px-6 py-16 text-center text-gray-500">
+                        <tr class="block lg:table-row bg-white rounded-2xl lg:rounded-none shadow-sm lg:shadow-none border border-gray-100 lg:border-none">
+                            <td colspan="4" class="block lg:table-cell px-6 py-16 text-center text-gray-500">
                                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
                                     <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                 </div>
@@ -310,18 +310,55 @@
                         </div>
 
                         @if($laporan_pengisian_bbm_id)
-                            @php $lpSelected = \App\Models\LaporanPengisianBbm::with(['suratPermohonan', 'suratTugas.petugas'])->find($laporan_pengisian_bbm_id); @endphp
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                                <div>
-                                    <span class="text-[9px] font-bold text-indigo-500 uppercase tracking-widest block mb-1">Ref. Surat Permohonan</span>
-                                    <p class="text-xs font-bold text-slate-800">{{ $lpSelected?->suratPermohonan?->nomor_surat ?? '-' }}</p>
+                            @php 
+                                // Tambahkan relasi kapal ke dalam eager loading
+                                $lpSelected = \App\Models\LaporanPengisianBbm::with([
+                                    'suratPermohonan', 
+                                    'suratTugas.petugas',
+                                    'suratTugas.LaporanSisaBbm.sounding.kapal'
+                                ])->find($laporan_pengisian_bbm_id); 
+                                
+                                $kapalSelected = $lpSelected?->suratTugas?->LaporanSisaBbm?->sounding?->kapal;
+                            @endphp
+
+                            <div class="flex flex-col gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-2">
+                                
+                                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 flex items-center justify-between">
+                                    <div class="flex items-center gap-4 overflow-hidden">
+                                        <div class="w-12 h-12 rounded-full bg-white shadow-sm text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="flex flex-col truncate">
+                                            <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest block mb-0.5">Armada Kapal</span>
+                                            <p class="text-base font-extrabold text-slate-800 truncate" title="{{ $kapalSelected?->nama_kapal ?? 'Data kapal tidak ditemukan' }}">
+                                                {{ $kapalSelected?->nama_kapal ?? 'Data kapal tidak ditemukan' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="hidden sm:block shrink-0 ml-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-100 border border-emerald-200 text-[10px] font-bold text-emerald-700">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            Ditarik Otomatis
+                                        </span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span class="text-[9px] font-bold text-indigo-500 uppercase tracking-widest block mb-1">Daftar Awak Kapal (SPT)</span>
-                                    <div class="flex flex-wrap gap-1">
-                                        @foreach($lpSelected?->suratTugas?->petugas ?? [] as $p)
-                                            <span class="bg-indigo-50 px-2 py-0.5 rounded text-[10px] border border-indigo-100 font-semibold text-indigo-700">{{ $p->nama_petugas ?? '-' }}</span>
-                                        @endforeach
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                                        <span class="text-[9px] font-bold text-indigo-500 uppercase tracking-widest block mb-1.5">Ref. Surat Permohonan</span>
+                                        <p class="text-xs font-bold text-slate-800">{{ $lpSelected?->suratPermohonan?->nomor_surat ?? '-' }}</p>
+                                    </div>
+                                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                                        <span class="text-[9px] font-bold text-indigo-500 uppercase tracking-widest block mb-1.5">Daftar Awak Kapal (SPT)</span>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            @forelse($lpSelected?->suratTugas?->petugas ?? [] as $p)
+                                                <span class="bg-white shadow-sm px-2 py-1 rounded-md text-[10px] border border-slate-200 font-bold text-slate-700">{{ $p->nama_petugas ?? '-' }}</span>
+                                            @empty
+                                                <span class="text-[10px] text-slate-400 italic font-medium">Belum ada awak ditautkan</span>
+                                            @endforelse
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -330,16 +367,6 @@
                         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2">Informasi Manual Berita Acara</h4>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            
-                            <div class="col-span-1 md:col-span-2">
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Armada Kapal <span class="text-rose-500">*</span></label>
-                                <select wire:model="kapal_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer" required>
-                                    <option value="">-- Pilih Armada Kapal --</option>
-                                    @foreach($kapals as $k)
-                                        <option value="{{ $k->id }}">{{ $k->nama_kapal }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
 
                             <div class="col-span-1 md:col-span-2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Berita Acara <span class="text-rose-500">*</span></label>

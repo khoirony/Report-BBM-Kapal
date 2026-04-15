@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <title>Laporan BBM {{ $laporan->kapal->nama_kapal }}</title>
     <style>
-        body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.3; color: black; margin: 0; padding: 0; }
+        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.2; color: black; margin: 0; padding: 10px 20px; }
         .text-center { text-align: center; }
         .text-justify { text-align: justify; }
         .font-bold { font-weight: bold; }
         .underline { text-decoration: underline; }
         
         /* Kop Surat */
-        .kop-table { width: 100%; border-bottom: 2px solid black; margin-bottom: 10px; padding-bottom: 5px; }
+        .kop-table { width: 100%; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 15px; }
         .logo-container { width: 15%; text-align: center; vertical-align: middle; }
         .logo-container img { width: 75px; height: auto; }
-        .kop-text { width: 85%; text-align: center; vertical-align: middle; }
+        .kop-text { width: 85%; text-align: center; vertical-align: middle; padding-bottom: 10px; }
         .kop-text div { margin: 0; padding: 0; line-height: 1.2; }
         .instansi { font-size: 13pt; font-weight: bold; }
         .ukpd { font-size: 15pt; font-weight: bold; margin: 2px 0 !important; }
@@ -36,18 +36,27 @@
 </head>
 <body>
 
-    <table class="kop-table">
+    <table class="kop-table" style="width: 100%; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 15px;">
         <tr>
             <td class="logo-container">
                 <img src="{{ public_path('img/logo-jaya-raya.jpg') }}" alt="Logo">
             </td>
             <td class="kop-text">
-                <div class="instansi">PEMERINTAH PROVINSI DAERAH KHUSUS IBUKOTA JAKARTA</div>
-                <div class="instansi">DINAS PERHUBUNGAN</div>
+                <div class="instansi" style="font-size: 14pt; font-weight: bold; margin: 0; white-space: nowrap;">PEMERINTAH PROVINSI DAERAH KHUSUS IBUKOTA JAKARTA</div>
+                <div class="instansi" style="font-size: 14pt; font-weight: bold; margin: 0; white-space: nowrap;">DINAS PERHUBUNGAN</div>
                 <div class="ukpd">{{ strtoupper($laporan?->kapal?->ukpd?->nama ?? '') }}</div>
                 <div style="font-size: 10pt;">{{ $laporan?->kapal?->ukpd?->alamat }}</div>
-                <div style="font-size: 10pt;">Website: <span style="color: blue; text-decoration: underline;">www.dishub.jakarta.go.id</span> E-mail: {{ $laporan?->kapal?->ukpd?->email }}</div>
-                <div style="font-size: 11pt; font-weight: bold;">J A K A R T A <span style="float: right; font-weight: normal;">Kode Pos : {{ $laporan?->kapal?->ukpd?->kode_pos }}</span></div>
+                <div style="font-size: 10pt;">Website: <span style="color: blue; text-decoration: underline;">www.dishub.jakarta.go.id</span> &nbsp;&nbsp;&nbsp; E-mail: {{ $laporan?->kapal?->ukpd?->email }}</div>
+                <table style="width: 100%; font-size: 10pt; margin-top: 0;">
+                    <tr>
+                        <td style="text-align: center; padding-left: 50px;">
+                            <span style="letter-spacing: 3px; font-size: 10">JAKARTA</span>
+                        </td>
+                        <td style="text-align: right; width: 100px;">
+                            Kode Pos : {{ $laporan?->kapal?->ukpd?->kode_pos ?? '-' }}
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
@@ -56,17 +65,21 @@
         <div class="text-center font-bold" style="font-size: 12pt;">
             BERITA ACARA LAPORAN PENGISIAN BAHAN BAKAR<br>
             MINYAK KENDARAAN DINAS KAPAL {{ strtoupper($laporan->kapal->nama_kapal) }}<br>
-            NOMOR: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/PH.12.00<br>
-            Tanggal : ...............................................
+            NOMOR: {{ $laporan->suratPermohonan->nomor_surat }}<br>
+            Tanggal : {{ $laporan->suratPermohonan->tanggal_surat }}
         </div>
 
         <div class="mt-10 text-justify">
-            <p>Pada hari ini <b>...........................</b> tanggal <b>..........</b> bulan <b>...........................</b> tahun <b>...........................</b> bertempat di Stasiun Pengisian Bahan Bakar Umum (SPBU) Pelabuhan Sunda Kelapa</p>
+            <p>Pada hari ini <b>{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('l') : '................' }}</b> 
+                tanggal <b>{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d') : '................' }}</b> 
+                bulan <b>{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('F') : '................' }}</b> 
+                tahun <b>{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('Y') : '................' }}</b> 
+                bertempat di {{ $laporan->suratPermohonan->suratTugas->lokasi ?? '-' }}</p>
             
             <p style="margin-bottom: 5px;">Berdasarkan:</p>
             <table style="width: 100%; vertical-align: top;">
                 <tr><td style="width: 25px;">a.</td><td>Peraturan Gubernur Daerah Khusus Ibukota Jakarta Nomor 75 Tahun 2021 tentang Pemberian Bahan Bakar Minyak Kendaraan Dinas;</td></tr>
-                <tr><td style="vertical-align: top;">b.</td><td>Perjanjian Kerja Sama (PKS) Penyediaan Bahan Bakar Minyak Kendaraan Dinas Operasional (KDO) Khusus <b>(Unit Pengelola Angkutan Perairan)</b> Dinas Perhubungan Provinsi DKI Jakarta dengan <b>(PT. Universal Energi Nusantara)</b> Nomor ............................................... Tanggal ...............................................; dan</td></tr>
+                <tr><td style="vertical-align: top;">b.</td><td>Perjanjian Kerja Sama (PKS) Penyediaan Bahan Bakar Minyak Kendaraan Dinas Operasional (KDO) Khusus <b>{{ $laporan?->kapal?->ukpd?->nama }}</b> Dinas Perhubungan Provinsi DKI Jakarta dengan <b>{{ $laporan->suratPermohonan->penyedia->name ?? '-' }}</b> Nomor ............................................... Tanggal ...............................................; dan</td></tr>
                 <tr><td style="vertical-align: top;">c.</td><td>Surat Permohonan Nomor ................................... perihal Permohonan Pengisian Bahan Bakar Minyak pada tanggal ................................... .</td></tr>
             </table>
 

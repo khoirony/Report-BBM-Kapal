@@ -56,13 +56,13 @@
                 <div class="instansi-utama" style="font-size: 14pt; font-weight: bold; margin: 0; white-space: nowrap;">
                     DINAS PERHUBUNGAN
                 </div>
-                <div class="instansi-utama" style="font-size: 14pt; font-weight: bold; margin: 0; white-space: nowrap;">
-                    {{ strtoupper($surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '') }}
+                <div class="instansi-utama" style="font-size: 14pt; font-weight: bold; margin: 0;">
+                    {{ strtoupper($surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '-') }}
                 </div>
                 
                 <p style="font-size: 10pt; margin: 5px 0 0 0; line-height: 1.2;">
-                    {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->alamat }}<br>
-                    Website: www.dishub.jakarta.go.id &nbsp;&nbsp;&nbsp; E-mail : {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->email }}
+                    {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->alamat ?? '-' }}<br>
+                    Website: <span style="color: blue; text-decoration: underline;">www.dishub.jakarta.go.id</span> &nbsp;&nbsp;&nbsp; E-mail : {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->email ?? '-' }}
                 </p>
     
                 <table style="width: 100%; font-size: 10pt; margin-top: 0;">
@@ -71,7 +71,7 @@
                             <span style="letter-spacing: 3px; font-size: 10">JAKARTA</span>
                         </td>
                         <td style="text-align: right; width: 100px;">
-                            Kode Pos : {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->kode_pos }}
+                            Kode Pos : {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->kode_pos ?? '-' }}
                         </td>
                     </tr>
                 </table>

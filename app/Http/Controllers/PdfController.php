@@ -28,7 +28,7 @@ class PdfController extends Controller
         // Atur ukuran kertas ke A4 (Portrait)
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Laporan_BBM_' . str_replace(' ', '_', $laporan->kapal->nama_kapal ?? 'Kapal') . '_' . $laporan->tgl_ba . '.pdf';
+        $namaFile = 'Berita_Acara_' . str_replace(' ', '_', $laporan->kapal->nama_kapal ?? 'Kapal') . '_' . $laporan->tgl_ba . '.pdf';
 
         // Gunakan stream() untuk menampilkan preview di browser, bukan download()
         return $pdf->stream($namaFile);

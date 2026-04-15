@@ -40,7 +40,6 @@ class BeritaAcaraLaporanPengisian extends Component
 
     public function render()
     {
-        // Eager load relasi dalam untuk tabel utama
         $query = BaPengisianBbm::with([
             'kapal.ukpd', 
             'laporanPengisian.suratPermohonan', 
@@ -51,9 +50,9 @@ class BeritaAcaraLaporanPengisian extends Component
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nomor_pks', 'like', "%{$this->search}%")
-                  ->orWhereHas('kapal', function($k) {
-                      $k->where('nama_kapal', 'like', "%{$this->search}%");
-                  });
+                ->orWhereHas('kapal', function($k) {
+                    $k->where('nama_kapal', 'like', "%{$this->search}%");
+                });
             });
         }
 
@@ -64,12 +63,20 @@ class BeritaAcaraLaporanPengisian extends Component
 
         $query->orderBy('created_at', $this->sortBy === 'latest' ? 'desc' : 'asc');
 
+        $laporanTerpakai = BaPengisianBbm::when($this->laporan_id, function ($q) {
+            $q->where('id', '!=', $this->laporan_id);
+        })->pluck('laporan_pengisian_bbm_id')->filter()->toArray();
+
         return view('livewire.satgas.berita-acara-laporan-pengisian', [
             'laporans' => $query->paginate(10),
             'kapals' => Kapal::orderBy('nama_kapal', 'asc')->get(),
             'ukpds' => Ukpd::orderBy('nama', 'asc')->get(),
-            // Eager load relasi ke kapal lewat surat tugas untuk Data Master Dropdown
-            'laporan_pengisian_list' => LaporanPengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal'])->latest()->get(),
+            
+            // 3. Tambahkan whereNotIn untuk menyaring data yang sudah terpakai
+            'laporan_pengisian_list' => LaporanPengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal'])
+                ->whereNotIn('id', $laporanTerpakai) 
+                ->latest()
+                ->get(),
         ])->layout('layouts.app');
     }
 
