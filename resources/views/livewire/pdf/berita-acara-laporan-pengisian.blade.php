@@ -79,8 +79,8 @@
             <p style="margin-bottom: 5px;">Berdasarkan:</p>
             <table style="width: 100%; vertical-align: top;">
                 <tr><td style="width: 25px;">a.</td><td>Peraturan Gubernur Daerah Khusus Ibukota Jakarta Nomor 75 Tahun 2021 tentang Pemberian Bahan Bakar Minyak Kendaraan Dinas;</td></tr>
-                <tr><td style="vertical-align: top;">b.</td><td>Perjanjian Kerja Sama (PKS) Penyediaan Bahan Bakar Minyak Kendaraan Dinas Operasional (KDO) Khusus <b>{{ $laporan?->kapal?->ukpd?->nama }}</b> Dinas Perhubungan Provinsi DKI Jakarta dengan <b>{{ $laporan->suratPermohonan->penyedia->name ?? '-' }}</b> Nomor ............................................... Tanggal ...............................................; dan</td></tr>
-                <tr><td style="vertical-align: top;">c.</td><td>Surat Permohonan Nomor ................................... perihal Permohonan Pengisian Bahan Bakar Minyak pada tanggal ................................... .</td></tr>
+                <tr><td style="vertical-align: top;">b.</td><td>Perjanjian Kerja Sama (PKS) Penyediaan Bahan Bakar Minyak Kendaraan Dinas Operasional (KDO) Khusus <b>{{ $laporan?->kapal?->ukpd?->nama }}</b> Dinas Perhubungan Provinsi DKI Jakarta dengan <b>{{ $laporan->suratPermohonan->penyedia->name ?? '-' }}</b> Nomor {{ $laporan->nomor_pks ?? '-' }} Tanggal {{ $laporan->tanggal_pks ?? '-' }} dan</td></tr>
+                <tr><td style="vertical-align: top;">c.</td><td>Surat Permohonan Nomor {{ $laporan->suratPermohonan->nomor_surat ?? '-' }} perihal Permohonan Pengisian Bahan Bakar Minyak pada tanggal {{ $laporan->suratPermohonan->tanggal_surat ?? '-' }} .</td></tr>
             </table>
 
             <p class="mt-10">Awak Kapal yang bertugas:</p>
@@ -114,22 +114,22 @@
                     <td class="text-center" style="width: 50%;">
                         Penyedia BBM<br><br><br><br><br>
                         (.........................................)<br>
-                        PT. Universal Energi Nusantara
+                        {{ $laporan->suratPermohonan->penyedia->name ?? '-' }}
                     </td>
                     <td class="text-center" style="width: 50%;">
                         Pejabat Pelaksana Teknis Kegiatan<br>
-                        (Unit Pengelola Angkutan Perairan)<br><br><br><br>
-                        <span class="signature-name">M. Fauzi Syu'aib, ST, M.Sc</span><br>
-                        NIP. 198007202009011001
+                        {{ $laporan?->kapal?->ukpd?->nama ?? '-' }}<br><br><br><br>
+                        <span class="signature-name">{{ $laporan?->kapal?->ukpd?->pptk->name ?? '-' }}</span><br>
+                        NIP. {{ $laporan?->kapal?->ukpd?->pptk->nip ?? '-' }}
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" class="text-center" style="padding-top: 30px;">
                         Mengetahui,<br>
-                        Kepala Unit Pengelola Angkutan Perairan<br>
+                        Kepala {{ $laporan?->kapal?->ukpd?->nama ?? '-' }}<br>
                         Dinas Perhubungan Provinsi DKI Jakarta<br><br><br><br>
-                        <span class="signature-name">Muhamad Widan Anwar</span><br>
-                        NIP. 197509201998031004
+                        <span class="signature-name">{{ $laporan?->kapal?->ukpd?->kepalaUkpd->name ?? '-' }}</span><br>
+                        NIP. {{ $laporan?->kapal?->ukpd?->kepalaUkpd->nip ?? '-' }}
                     </td>
                 </tr>
             </table>
@@ -148,9 +148,9 @@
         <div class="text-center font-bold mt-10" style="font-size: 12pt;">LAPORAN PENGISIAN BBM KAPAL</div>
 
         <table style="width: 100%; margin-top: 10px;">
-            <tr><td style="width: 140px;">1. Hari</td><td>: .......................................................................</td></tr>
-            <tr><td>2. Tanggal</td><td>: .......................................................................</td></tr>
-            <tr><td>3. Dasar Hukum</td><td>: .......................................................................</td></tr>
+            <tr><td style="width: 140px;">1. Hari</td><td>: {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('l') : '................' }}</td></tr>
+            <tr><td>2. Tanggal</td><td>: {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('d F Y') : '................' }}</td></tr>
+            <tr><td>3. Dasar Hukum</td><td>: {{ $laporan->laporanPengisian->dasar_hukum }}</td></tr>
             <tr><td>4. Petugas</td><td>: .......................................................................</td></tr>
         </table>
 
@@ -161,31 +161,31 @@
                 <th style="width: 30%;">Jabatan</th>
                 <th style="width: 20%;">Paraf</th>
             </tr>
-            @for($i = 0; $i < 7; $i++)
+            @foreach($laporan->suratPermohonan->suratTugas->petugas as $index => $petugas)
             <tr>
                 <td class="text-center">{{ $i + 1 }}.</td>
-                <td>{{ $laporan->petugas_list[$i]['nama'] ?? '' }}</td>
-                <td>{{ $laporan->petugas_list[$i]['jabatan'] ?? '' }}</td>
+                <td>{{ $petugas->nama_petugas ?? '-' }}</td>
+                <td>{{ $petugas->jabatan ?? '-' }}</td>
                 <td></td>
             </tr>
-            @endfor
+            @endforeach
         </table>
 
         <table style="width: 100%; margin-top: 10px;">
-            <tr><td style="width: 140px; vertical-align: top;">5. Kegiatan</td><td>: Pengisian BBM Kapal di Pelabuhan Sunda Kelapa</td></tr>
-            <tr><td style="vertical-align: top;">6. Tujuan</td><td>: Meningkatkan Ketersediaan BBM Kapal untuk Menunjang Kegiatan Operasional</td></tr>
-            <tr><td style="vertical-align: top;">7. Lokasi</td><td>: .......................................................................</td></tr>
+            <tr><td style="width: 140px; vertical-align: top;">5. Kegiatan</td><td>: {{ $laporan->laporanPengisian->kegiatan }}</td></tr>
+            <tr><td style="vertical-align: top;">6. Tujuan</td><td>: {{ $laporan->laporanPengisian->tujuan }}</td></tr>
+            <tr><td style="vertical-align: top;">7. Lokasi</td><td>: {{ $laporan->laporanPengisian->lokasi_pengisian }}</td></tr>
         </table>
 
         <div class="font-bold mt-10">8. Kondisi Kapal</div>
         <table style="width: 100%;">
             <tr><td style="width: 25px;">a.</td><td style="width: 200px;">Nama Kapal</td><td>: <b>{{ $laporan->kapal->nama_kapal }}</b></td></tr>
-            <tr><td>b.</td><td>BBM Awal Di Pom Bensin</td><td>: ........................................... Liter</td></tr>
-            <tr><td>c.</td><td>Pengisian</td><td>: ........................................... Liter</td></tr>
-            <tr><td>d.</td><td>Pemakaian BBM dari Pom</td><td>: ........................................... Liter</td></tr>
-            <tr><td>e.</td><td>BBM Akhir</td><td>: ........................................... Liter</td></tr>
-            <tr><td>f.</td><td>Jam Berangkat</td><td>: ........................................... WIB</td></tr>
-            <tr><td>g.</td><td>Jam Kembali</td><td>: ........................................... WIB</td></tr>
+            <tr><td>b.</td><td>BBM Awal Di Pom Bensin</td><td>: {{ $laporan->laporanPengisian->jumlah_bbm_awal }} Liter</td></tr>
+            <tr><td>c.</td><td>Pengisian</td><td>: {{ $laporan->laporanPengisian->jumlah_bbm_pengisian }} Liter</td></tr>
+            <tr><td>d.</td><td>Pemakaian BBM dari Pom</td><td>: {{ $laporan->laporanPengisian->pemakaian_bbm }} Liter</td></tr>
+            <tr><td>e.</td><td>BBM Akhir</td><td>: {{ $laporan->laporanPengisian->jumlah_bbm_akhir }} Liter</td></tr>
+            <tr><td>f.</td><td>Jam Berangkat</td><td>: {{ $laporan->laporanPengisian->jam_berangkat }} WIB</td></tr>
+            <tr><td>g.</td><td>Jam Kembali</td><td>: {{ $laporan->laporanPengisian->jam_kembali }} WIB</td></tr>
         </table>
 
         <table class="signature-section" style="margin-top: 30px;">
@@ -201,10 +201,10 @@
             </tr>
             <tr>
                 <td colspan="2" class="text-center" style="padding-top: 30px;">
-                    Kepala Unit Pengelola Angkutan Perairan<br>
+                    Kepala {{ $laporan?->kapal?->ukpd?->nama ?? '-' }}<br>
                     Dinas Perhubungan Provinsi DKI Jakarta<br><br><br><br>
-                    <span class="signature-name">Muhamad Widan Anwar</span><br>
-                    NIP. 197509201998031004
+                    <span class="signature-name">{{ $laporan?->kapal?->ukpd?->kepalaUkpd->name ?? '-' }}</span><br>
+                    NIP. {{ $laporan?->kapal?->ukpd?->kepalaUkpd->nip ?? '-' }}
                 </td>
             </tr>
         </table>

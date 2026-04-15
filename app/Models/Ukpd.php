@@ -16,4 +16,9 @@ class Ukpd extends Model
     {
         return $this->hasOne(User::class, 'ukpd_id')->where('role_id', 3);
     }
+
+    public function pptk()
+    {
+        return $this->hasOne(User::class, 'ukpd_id')->where('role_id', 5);
+    }
 }
