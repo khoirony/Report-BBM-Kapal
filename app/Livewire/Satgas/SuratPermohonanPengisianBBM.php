@@ -272,4 +272,42 @@ class SuratPermohonanPengisianBBM extends Component
         $query->findOrFail($id)->delete();
         session()->flash('message', 'Surat Permohonan Berhasil Dihapus.');
     }
+
+    public function setujui($id)
+    {
+        $userRole = auth()->user()?->role?->slug;
+        if (!in_array($userRole, ['superadmin', 'pptk'])) {
+            session()->flash('error', 'Anda tidak memiliki akses untuk menyetujui permohonan ini.');
+            return;
+        }
+
+        $permohonan = SuratPermohonanPengisian::findOrFail($id);
+        
+        $permohonan->update([
+            'disetujui_pptk_by' => auth()->id(),
+            'disetujui_pptk_at' => now(),
+            'progress' => 'on progress'
+        ]);
+
+        session()->flash('message', 'Surat Permohonan berhasil disetujui.');
+    }
+
+    public function batalSetuju($id)
+    {
+        $userRole = auth()->user()?->role?->slug;
+        if (!in_array($userRole, ['superadmin', 'pptk'])) {
+            session()->flash('error', 'Anda tidak memiliki akses untuk membatalkan persetujuan ini.');
+            return;
+        }
+
+        $permohonan = SuratPermohonanPengisian::findOrFail($id);
+        
+        $permohonan->update([
+            'disetujui_pptk_by' => null,
+            'disetujui_pptk_at' => null,
+            'progress' => 'not started'
+        ]);
+
+        session()->flash('message', 'Persetujuan Surat Permohonan dibatalkan.');
+    }
 }

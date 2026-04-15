@@ -6,7 +6,6 @@ use App\Models\Spj;
 use App\Models\Kapal;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class SpjSeeder extends Seeder
@@ -16,6 +15,11 @@ class SpjSeeder extends Seeder
         // Ambil data user satgas dan admin ukpd untuk dijadikan pembuat SPJ
         $satgas = User::whereHas('role', function($q) {
             $q->where('slug', 'satgas');
+        })->first();
+
+        // Ambil data user PPTK untuk simulasi persetujuan di SPJ kedua
+        $pptk = User::whereHas('role', function($q) {
+            $q->where('slug', 'pptk');
         })->first();
 
         // Ambil kapal pertama yang ada di database
@@ -28,7 +32,11 @@ class SpjSeeder extends Seeder
                     'kapal_id'    => $kapal->id,
                     'tanggal_spj' => Carbon::now()->subDays(5)->format('Y-m-d'),
                     'file_spj'    => 'uploads/spj/dummy_spj_1.pdf',
-                    'status'      => 'menunggu_pptk',
+                    // Status persetujuan: Menunggu PPTK
+                    'disetujui_pptk_by'        => null,
+                    'disetujui_pptk_at'        => null,
+                    'disetujui_kepala_ukpd_by' => null,
+                    'disetujui_kepala_ukpd_at' => null,
                     'created_by'  => $satgas->id,
                     'ukpd_id'     => $satgas->ukpd_id,
                 ],
@@ -37,7 +45,11 @@ class SpjSeeder extends Seeder
                     'kapal_id'    => $kapal->id,
                     'tanggal_spj' => Carbon::now()->subDays(2)->format('Y-m-d'),
                     'file_spj'    => 'uploads/spj/dummy_spj_2.pdf',
-                    'status'      => 'menunggu_kepala_ukpd', // Sudah di-acc PPTK
+                    // Status persetujuan: Sudah disetujui PPTK, Menunggu Kepala UKPD
+                    'disetujui_pptk_by'        => $pptk ? $pptk->id : $satgas->id, // Fallback jika tidak ada user pptk
+                    'disetujui_pptk_at'        => Carbon::now()->subDay(),
+                    'disetujui_kepala_ukpd_by' => null,
+                    'disetujui_kepala_ukpd_at' => null,
                     'created_by'  => $satgas->id,
                     'ukpd_id'     => $satgas->ukpd_id,
                 ]

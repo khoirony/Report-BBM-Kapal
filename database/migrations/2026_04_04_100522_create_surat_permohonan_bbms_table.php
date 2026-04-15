@@ -38,6 +38,8 @@ return new class extends Migration
             $table->decimal('jumlah_bbm', 10, 2)->nullable()->comment('Dalam satuan liter');
             $table->integer('user_id')->nullable();
             $table->enum('progress', ['not started', 'on progress', 'done'])->default('not started');
+            $table->unsignedBigInteger('disetujui_pptk_by')->nullable();
+            $table->timestamp('disetujui_pptk_at')->nullable();
             $table->timestamps();
         });
     }

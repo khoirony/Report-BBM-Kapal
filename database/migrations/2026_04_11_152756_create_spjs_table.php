@@ -21,12 +21,10 @@ return new class extends Migration
             $table->string('file_spj'); // Menyimpan path file PDF/dokumen SPJ
             
             // Status persetujuan bertingkat
-            $table->enum('status', [
-                'menunggu_pptk', 
-                'menunggu_kepala_ukpd', 
-                'selesai', // Status DONE
-                'ditolak'
-            ])->default('menunggu_pptk');
+            $table->unsignedBigInteger('disetujui_pptk_by')->nullable();
+            $table->timestamp('disetujui_pptk_at')->nullable();
+            $table->unsignedBigInteger('disetujui_kepala_ukpd_by')->nullable();
+            $table->timestamp('disetujui_kepala_ukpd_at')->nullable();
             
             // Relasi ke User yang mengupload (Satgas / Admin UKPD)
             $table->foreignId('created_by')

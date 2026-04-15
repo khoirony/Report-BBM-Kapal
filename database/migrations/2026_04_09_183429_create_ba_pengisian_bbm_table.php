@@ -27,8 +27,11 @@ return new class extends Migration
             $table->string('lokasi')->nullable();
             
             // Sistem Persetujuan Bertingkat
+            $table->unsignedBigInteger('disetujui_penyedia_by')->nullable();
             $table->timestamp('disetujui_penyedia_at')->nullable();
+            $table->unsignedBigInteger('disetujui_pptk_by')->nullable();
             $table->timestamp('disetujui_pptk_at')->nullable();
+            $table->unsignedBigInteger('disetujui_kepala_ukpd_by')->nullable();
             $table->timestamp('disetujui_kepala_ukpd_at')->nullable();
             
             $table->foreignId('user_id')->constrained('users');

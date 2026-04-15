@@ -9,15 +9,7 @@ class Spj extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'nomor_spj',
-        'kapal_id',
-        'tanggal_spj',
-        'file_spj',
-        'status',
-        'created_by',
-        'ukpd_id',
-    ];
+    protected $guarded = [];
 
     // Relasi ke Kapal
     public function kapal()
@@ -35,5 +27,15 @@ class Spj extends Model
     public function ukpd()
     {
         return $this->belongsTo(Ukpd::class);
+    }
+
+    public function pemberiPersetujuanPptk()
+    {
+        return $this->belongsTo(User::class, 'disetujui_pptk_by');
+    }
+
+    public function pemberiPersetujuanKaUkpd()
+    {
+        return $this->belongsTo(User::class, 'disetujui_kepala_ukpd_by');
     }
 }

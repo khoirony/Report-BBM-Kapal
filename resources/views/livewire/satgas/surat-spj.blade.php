@@ -141,50 +141,85 @@
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase lg:hidden mb-2 block mt-2">Status & Dokumen</span>
                                 
-                                <div class="mb-3">
-                                    @if($spj->status === 'menunggu_pptk')
-                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-xs font-bold text-amber-700 shadow-sm">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            Menunggu PPTK
-                                        </div>
-                                    @elseif($spj->status === 'menunggu_kepala_ukpd')
-                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs font-bold text-blue-700 shadow-sm">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            Menunggu Ka. UKPD
-                                        </div>
-                                    @elseif($spj->status === 'selesai')
-                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-700 shadow-sm">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                            Selesai (DONE)
-                                        </div>
-                                    @endif
+                                <div class="space-y-3">
+                                    <div>
+                                        @if($spj->disetujui_pptk_at)
+                                            <div class="flex items-center gap-1.5 text-emerald-700 font-bold text-[11px]">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                ACC PPTK
+                                            </div>
+                                            <div class="text-[10px] text-slate-500 leading-tight">
+                                                Oleh: {{ $spj->pemberiPersetujuanPptk->name ?? '-' }} <br>
+                                                {{ \Carbon\Carbon::parse($spj->disetujui_pptk_at)->format('d/m/y H:i') }}
+                                            </div>
+                                        @else
+                                            <div class="flex items-center gap-1.5 text-amber-600 font-bold text-[11px]">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                Menunggu PPTK
+                                            </div>
+                                        @endif
+                                    </div>
+                            
+                                    <div>
+                                        @if($spj->disetujui_kepala_ukpd_at)
+                                            <div class="flex items-center gap-1.5 text-blue-700 font-bold text-[11px]">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                ACC Ka. UKPD
+                                            </div>
+                                            <div class="text-[10px] text-slate-500 leading-tight">
+                                                Oleh: {{ $spj->pemberiPersetujuanKaUkpd->name ?? '-' }} <br>
+                                                {{ \Carbon\Carbon::parse($spj->disetujui_kepala_ukpd_at)->format('d/m/y H:i') }}
+                                            </div>
+                                        @else
+                                            <div class="flex items-center gap-1.5 text-slate-400 font-bold text-[11px]">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                Menunggu Ka. UKPD
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
-
-                                <a href="{{ Storage::url($spj->file_spj) }}" target="_blank" class="inline-flex items-center text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded border border-indigo-100 transition-colors">
-                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                                    Lihat Lampiran SPJ
-                                </a>
+                            
+                                <div class="mt-4">
+                                    <a href="{{ Storage::url($spj->file_spj) }}" target="_blank" class="inline-flex items-center text-[11px] font-bold text-indigo-600 hover:underline">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                        LIHAT DOKUMEN SPJ
+                                    </a>
+                                </div>
                             </td>
         
                             <td class="block lg:table-cell px-2 py-4 lg:px-6 lg:py-5 lg:text-right align-middle">
-                                <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto mt-2 lg:mt-0">
+                                <div class="flex flex-col gap-2 w-full lg:max-w-[150px] lg:ml-auto mt-2 lg:mt-0">
                                     
                                     @php $role = auth()->user()?->role?->slug; @endphp
                                     
-                                    @if($role === 'pptk' && $spj->status === 'menunggu_pptk')
-                                        <button wire:click="approve({{ $spj->id }})" wire:confirm="Setujui dokumen SPJ ini sebagai PPTK?" class="w-full justify-center inline-flex items-center text-emerald-700 font-semibold bg-emerald-50 hover:bg-emerald-600 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-emerald-200 shadow-sm text-xs">
-                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            Approve PPTK
-                                        </button>
-                                    @elseif($role === 'kepala_ukpd' && $spj->status === 'menunggu_kepala_ukpd')
-                                        <button wire:click="approve({{ $spj->id }})" wire:confirm="Setujui final dokumen SPJ ini sebagai Kepala UKPD?" class="w-full justify-center inline-flex items-center text-blue-700 font-semibold bg-blue-50 hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-blue-200 shadow-sm text-xs">
-                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                            Approve Ka. UKPD
-                                        </button>
-                                    @else
-                                        <span class="text-xs text-slate-400 font-medium italic lg:text-right block">Tidak ada aksi</span>
+                                    @if(in_array($role, ['pptk', 'superadmin']))
+                                        @if(is_null($spj->disetujui_pptk_at))
+                                            <button wire:click="approve({{ $spj->id }})" wire:confirm="Setujui sebagai PPTK?" class="w-full justify-center inline-flex items-center text-emerald-700 font-bold bg-emerald-50 hover:bg-emerald-600 hover:text-white px-3 py-2 rounded-lg border border-emerald-200 transition-all text-[11px]">
+                                                APPROVE PPTK
+                                            </button>
+                                        @elseif(!is_null($spj->disetujui_pptk_at) && is_null($spj->disetujui_kepala_ukpd_at))
+                                            <button wire:click="cancelApprove({{ $spj->id }})" wire:confirm="Batalkan persetujuan PPTK?" class="w-full justify-center inline-flex items-center text-rose-700 font-bold bg-rose-50 hover:bg-rose-600 hover:text-white px-3 py-2 rounded-lg border border-rose-200 transition-all text-[11px]">
+                                                BATAL ACC PPTK
+                                            </button>
+                                        @endif
                                     @endif
-
+                            
+                                    @if(in_array($role, ['kepala_ukpd', 'superadmin']))
+                                        @if(is_null($spj->disetujui_kepala_ukpd_at))
+                                            <button wire:click="approve({{ $spj->id }})" wire:confirm="Setujui sebagai Kepala UKPD?" class="w-full justify-center inline-flex items-center text-blue-700 font-bold bg-blue-50 hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg border border-blue-200 transition-all text-[11px]">
+                                                APPROVE KA. UKPD
+                                            </button>
+                                        @elseif(!is_null($spj->disetujui_kepala_ukpd_at))
+                                            <button wire:click="cancelApprove({{ $spj->id }})" wire:confirm="Batalkan persetujuan Kepala UKPD?" class="w-full justify-center inline-flex items-center text-rose-700 font-bold bg-rose-50 hover:bg-rose-600 hover:text-white px-3 py-2 rounded-lg border border-rose-200 transition-all text-[11px]">
+                                                BATAL ACC KA. UKPD
+                                            </button>
+                                        @endif
+                                    @endif
+                            
+                                    @if($role === 'satgas' || ($role === 'pptk' && !is_null($spj->disetujui_kepala_ukpd_at)))
+                                        <span class="text-[10px] text-slate-400 font-medium italic lg:text-right block">No Action Available</span>
+                                    @endif
+                            
                                 </div>
                             </td>
         

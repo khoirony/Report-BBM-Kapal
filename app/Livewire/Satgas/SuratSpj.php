@@ -59,12 +59,10 @@ class SuratSpj extends Component
             'nomor_spj'   => 'required|unique:spjs,nomor_spj',
             'kapal_id'    => 'required|exists:kapals,id',
             'tanggal_spj' => 'required|date',
-            'file_spj'    => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
+            'file_spj'    => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $user = Auth::user();
-
-        // Upload File menggunakan fitur bawaan Livewire
         $filePath = $this->file_spj->store('uploads/spj', 'public');
 
         Spj::create([
@@ -72,7 +70,7 @@ class SuratSpj extends Component
             'kapal_id'    => $this->kapal_id,
             'tanggal_spj' => $this->tanggal_spj,
             'file_spj'    => $filePath,
-            'status'      => 'menunggu_pptk', // Default status awal
+            // Kolom status dihapus dari sini
             'created_by'  => $user->id,
             'ukpd_id'     => $user->ukpd_id,
         ]);
@@ -85,22 +83,58 @@ class SuratSpj extends Component
     {
         $spj = Spj::findOrFail($id);
         $user = Auth::user();
+        $role = $user->role->slug;
 
-        // 1. PPTK Approve
-        if ($user->role->slug === 'pptk' && $spj->status === 'menunggu_pptk') {
-            $spj->update(['status' => 'menunggu_kepala_ukpd']);
+        // 1. PPTK Approve (Syarat: Belum disetujui PPTK)
+        if (in_array($role, ['pptk', 'superadmin']) && is_null($spj->disetujui_pptk_at)) {
+            $spj->update([
+                'disetujui_pptk_by' => $user->id,
+                'disetujui_pptk_at' => now(),
+            ]);
             session()->flash('message', 'SPJ disetujui. Diteruskan ke Kepala UKPD.');
             return;
         }
 
-        // 2. Kepala UKPD Approve -> DONE
-        if ($user->role->slug === 'kepala_ukpd' && $spj->status === 'menunggu_kepala_ukpd') {
-            $spj->update(['status' => 'selesai']);
+        // 2. Kepala UKPD Approve (Syarat: Sudah disetujui PPTK, tapi belum disetujui Ka. UKPD)
+        if (in_array($role, ['kepala_ukpd', 'superadmin']) && !is_null($spj->disetujui_pptk_at) && is_null($spj->disetujui_kepala_ukpd_at)) {
+            $spj->update([
+                'disetujui_kepala_ukpd_by' => $user->id,
+                'disetujui_kepala_ukpd_at' => now(),
+            ]);
             session()->flash('message', 'SPJ disetujui Kepala UKPD. Transaksi Selesai.');
             return;
         }
 
-        session()->flash('error', 'Anda tidak memiliki hak untuk menyetujui dokumen ini.');
+        session()->flash('error', 'Anda tidak memiliki hak untuk menyetujui dokumen ini pada tahap ini.');
+    }
+
+    public function cancelApprove($id)
+    {
+        $spj = Spj::findOrFail($id);
+        $user = Auth::user();
+        $role = $user->role->slug;
+
+        // 1. Batal Setuju PPTK (Syarat: Sudah disetujui PPTK, TAPI belum disetujui Kepala UKPD)
+        if (in_array($role, ['pptk', 'superadmin']) && !is_null($spj->disetujui_pptk_at) && is_null($spj->disetujui_kepala_ukpd_at)) {
+            $spj->update([
+                'disetujui_pptk_by' => null,
+                'disetujui_pptk_at' => null,
+            ]);
+            session()->flash('message', 'Persetujuan PPTK dibatalkan.');
+            return;
+        }
+
+        // 2. Batal Setuju Kepala UKPD (Syarat: Sudah disetujui Kepala UKPD)
+        if (in_array($role, ['kepala_ukpd', 'superadmin']) && !is_null($spj->disetujui_kepala_ukpd_at)) {
+            $spj->update([
+                'disetujui_kepala_ukpd_by' => null,
+                'disetujui_kepala_ukpd_at' => null,
+            ]);
+            session()->flash('message', 'Persetujuan Kepala UKPD dibatalkan.');
+            return;
+        }
+
+        session()->flash('error', 'Aksi tidak diizinkan atau status dokumen sudah berubah.');
     }
 
     public function render()
@@ -108,7 +142,7 @@ class SuratSpj extends Component
         $user = Auth::user();
         
         // Base Query SPJ
-        $query = Spj::with(['kapal', 'creator']);
+        $query = Spj::with(['kapal', 'creator', 'pemberiPersetujuanPptk', 'pemberiPersetujuanKaUkpd']);
 
         // Filter berdasarkan UKPD (Kecuali Superadmin)
         if ($user->role->slug !== 'superadmin') {
