@@ -25,10 +25,17 @@
             </div>
             
             <div class="flex flex-col">
+                <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-0.5">
+                    Sistem Monitoring
+                </span>
+                
                 <span class="text-xl font-black tracking-tight leading-none text-gray-800">
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">BBM</span>KAPAL
                 </span>
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Dishub Jakarta</span>
+                
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                    Dishub Jakarta
+                </span>
             </div>
         </a>
         
