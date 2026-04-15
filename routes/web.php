@@ -26,6 +26,7 @@ use App\Livewire\Satgas\SuratSpj;
 use App\Livewire\Satgas\VerifikasiInvoiceBBM;
 use App\Livewire\Sounding\SoundingBBM;
 use App\Livewire\SuperAdmin\DataKapal;
+use App\Livewire\SuperAdmin\KelolaPerusahaan;
 use App\Livewire\SuperAdmin\KelolaUser;
 use App\Livewire\SuperAdmin\KelolaUkpd;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -102,6 +103,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard-penyedia', PenyediaDashboard::class)->middleware('role:penyedia')->name('dashboard.penyedia');
         Route::get('/dashboard-nakhoda', NakhodaDashboard::class)->middleware('role:nakhoda')->name('dashboard.nakhoda');
 
+        Route::get('/kelola-perusahaan', KelolaPerusahaan::class)->middleware('role:superadmin')->name('superadmin.kelola-perusahaan');
         Route::get('/kelola-ukpd', KelolaUkpd::class)->middleware('role:superadmin')->name('superadmin.kelola-ukpd');
         Route::get('/kelola-user', KelolaUser::class)->middleware('role:superadmin,admin_ukpd')->name('superadmin.kelola-user');
         Route::get('/data-kapal', DataKapal::class)->middleware('role:superadmin,satgas,sounding,admin_ukpd,kepala_ukpd,nakhoda')->name('data-kapal');

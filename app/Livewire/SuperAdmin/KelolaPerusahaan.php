@@ -10,7 +10,7 @@ use Livewire\WithPagination;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
-class KelolaUser extends Component
+class KelolaPerusahaan extends Component
 {
     use WithPagination;
 
@@ -18,11 +18,8 @@ class KelolaUser extends Component
     public $userId, $name, $email, $password, $ukpd_id, $role_id;
     public $is_verified = true; 
 
-    // Properti Filter, Search, Sort
+    // Properti Search & Sort
     public $search = '';
-    public $filterRole = ''; 
-    public $filterUkpd = '';
-    public $filterVerifikasi = ''; 
     public $sortBy = 'created_at';
     public $sortDirection = 'desc';
 
@@ -30,10 +27,10 @@ class KelolaUser extends Component
     public $isModalOpen = false;
     public $modalMode = 'create'; 
 
-    public function updatingSearch() { $this->resetPage(); }
-    public function updatingFilterRole() { $this->resetPage(); }
-    public function updatingFilterUkpd() { $this->resetPage(); }
-    public function updatingFilterVerifikasi() { $this->resetPage(); }
+    public function updatingSearch() 
+    { 
+        $this->resetPage(); 
+    }
 
     public function sortByField($field)
     {
@@ -51,6 +48,9 @@ class KelolaUser extends Component
         $this->reset(['userId', 'name', 'email', 'password', 'ukpd_id', 'role_id', 'is_verified']);
         $this->modalMode = $mode;
 
+        // Cari Role Penyedia secara dinamis
+        $rolePenyedia = Role::where('slug', 'penyedia')->first();
+
         if ($mode === 'edit' && $id) {
             $user = User::findOrFail($id);
             $this->userId = $user->id;
@@ -60,8 +60,8 @@ class KelolaUser extends Component
             $this->role_id = $user->role_id;
             $this->is_verified = !is_null($user->email_verified_at);
         } else {
-            $defaultRole = Role::where('slug', 'sounding')->first();
-            $this->role_id = $defaultRole ? $defaultRole->id : null; 
+            // Default ID untuk Penyedia
+            $this->role_id = $rolePenyedia ? $rolePenyedia->id : null; 
             $this->is_verified = true; 
         }
 
@@ -123,7 +123,7 @@ class KelolaUser extends Component
             $data
         );
 
-        session()->flash('message', $this->modalMode === 'create' ? 'User berhasil ditambahkan.' : 'User berhasil diperbarui.');
+        session()->flash('message', $this->modalMode === 'create' ? 'User Penyedia berhasil ditambahkan.' : 'User Penyedia berhasil diperbarui.');
         $this->closeModal();
     }
 
@@ -142,51 +142,31 @@ class KelolaUser extends Component
     public function delete($id)
     {
         User::findOrFail($id)->delete();
-        session()->flash('message', 'User berhasil dihapus.');
+        session()->flash('message', 'User Penyedia berhasil dihapus.');
     }
 
     public function render()
     {
-        $excludedRoleNames = [
-            'penyedia',
-            'admin_ukpd',
-            'kepala_ukpd',
-        ];
-        
-        $excludedRoleIds = Role::whereIn('slug', $excludedRoleNames)->pluck('id')->toArray();
+        // Dapatkan ID Role Penyedia
+        $rolePenyedia = Role::where('slug', 'penyedia')->first();
+        $roleId = $rolePenyedia ? $rolePenyedia->id : null;
 
         $users = User::with(['ukpd', 'role'])
-            ->whereNotIn('role_id', $excludedRoleIds)
+            ->where('role_id', $roleId) // KUNCI: Hanya menampilkan role penyedia
             ->when($this->search, function ($query) {
                 $query->where(function ($subQuery) {
                     $subQuery->where('name', 'like', '%' . $this->search . '%')
                              ->orWhere('email', 'like', '%' . $this->search . '%');
                 });
             })
-            ->when($this->filterRole, function ($query) {
-                $query->where('role_id', $this->filterRole);
-            })
-            ->when($this->filterUkpd, function ($query) {
-                $query->where('ukpd_id', $this->filterUkpd);
-            })
-            ->when($this->filterVerifikasi !== '', function ($query) {
-                if ($this->filterVerifikasi == '1') {
-                    $query->whereNotNull('email_verified_at');
-                } else {
-                    $query->whereNull('email_verified_at');
-                }
-            })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(10);
 
         $ukpds = Ukpd::all();
-        
-        $roles = Role::whereNotIn('id', $excludedRoleIds)->get();
 
-        return view('livewire.super-admin.kelola-user', [
+        return view('livewire.super-admin.kelola-perusahaan', [
             'users' => $users,
             'ukpds' => $ukpds,
-            'roles' => $roles,
         ])->layout('layouts.app');
     }
 }
