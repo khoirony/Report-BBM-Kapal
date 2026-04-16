@@ -50,7 +50,6 @@ class LaporanPengisianBbmSeeder extends Seeder
                 'jumlah_bbm_akhir'     => $bbmAkhir,
                 'jam_berangkat'        => '08:00:00',
                 'jam_kembali'          => '13:30:00',
-                'dokumentasi_foto'     => json_encode(['path/to/flowmeter.jpg', 'path/to/struk.jpg']), // Format JSON Dummy
                 'user_id'              => 3,
                 'created_at'           => now(),
                 'updated_at'           => now(),

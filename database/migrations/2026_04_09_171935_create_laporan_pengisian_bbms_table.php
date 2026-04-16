@@ -26,7 +26,6 @@ return new class extends Migration
             $table->decimal('jumlah_bbm_akhir', 10, 2)->default(0);
             $table->time('jam_berangkat')->nullable();
             $table->time('jam_kembali')->nullable();
-            $table->json('dokumentasi_foto')->nullable();
             $table->integer('user_id')->nullable();
             $table->unsignedBigInteger('disetujui_nakhoda_by')->nullable();
             $table->timestamp('disetujui_nakhoda_at')->nullable();

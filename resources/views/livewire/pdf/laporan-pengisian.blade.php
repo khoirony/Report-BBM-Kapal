@@ -131,5 +131,72 @@
         </table>
     </div>
 
+    <div style="page-break-before: always;"></div>
+    <div style="margin-top: 20px;">
+        <p style="font-weight: bold;">Dokumentasi Proses:</p>
+        
+        @php
+            $path = storage_path('app/public/' . $laporan->suratPermohonan->pencatatanHasil->foto_proses);
+            $base64 = '';
+            if(file_exists($path) && !is_dir($path)){
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = file_get_contents($path);
+                $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            }
+        @endphp
+
+        @if($base64)
+            <img src="{{ $base64 }}" 
+                 alt="Foto Proses" 
+                 style="max-width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ccc; padding: 5px;">
+        @else
+            <p style="font-style: italic; color: gray;">Tidak ada foto proses yang dilampirkan atau file tidak ditemukan.</p>
+        @endif
+    </div>
+
+    <div style="margin-top: 20px;">
+        <p style="font-weight: bold;">Dokumentasi Meter:</p>
+        
+        @php
+            $path = storage_path('app/public/' . $laporan->suratPermohonan->pencatatanHasil->foto_flow_meter);
+            $base64 = '';
+            if(file_exists($path) && !is_dir($path)){
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = file_get_contents($path);
+                $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            }
+        @endphp
+
+        @if($base64)
+            <img src="{{ $base64 }}" 
+                 alt="Foto Proses" 
+                 style="max-width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ccc; padding: 5px;">
+        @else
+            <p style="font-style: italic; color: gray;">Tidak ada foto proses yang dilampirkan atau file tidak ditemukan.</p>
+        @endif
+    </div>
+
+    <div style="margin-top: 20px;">
+        <p style="font-weight: bold;">Dokumentasi Struk/Nota:</p>
+        
+        @php
+            $path = storage_path('app/public/' . $laporan->suratPermohonan->pencatatanHasil->foto_struk);
+            $base64 = '';
+            if(file_exists($path) && !is_dir($path)){
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = file_get_contents($path);
+                $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            }
+        @endphp
+
+        @if($base64)
+            <img src="{{ $base64 }}" 
+                 alt="Foto Proses" 
+                 style="max-width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ccc; padding: 5px;">
+        @else
+            <p style="font-style: italic; color: gray;">Tidak ada foto proses yang dilampirkan atau file tidak ditemukan.</p>
+        @endif
+    </div>
+
 </body>
 </html>

@@ -4,18 +4,16 @@ namespace App\Livewire\Satgas;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\WithFileUploads;
 use App\Models\LaporanPengisianBbm as PengisianBbm;
 use App\Models\SuratPermohonanPengisian;
 use App\Models\Sounding;
 use App\Models\Kapal;
 use App\Models\Ukpd;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class LaporanPengisianBBM extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithPagination;
 
     // Master Data
     public $permohonan_list, $kapals, $available_soundings = [];
@@ -34,8 +32,6 @@ class LaporanPengisianBBM extends Component
     
     // Form Properties - Waktu & Dokumentasi
     public $jam_berangkat, $jam_kembali;
-    public $dokumentasi_baru = [];
-    public $dokumentasi_lama = [];
 
     // Filter Properties
     public $search = '', $sortBy = 'latest', $filterKapal = '', $filterUkpd = '';
@@ -209,8 +205,6 @@ class LaporanPengisianBBM extends Component
         
         $this->jam_berangkat = \Carbon\Carbon::parse($laporan->jam_berangkat)->format('H:i');
         $this->jam_kembali = \Carbon\Carbon::parse($laporan->jam_kembali)->format('H:i');
-        
-        $this->dokumentasi_lama = json_decode($laporan->dokumentasi_foto, true) ?? [];
 
         $this->isOpen = true;
     }
@@ -222,19 +216,10 @@ class LaporanPengisianBBM extends Component
             'tanggal' => 'required|date',
             'lokasi_pengisian' => 'required|string',
             'jumlah_bbm_pengisian' => 'required|numeric|min:0',
-            'dokumentasi_baru.*' => 'image|max:2048', // Max 2MB
         ]);
 
         $finalKegiatan = $this->kegiatan === 'Lainnya' ? $this->kegiatan_lainnya : $this->kegiatan;
         $finalTujuan = $this->tujuan === 'Lainnya' ? $this->tujuan_lainnya : $this->tujuan;
-
-        // Upload Foto Baru
-        $paths = $this->dokumentasi_lama;
-        if (!empty($this->dokumentasi_baru)) {
-            foreach ($this->dokumentasi_baru as $foto) {
-                $paths[] = $foto->store('dokumentasi_bbm', 'public');
-            }
-        }
 
         $data = [
             'ukpd_id' => $this->ukpd_id,
@@ -253,7 +238,6 @@ class LaporanPengisianBBM extends Component
             'jumlah_bbm_akhir' => $this->jumlah_bbm_akhir ?: 0,
             'jam_berangkat' => $this->jam_berangkat,
             'jam_kembali' => $this->jam_kembali,
-            'dokumentasi_foto' => json_encode($paths),
         ];
 
         if (!$this->laporan_id) {
@@ -264,15 +248,6 @@ class LaporanPengisianBBM extends Component
 
         session()->flash('message', $this->laporan_id ? 'Laporan Diperbarui.' : 'Laporan Dibuat.');
         $this->closeModal();
-    }
-
-    public function deleteFoto($index)
-    {
-        if (isset($this->dokumentasi_lama[$index])) {
-            Storage::disk('public')->delete($this->dokumentasi_lama[$index]);
-            unset($this->dokumentasi_lama[$index]);
-            $this->dokumentasi_lama = array_values($this->dokumentasi_lama); 
-        }
     }
 
     public function closeModal()
@@ -286,7 +261,7 @@ class LaporanPengisianBBM extends Component
             'laporan_id', 'surat_permohonan_id', 'surat_tugas_id', 'ukpd_id', 
             'tanggal', 'lokasi_pengisian', 'kegiatan_lainnya', 'tujuan_lainnya',
             'sounding_awal_id', 'jumlah_bbm_awal', 'jumlah_bbm_pengisian', 'pemakaian_bbm', 'sounding_akhir_id', 'jumlah_bbm_akhir',
-            'jam_berangkat', 'jam_kembali', 'dokumentasi_baru', 'dokumentasi_lama', 'available_soundings'
+            'jam_berangkat', 'jam_kembali', 'available_soundings'
         ]);
         $this->kegiatan = 'Pengisian BBM KDO Khusus';
         $this->tujuan = 'Memastikan ketersediaan BBM Kapal untuk menunjang kegiatan Operasional';
@@ -296,10 +271,6 @@ class LaporanPengisianBBM extends Component
     public function delete($id)
     {
         $laporan = PengisianBbm::findOrFail($id);
-        
-        $fotos = json_decode($laporan->dokumentasi_foto, true) ?? [];
-        foreach($fotos as $f) { Storage::disk('public')->delete($f); }
-        
         $laporan->delete();
         session()->flash('message', 'Laporan Berhasil Dihapus.');
     }

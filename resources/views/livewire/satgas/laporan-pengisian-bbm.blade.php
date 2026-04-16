@@ -125,7 +125,7 @@
                                     {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
                                 </div>
                                 <div class="font-bold text-slate-900 text-sm tracking-tight mb-1" title="Nomor Surat Tugas">
-                                    {{ $item->suratTugas->nomor_surat ?? '-' }}
+                                    {{ $item->suratPermohonan->nomor_surat ?? '-' }}
                                 </div>
                                 
                                 <div class="bg-indigo-50/50 border border-indigo-100 rounded-lg p-2 mt-2 w-fit pr-4">
@@ -194,14 +194,6 @@
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     {{ \Carbon\Carbon::parse($item->jam_berangkat)->format('H:i') }} - {{ \Carbon\Carbon::parse($item->jam_kembali)->format('H:i') }} WIB
                                 </div>
-        
-                                @php $fotos = json_decode($item->dokumentasi_foto, true) ?? []; @endphp
-                                @if(count($fotos) > 0)
-                                    <div class="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 w-fit">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                        {{ count($fotos) }} Lampiran Dokumentasi
-                                    </div>
-                                @endif
                             </td>
         
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
@@ -431,33 +423,6 @@
                                 <input type="number" step="0.01" wire:model="jumlah_bbm_akhir" class="w-full px-3 py-2.5 bg-blue-50 border border-blue-200 text-blue-700 font-extrabold text-sm rounded-lg outline-none">
                             </div>
                         </div>
-
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2 pt-2">Dokumentasi (Foto/Struk)</h4>
-                        
-                        <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 bg-slate-50 hover:bg-slate-100 transition-colors">
-                            <input type="file" wire:model="dokumentasi_baru" multiple accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
-                            <div wire:loading wire:target="dokumentasi_baru" class="text-xs text-indigo-600 mt-2 font-semibold flex items-center">
-                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                Mengunggah gambar...
-                            </div>
-                            @error('dokumentasi_baru.*') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-
-                        @if(!empty($dokumentasi_lama))
-                        <div class="flex flex-wrap gap-3 mt-3">
-                            @foreach($dokumentasi_lama as $idx => $path)
-                            <div class="relative group rounded-lg overflow-hidden border border-slate-200 shadow-sm">
-                                <img src="{{ Storage::url($path) }}" class="h-20 w-20 object-cover">
-                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button type="button" wire:click="deleteFoto({{ $idx }})" class="text-white hover:text-rose-500 p-1 bg-white/20 rounded-full">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        @endif
-
                     </form>
                 </div>
 
