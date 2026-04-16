@@ -46,7 +46,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'jenis_bbm'                => 'Dexlite/sekelas',
                 'jumlah_bbm'               => 1500.00,
                 'user_id'                  => $defaultUserId,
-                'progress'                 => 'done',
+                'progress'                 => 'on progress',
             ],
             [
                 'nomor_surat'              => '002/PH.12.00',
@@ -72,7 +72,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'jenis_bbm'                => 'Biosolar',
                 'jumlah_bbm'               => 5000.00,
                 'user_id'                  => $defaultUserId,
-                'progress'                 => 'not started',
+                'progress'                 => 'on progress',
             ],
             [
                 'nomor_surat'              => '004/PH.12.00',
@@ -98,7 +98,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'jenis_bbm'                => 'Dexlite/sekelas',
                 'jumlah_bbm'               => 1000.00,
                 'user_id'                  => $defaultUserId,
-                'progress'                 => 'done',
+                'progress'                 => 'on progress',
             ],
             [
                 'nomor_surat'              => '006/PH.12.00',
@@ -111,7 +111,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
                 'jenis_bbm'                => 'Pertamina Dex/sekelas',
                 'jumlah_bbm'               => 3000.00,
                 'user_id'                  => $defaultUserId,
-                'progress'                 => 'not started',
+                'progress'                 => 'on progress',
             ]
         ];
 

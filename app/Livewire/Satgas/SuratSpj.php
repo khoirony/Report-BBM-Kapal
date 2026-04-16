@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Spj;
 use App\Models\Kapal;
+use App\Models\ProsesPenyediaBbm;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,23 +15,20 @@ class SuratSpj extends Component
 {
     use WithPagination, WithFileUploads;
 
-    // Properti Form
-    public $spj_id; // Digunakan untuk tracking Edit
+    public $spj_id; 
     public $nomor_spj;
     public $kapal_id;
+    public $proses_penyedia_bbm_id;
     public $tanggal_spj;
-    public $total_biaya; // Input baru
+    public $total_biaya; 
     public $file_spj;
 
-    // Properti Filter
     public $filter_start_date;
     public $filter_end_date;
     public $filter_kapal_id;
 
-    // State Modal
     public $isOpen = false;
 
-    // Reset pagination ketika filter berubah
     public function updatingFilterStartDate() { $this->resetPage(); }
     public function updatingFilterEndDate() { $this->resetPage(); }
     public function updatingFilterKapalId() { $this->resetPage(); }
@@ -52,10 +50,42 @@ class SuratSpj extends Component
         $this->spj_id = null;
         $this->nomor_spj = '';
         $this->kapal_id = '';
+        $this->proses_penyedia_bbm_id = '';
         $this->tanggal_spj = '';
         $this->total_biaya = '';
         $this->file_spj = null;
         $this->resetErrorBag();
+    }
+
+    public function updatedProsesPenyediaBbmId($value)
+    {
+        if ($value) {
+            $this->tarikBiayaPenyedia();
+            $this->tarikKapalPenyedia();
+        }
+    }
+
+    public function tarikBiayaPenyedia()
+    {
+        if ($this->proses_penyedia_bbm_id) {
+            $proses = ProsesPenyediaBbm::find($this->proses_penyedia_bbm_id);
+            if ($proses) {
+                $this->total_biaya = $proses->total_harga;
+            }
+        }
+    }
+
+    public function tarikKapalPenyedia()
+    {
+        if ($this->proses_penyedia_bbm_id) {
+            $proses = ProsesPenyediaBbm::with('suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal')->find($this->proses_penyedia_bbm_id);
+            
+            $kapal = $proses?->suratPermohonan?->suratTugas?->LaporanSisaBbm?->sounding?->kapal;
+            
+            if ($kapal) {
+                $this->kapal_id = $kapal->id;
+            }
+        }
     }
 
     public function edit($id)
@@ -65,49 +95,57 @@ class SuratSpj extends Component
         $this->spj_id = $id;
         $this->nomor_spj = $spj->nomor_spj;
         $this->kapal_id = $spj->kapal_id;
+        $this->proses_penyedia_bbm_id = $spj->proses_penyedia_bbm_id;
         $this->tanggal_spj = $spj->tanggal_spj;
         $this->total_biaya = $spj->total_biaya;
-        // File tidak di-bind kembali, jika kosong berarti user tidak mengganti file saat edit
         
         $this->isOpen = true;
     }
 
     public function store()
     {
-        // Validasi Dinamis (Jika edit, file opsional dan nomor_spj exclude ID saat ini)
         $this->validate([
-            'nomor_spj'   => 'required|unique:spjs,nomor_spj,' . $this->spj_id,
-            'kapal_id'    => 'required|exists:kapals,id',
-            'tanggal_spj' => 'required|date',
-            'total_biaya' => 'required|numeric|min:0',
-            'file_spj'    => $this->spj_id ? 'nullable|mimes:pdf,jpg,jpeg,png|max:5120' : 'required|mimes:pdf,jpg,jpeg,png|max:5120',
+            'nomor_spj'              => 'required|unique:spjs,nomor_spj,' . $this->spj_id,
+            'kapal_id'               => 'required|exists:kapals,id',
+            'proses_penyedia_bbm_id' => 'nullable|exists:proses_penyedia_bbms,id',
+            'tanggal_spj'            => 'required|date',
+            'total_biaya'            => 'required|numeric|min:0',
+            'file_spj'               => $this->spj_id ? 'nullable|mimes:pdf,jpg,jpeg,png|max:5120' : 'required|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $data = [
-            'nomor_spj'   => $this->nomor_spj,
-            'kapal_id'    => $this->kapal_id,
-            'tanggal_spj' => $this->tanggal_spj,
-            'total_biaya' => $this->total_biaya,
+            'nomor_spj'              => $this->nomor_spj,
+            'kapal_id'               => $this->kapal_id,
+            'proses_penyedia_bbm_id' => $this->proses_penyedia_bbm_id ?: null,
+            'tanggal_spj'            => $this->tanggal_spj,
+            'total_biaya'            => $this->total_biaya,
         ];
 
-        // Jika ada file yang diunggah (baik saat Create maupun Edit)
         if ($this->file_spj) {
             $data['file_spj'] = $this->file_spj->store('uploads/spj', 'public');
         }
 
         if ($this->spj_id) {
-            // Proses Update
             $spj = Spj::find($this->spj_id);
             $spj->update($data);
             session()->flash('message', 'Dokumen SPJ berhasil diperbarui.');
         } else {
-            // Proses Create Baru
             $user = Auth::user();
             $data['created_by']  = $user->id;
             $data['ukpd_id']     = $user->ukpd_id;
             
             Spj::create($data);
             session()->flash('message', 'SPJ berhasil ditambahkan dan menunggu persetujuan PPTK.');
+        }
+
+        if ($this->proses_penyedia_bbm_id) {
+            $proses = ProsesPenyediaBbm::with('suratPermohonan')->find($this->proses_penyedia_bbm_id);
+            
+            if ($proses && $proses->suratPermohonan) {
+                $proses->suratPermohonan->update([
+                    'progress' => 'done'
+                ]);
+            }
         }
 
         $this->closeModal();
@@ -119,22 +157,14 @@ class SuratSpj extends Component
         $user = Auth::user();
         $role = $user->role->slug;
 
-        // 1. PPTK Approve (Syarat: Belum disetujui PPTK)
         if (in_array($role, ['pptk', 'superadmin']) && is_null($spj->disetujui_pptk_at)) {
-            $spj->update([
-                'disetujui_pptk_by' => $user->id,
-                'disetujui_pptk_at' => now(),
-            ]);
+            $spj->update(['disetujui_pptk_by' => $user->id, 'disetujui_pptk_at' => now()]);
             session()->flash('message', 'SPJ disetujui. Diteruskan ke Kepala UKPD.');
             return;
         }
 
-        // 2. Kepala UKPD Approve (Syarat: Sudah disetujui PPTK, tapi belum disetujui Ka. UKPD)
         if (in_array($role, ['kepala_ukpd', 'superadmin']) && !is_null($spj->disetujui_pptk_at) && is_null($spj->disetujui_kepala_ukpd_at)) {
-            $spj->update([
-                'disetujui_kepala_ukpd_by' => $user->id,
-                'disetujui_kepala_ukpd_at' => now(),
-            ]);
+            $spj->update(['disetujui_kepala_ukpd_by' => $user->id, 'disetujui_kepala_ukpd_at' => now()]);
             session()->flash('message', 'SPJ disetujui Kepala UKPD. Transaksi Selesai.');
             return;
         }
@@ -148,22 +178,14 @@ class SuratSpj extends Component
         $user = Auth::user();
         $role = $user->role->slug;
 
-        // 1. Batal Setuju PPTK (Syarat: Sudah disetujui PPTK, TAPI belum disetujui Kepala UKPD)
         if (in_array($role, ['pptk', 'superadmin']) && !is_null($spj->disetujui_pptk_at) && is_null($spj->disetujui_kepala_ukpd_at)) {
-            $spj->update([
-                'disetujui_pptk_by' => null,
-                'disetujui_pptk_at' => null,
-            ]);
+            $spj->update(['disetujui_pptk_by' => null, 'disetujui_pptk_at' => null]);
             session()->flash('message', 'Persetujuan PPTK dibatalkan.');
             return;
         }
 
-        // 2. Batal Setuju Kepala UKPD (Syarat: Sudah disetujui Kepala UKPD)
         if (in_array($role, ['kepala_ukpd', 'superadmin']) && !is_null($spj->disetujui_kepala_ukpd_at)) {
-            $spj->update([
-                'disetujui_kepala_ukpd_by' => null,
-                'disetujui_kepala_ukpd_at' => null,
-            ]);
+            $spj->update(['disetujui_kepala_ukpd_by' => null, 'disetujui_kepala_ukpd_at' => null]);
             session()->flash('message', 'Persetujuan Kepala UKPD dibatalkan.');
             return;
         }
@@ -177,17 +199,11 @@ class SuratSpj extends Component
         $user = Auth::user();
         $role = $user->role->slug;
 
-        // Pastikan hanya role tertentu yang bisa hapus, dan HANYA JIKA dokumen belum di-ACC PPTK
         if (in_array($role, ['satgas', 'admin_ukpd', 'superadmin']) && is_null($spj->disetujui_pptk_at)) {
-            
-            // Hapus file fisik dari storage jika ada
             if ($spj->file_spj && Storage::disk('public')->exists($spj->file_spj)) {
                 Storage::disk('public')->delete($spj->file_spj);
             }
-
-            // Hapus record dari database
             $spj->delete();
-            
             session()->flash('message', 'Dokumen SPJ dan file lampirannya berhasil dihapus.');
         } else {
             session()->flash('error', 'Anda tidak dapat menghapus dokumen yang sudah diproses atau tidak memiliki izin.');
@@ -198,34 +214,44 @@ class SuratSpj extends Component
     {
         $user = Auth::user();
         
-        // Base Query SPJ
         $query = Spj::with(['kapal', 'creator', 'pemberiPersetujuanPptk', 'pemberiPersetujuanKaUkpd']);
 
-        // Filter berdasarkan UKPD (Kecuali Superadmin)
         if ($user->role->slug !== 'superadmin') {
             $query->where('ukpd_id', $user->ukpd_id);
         }
 
-        // Terapkan Filter Tanggal
         if ($this->filter_start_date && $this->filter_end_date) {
             $query->whereBetween('tanggal_spj', [$this->filter_start_date, $this->filter_end_date]);
         }
 
-        // Terapkan Filter Kapal
         if ($this->filter_kapal_id) {
             $query->where('kapal_id', $this->filter_kapal_id);
         }
 
         $spjs = $query->latest()->paginate(10);
 
-        // Data Kapal untuk Dropdown (Tambah & Filter)
         $kapals = Kapal::when($user->role->slug !== 'superadmin', function($q) use ($user) {
             return $q->where('ukpd_id', $user->ukpd_id);
         })->get();
 
+        // LOGIKA BARU: Filter Proses Penyedia yang belum ditautkan (kecuali yang sedang diedit)
+        $prosesTerpakai = Spj::whereNotNull('proses_penyedia_bbm_id')
+            ->when($this->spj_id, function($q) {
+                // Kecualikan ID Penyedia yang sedang dipakai oleh SPJ yang sedang di-edit
+                return $q->where('id', '!=', $this->spj_id);
+            })
+            ->pluck('proses_penyedia_bbm_id')
+            ->toArray();
+
+        $proses_penyedia_list = ProsesPenyediaBbm::with('suratPermohonan')
+            ->whereNotIn('id', $prosesTerpakai)
+            ->latest()
+            ->get();
+
         return view('livewire.satgas.surat-spj', [
-            'spjs'   => $spjs,
+            'spjs' => $spjs,
             'kapals' => $kapals,
+            'proses_penyedia_list' => $proses_penyedia_list,
         ])->layout('layouts.app');
     }
 }

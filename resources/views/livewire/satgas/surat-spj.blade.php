@@ -292,14 +292,33 @@
                         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2">Informasi Utama SPJ</h4>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">Tautkan Proses Penyedia BBM (Opsional)</label>
+                                <select wire:model.live="proses_penyedia_bbm_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer">
+                                    <option value="">-- Tidak Ditautkan (Input Manual) --</option>
+                                    @foreach($proses_penyedia_list as $proses)
+                                        <option value="{{ $proses->id }}">
+                                            Ref Permohonan: {{ $proses->suratPermohonan->nomor_surat ?? 'Tanpa Nomor' }} | Rp {{ number_format($proses->total_harga, 0, ',', '.') }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('proses_penyedia_bbm_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+                    
                             <div class="col-span-1 md:col-span-2">
                                 <label class="block text-sm font-semibold text-slate-800 mb-2">Nomor SPJ <span class="text-rose-500">*</span></label>
                                 <input type="text" wire:model="nomor_spj" placeholder="Masukkan nomor surat..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all" required>
                                 @error('nomor_spj') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
-
+                    
                             <div class="col-span-1 md:col-span-2">
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Pilih Kapal <span class="text-rose-500">*</span></label>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <label class="block text-sm font-semibold text-slate-800">Pilih Kapal <span class="text-rose-500">*</span></label>
+                                    <button type="button" wire:click="tarikKapalPenyedia" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-indigo-700 font-bold px-2 py-0.5 rounded border border-slate-200 transition-colors {{ !$proses_penyedia_bbm_id ? 'opacity-50 cursor-not-allowed' : '' }}" {{ !$proses_penyedia_bbm_id ? 'disabled' : '' }}>
+                                        Tarik dr Penyedia
+                                    </button>
+                                </div>
                                 <select wire:model="kapal_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer" required>
                                     <option value="">-- Silakan Pilih Kapal --</option>
                                     @foreach($kapals as $kapal)
@@ -308,23 +327,28 @@
                                 </select>
                                 @error('kapal_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
-
+                    
                             <div class="col-span-1">
                                 <label class="block text-sm font-semibold text-slate-800 mb-2">Tanggal SPJ <span class="text-rose-500">*</span></label>
                                 <input type="date" wire:model="tanggal_spj" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer" required>
                                 @error('tanggal_spj') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
-
+                    
                             <div class="col-span-1">
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Total Biaya <span class="text-rose-500">*</span></label>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <label class="block text-sm font-semibold text-slate-800">Total Biaya <span class="text-rose-500">*</span></label>
+                                    <button type="button" wire:click="tarikBiayaPenyedia" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-indigo-700 font-bold px-2 py-0.5 rounded border border-slate-200 transition-colors {{ !$proses_penyedia_bbm_id ? 'opacity-50 cursor-not-allowed' : '' }}" {{ !$proses_penyedia_bbm_id ? 'disabled' : '' }}>
+                                        Tarik dr Penyedia
+                                    </button>
+                                </div>
                                 <div class="relative">
                                     <span class="absolute left-3 top-3 text-slate-500 text-sm font-semibold">Rp</span>
-                                    <input type="number" wire:model="total_biaya" placeholder="0" class="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all" required min="0">
+                                    <input type="number" wire:model="total_biaya" placeholder="0" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block transition-colors" required min="0">
                                 </div>
                                 @error('total_biaya') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
                         </div>
-
+                    
                         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2 pt-2">Unggah Dokumen (Telah di-TTD)</h4>
                         
                         <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 bg-slate-50 hover:bg-slate-100 transition-colors">
@@ -340,7 +364,7 @@
                             @endif
                             @error('file_spj') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
-
+                    
                     </form>
                 </div>
 

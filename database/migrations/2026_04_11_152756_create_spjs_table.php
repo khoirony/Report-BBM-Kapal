@@ -11,6 +11,11 @@ return new class extends Migration
         Schema::create('spjs', function (Blueprint $table) {
             $table->id();
             $table->string('nomor_spj')->unique();
+
+            $table->foreignId('proses_penyedia_bbm_id')
+                  ->nullable()
+                  ->constrained('proses_penyedia_bbms')
+                  ->onDelete('cascade');
             
             // Relasi ke tabel kapals
             $table->foreignId('kapal_id')
