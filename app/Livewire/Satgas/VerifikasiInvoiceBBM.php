@@ -4,6 +4,7 @@ namespace App\Livewire\Satgas;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Computed; // Pastikan ini di-import
 use App\Models\RekonsiliasiInvoice;
 use App\Models\User;
 
@@ -16,10 +17,12 @@ class VerifikasiInvoiceBBM extends Component
     public $filterPenyedia = '';
     public $filterStatus = '';
 
-    // Properti untuk Modal Detail & Penolakan
+    // Properti UI Modal
     public $isDetailModalOpen = false;
     public $isRejectModalOpen = false;
-    public $selectedInvoice;
+    
+    // PERBAIKAN: Hanya simpan ID untuk mencegah hilangnya relasi saat proses Hydration Livewire
+    public $selectedInvoiceId = null; 
     public $catatan_penolakan = '';
 
     public function updatingSearch() { $this->resetPage(); }
@@ -32,6 +35,21 @@ class VerifikasiInvoiceBBM extends Component
         $this->reset(['search', 'filterPenyedia', 'filterStatus']);
         $this->sortBy = 'latest';
         $this->resetPage();
+    }
+
+    // PERBAIKAN: Gunakan Computed Property untuk memanggil data lengkap (termasuk relasinya)
+    #[Computed]
+    public function selectedInvoice()
+    {
+        if (!$this->selectedInvoiceId) {
+            return null;
+        }
+
+        return RekonsiliasiInvoice::with([
+            'ukpd', 
+            'penyedia', 
+            'suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal'
+        ])->find($this->selectedInvoiceId);
     }
 
     public function render()
@@ -84,24 +102,22 @@ class VerifikasiInvoiceBBM extends Component
 
     public function openDetail($id)
     {
-        $this->selectedInvoice = RekonsiliasiInvoice::with([
-            'ukpd', 'penyedia', 
-            'suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal'
-        ])->findOrFail($id);
-        
+        $this->selectedInvoiceId = $id; // Cukup simpan ID-nya saja
         $this->isDetailModalOpen = true;
     }
 
     public function closeDetail()
     {
         $this->isDetailModalOpen = false;
-        $this->selectedInvoice = null;
+        $this->selectedInvoiceId = null;
     }
 
     public function approveSatgas()
     {
-        if ($this->selectedInvoice && $this->selectedInvoice->status === 'pending') {
-            $this->selectedInvoice->update(['status' => 'satgas_approved', 'catatan_penolakan' => null]);
+        $invoice = $this->selectedInvoice; // Panggil dari Computed
+
+        if ($invoice && $invoice->status === 'pending') {
+            $invoice->update(['status' => 'satgas_approved', 'catatan_penolakan' => null]);
             session()->flash('message', 'Invoice berhasil diverifikasi oleh Satgas. Menunggu persetujuan PPTK.');
             $this->closeDetail();
         }
@@ -109,8 +125,10 @@ class VerifikasiInvoiceBBM extends Component
 
     public function approvePptk()
     {
-        if ($this->selectedInvoice && $this->selectedInvoice->status === 'satgas_approved') {
-            $this->selectedInvoice->update(['status' => 'pptk_approved', 'catatan_penolakan' => null]);
+        $invoice = $this->selectedInvoice;
+
+        if ($invoice && $invoice->status === 'satgas_approved') {
+            $invoice->update(['status' => 'pptk_approved', 'catatan_penolakan' => null]);
             session()->flash('message', 'Invoice disetujui final oleh PPTK. Siap untuk dibuatkan Surat Rekonsiliasi.');
             $this->closeDetail();
         }
@@ -134,17 +152,19 @@ class VerifikasiInvoiceBBM extends Component
             'catatan_penolakan' => 'required|min:10'
         ], [
             'catatan_penolakan.required' => 'Alasan penolakan wajib diisi.',
-            'catatan_penolakan.min' => 'Alasan penolakan terlalu singkat.'
+            'catatan_penolakan.min' => 'Alasan penolakan terlalu singkat (minimal 10 karakter).'
         ]);
 
-        if ($this->selectedInvoice) {
-            $this->selectedInvoice->update([
+        $invoice = $this->selectedInvoice;
+
+        if ($invoice) {
+            $invoice->update([
                 'status' => 'rejected',
                 'catatan_penolakan' => $this->catatan_penolakan
             ]);
             
             // Melepas tautan transaksi agar penyedia bisa mengajukan ulang
-            foreach ($this->selectedInvoice->suratPermohonan as $permohonan) {
+            foreach ($invoice->suratPermohonan as $permohonan) {
                 $permohonan->update(['rekonsiliasi_invoice_id' => null]);
             }
 

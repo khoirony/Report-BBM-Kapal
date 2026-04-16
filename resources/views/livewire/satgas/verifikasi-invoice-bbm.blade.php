@@ -171,9 +171,9 @@
         </div>
 
         {{-- MODAL TINJAUAN DETAIL INVOICE --}}
-        @if($isDetailModalOpen && $selectedInvoice)
-        <div class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-all">
-            <div @click.away="$wire.closeDetail()" class="relative w-full max-w-5xl bg-slate-50 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+        @if($isDetailModalOpen && $this->selectedInvoice)
+        <div wire:click.self="closeDetail()" class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-all">
+            <div class="relative w-full max-w-5xl bg-slate-50 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
                 
                 <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
                     <div class="flex items-center space-x-3">
@@ -197,19 +197,19 @@
                             <div class="space-y-3">
                                 <div>
                                     <span class="text-[10px] text-slate-500 font-bold uppercase block">Penyedia</span>
-                                    <span class="font-semibold text-slate-800 text-sm">{{ $selectedInvoice->penyedia->name }}</span>
+                                    <span class="font-semibold text-slate-800 text-sm">{{ $this->selectedInvoice->penyedia->name }}</span>
                                 </div>
                                 <div>
                                     <span class="text-[10px] text-slate-500 font-bold uppercase block">Nomor Invoice</span>
-                                    <span class="font-semibold text-slate-800 text-sm">{{ $selectedInvoice->nomor_invoice }}</span>
+                                    <span class="font-semibold text-slate-800 text-sm">{{ $this->selectedInvoice->nomor_invoice }}</span>
                                 </div>
                                 <div>
                                     <span class="text-[10px] text-slate-500 font-bold uppercase block">Periode Klaim</span>
-                                    <span class="font-semibold text-slate-800 text-sm">{{ \Carbon\Carbon::parse($selectedInvoice->periode_awal)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($selectedInvoice->periode_akhir)->format('d/m/Y') }}</span>
+                                    <span class="font-semibold text-slate-800 text-sm">{{ \Carbon\Carbon::parse($this->selectedInvoice->periode_awal)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($this->selectedInvoice->periode_akhir)->format('d/m/Y') }}</span>
                                 </div>
                                 <div class="pt-2 border-t border-slate-100">
                                     <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Total Tagihan Diajukan</span>
-                                    <span class="font-extrabold text-emerald-600 text-2xl">Rp {{ number_format($selectedInvoice->total_tagihan, 0, ',', '.') }}</span>
+                                    <span class="font-extrabold text-emerald-600 text-2xl">Rp {{ number_format($this->selectedInvoice->total_tagihan, 0, ',', '.') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -220,7 +220,7 @@
                             </div>
                             <h5 class="text-sm font-bold text-slate-800 mb-1">Dokumen Lampiran</h5>
                             <p class="text-[10px] text-slate-500 mb-3">Silakan tinjau berkas Invoice fisik atau struk kolektif yang diunggah penyedia.</p>
-                            <a href="{{ Storage::url($selectedInvoice->file_evidence) }}" target="_blank" class="w-full justify-center inline-flex items-center text-white font-semibold bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl transition-all text-xs shadow-sm">
+                            <a href="{{ Storage::url($this->selectedInvoice->file_evidence) }}" target="_blank" class="w-full justify-center inline-flex items-center text-white font-semibold bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl transition-all text-xs shadow-sm">
                                 Buka Dokumen Tagihan
                             </a>
                         </div>
@@ -230,12 +230,12 @@
                     <div class="w-full lg:w-2/3 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col h-full">
                         <div class="flex justify-between items-end mb-4 border-b border-slate-100 pb-2">
                             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Rincian Transaksi Pengisian</h4>
-                            <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">{{ $selectedInvoice->suratPermohonan->count() }} Transaksi</span>
+                            <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">{{ $this->selectedInvoice->suratPermohonan->count() }} Transaksi</span>
                         </div>
                         
                         <div class="overflow-y-auto flex-1 pr-2 custom-scrollbar max-h-[400px]">
                             <div class="space-y-3">
-                                @forelse($selectedInvoice->suratPermohonan as $ts)
+                                @forelse($this->selectedInvoice->suratPermohonan as $ts)
                                     <div class="p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
                                         <div class="flex justify-between items-start mb-2">
                                             <div>
@@ -262,10 +262,10 @@
                             </div>
                         </div>
                         
-                        @if($selectedInvoice->status === 'rejected')
+                        @if($this->selectedInvoice->status === 'rejected')
                         <div class="mt-4 p-4 bg-rose-50 border border-rose-200 rounded-xl">
                             <h5 class="text-xs font-bold text-rose-800 uppercase tracking-wider mb-1">Alasan Penolakan:</h5>
-                            <p class="text-sm text-rose-700">{{ $selectedInvoice->catatan_penolakan }}</p>
+                            <p class="text-sm text-rose-700">{{ $this->selectedInvoice->catatan_penolakan }}</p>
                         </div>
                         @endif
 
@@ -273,9 +273,7 @@
                 </div>
 
                 <div class="px-6 py-4 bg-white border-t border-slate-200 flex items-center justify-between rounded-b-3xl shrink-0">
-                    <div>
-                        {{-- Placeholder Kiri --}}
-                    </div>
+                    <div></div>
                     
                     <div class="flex items-center gap-3">
                         <button wire:click="closeDetail()" type="button" class="px-5 py-2.5 bg-slate-100 border border-transparent text-slate-700 hover:bg-slate-200 text-sm font-semibold rounded-xl transition-colors">Tutup</button>
@@ -283,14 +281,14 @@
                         @php $role = auth()->user()?->role?->slug; @endphp
                         
                         {{-- Logika Tombol Aksi Verifikasi --}}
-                        @if($selectedInvoice->status === 'pending' && in_array($role, ['satgas', 'superadmin']))
+                        @if($this->selectedInvoice->status === 'pending' && in_array($role, ['satgas', 'superadmin']))
                             <button wire:click="openRejectModal()" type="button" class="px-5 py-2.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 text-sm font-semibold rounded-xl transition-colors shadow-sm">Tolak Invoice</button>
-                            <button wire:click="approveSatgas()" type="button" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all">Verifikasi (Satgas)</button>
+                            <button wire:click="approveSatgas()" wire:confirm="Yakin ingin memverifikasi Invoice ini sebagai Satgas?" type="button" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all">Verifikasi (Satgas)</button>
                         @endif
 
-                        @if($selectedInvoice->status === 'satgas_approved' && in_array($role, ['pptk', 'superadmin']))
+                        @if($this->selectedInvoice->status === 'satgas_approved' && in_array($role, ['pptk', 'superadmin']))
                             <button wire:click="openRejectModal()" type="button" class="px-5 py-2.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 text-sm font-semibold rounded-xl transition-colors shadow-sm">Tolak Invoice</button>
-                            <button wire:click="approvePptk()" type="button" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all">Setujui Final (PPTK)</button>
+                            <button wire:click="approvePptk()" wire:confirm="Yakin ingin menyetujui secara final Invoice ini sebagai PPTK?" type="button" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all">Setujui Final (PPTK)</button>
                         @endif
                     </div>
                 </div>
@@ -301,7 +299,7 @@
 
         {{-- MODAL PENOLAKAN --}}
         @if($isRejectModalOpen)
-        <div class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 transition-all">
+        <div wire:click.self="closeRejectModal()" class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 transition-all">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="p-6 border-b border-slate-100 bg-rose-50/50">
                     <h3 class="text-lg font-bold text-rose-800 flex items-center">
