@@ -36,7 +36,6 @@
     </style>
 </head>
 <body>
-
     <div class="kop-surat">
         <img src="{{ public_path('img/logo-jaya-raya.jpg') }}" alt="Logo">
         <div class="uppercase">{{ strtoupper($surat?->ukpd?->nama ?? '-') }}</div>
