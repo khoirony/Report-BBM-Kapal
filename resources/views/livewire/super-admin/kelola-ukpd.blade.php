@@ -240,6 +240,12 @@
                                         <div class="font-bold text-slate-900 text-sm tracking-tight">
                                             {{ $user->name }}
                                         </div>
+                                        @if($user->username)
+                                        <div class="text-[11px] font-semibold text-indigo-500 mt-0.5 flex items-center">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                            {{ '@' . $user->username }}
+                                        </div>
+                                        @endif
                                         <div class="text-xs text-slate-500 font-medium mt-0.5 flex items-center">
                                             <svg class="w-3.5 h-3.5 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                                             {{ $user->email }}

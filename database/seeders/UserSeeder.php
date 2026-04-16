@@ -26,6 +26,7 @@ class UserSeeder extends Seeder
             ['email' => 'superadmin@gmail.com'],
             [
                 'name'              => 'Super Administrator',
+                'username'          => 'superadmin', // Penambahan Username
                 'email_verified_at' => now(),
                 'password'          => $defaultPassword,
                 'role_id'           => $roleIds['superadmin'] ?? null,
@@ -44,12 +45,14 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($daftarPenyedia as $perusahaan) {
-            $emailPenyedia = Str::slug($perusahaan, '_') . '@gmail.com';
+            $username = Str::slug($perusahaan, '_');
+            $emailPenyedia = $username . '@gmail.com';
 
             User::updateOrCreate(
                 ['email' => $emailPenyedia],
                 [
                     'name'              => $perusahaan,
+                    'username'          => $username, // Penambahan Username
                     'email_verified_at' => now(),
                     'password'          => $defaultPassword,
                     'role_id'           => $roleIds['penyedia'] ?? null,
@@ -124,7 +127,8 @@ class UserSeeder extends Seeder
             foreach ($rolesPerUkpd as $roleSlug) {
                 
                 // Format default
-                $email = "{$roleSlug}_{$ukpdKey}@gmail.com"; 
+                $username = "{$roleSlug}_{$ukpdKey}"; // Penambahan base Username
+                $email = "{$username}@gmail.com"; 
                 $name  = ucwords(str_replace('_', ' ', $roleSlug)) . ' ' . strtoupper($ukpdKey); 
                 $nip   = null;
 
@@ -149,6 +153,7 @@ class UserSeeder extends Seeder
                     ['email' => $email],
                     [
                         'name'              => $name,
+                        'username'          => $username, // Insert Username ke DB
                         'email_verified_at' => now(),
                         'password'          => $defaultPassword,
                         'role_id'           => $roleIds[$roleSlug] ?? null,

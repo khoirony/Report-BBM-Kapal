@@ -184,7 +184,7 @@
                                             <span class="font-bold text-gray-800 truncate">{{ $laporan->nama_nakhoda }}</span>
                                             <span class="text-[10px] text-gray-500 truncate">Nakhoda</span>
                                             @if($laporan->id_nakhoda)
-                                                <span class="text-[10px] text-blue-600 font-medium">NIP/NRK: {{ $laporan->id_nakhoda }}</span>
+                                                <span class="text-[10px] text-blue-600 font-medium">ID: {{ $laporan->id_nakhoda }}</span>
                                             @endif
                                         </div>
                                     </div>

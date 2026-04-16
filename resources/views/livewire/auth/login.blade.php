@@ -33,20 +33,20 @@
             </div>
         @endif
         
-        <form class="mt-8 space-y-5" wire:submit.prevent="login">
+        <form class="mt-8 space-y-5" wire:submit.prevent="authenticate">
             <div class="space-y-4">
                 <div>
-                    <label class="text-xs font-bold text-blue-900 uppercase tracking-wider ml-1">Email / Username</label>
+                    <label class="text-xs font-bold text-blue-900 uppercase tracking-wider ml-1">Email / Username / NIP</label>
                     <div class="mt-1 relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
-                        <input wire:model.blur="email" type="email" required placeholder="admin@dishub.go.id"
+                        <input wire:model.blur="login" type="text" required placeholder="admin@dishub.go.id, username, atau NIP"
                                class="block w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm transition duration-200 outline-none shadow-sm">
                     </div>
-                    @error('email') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    @error('login') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <div x-data="{ showPassword: false }">
@@ -78,8 +78,8 @@
 
             <div>
                 <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 shadow-lg shadow-blue-200 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95">
-                    <span wire:loading.remove wire:target="login">MASUK KE SISTEM</span>
-                    <span wire:loading wire:target="login" class="flex items-center">
+                    <span wire:loading.remove wire:target="authenticate">MASUK KE SISTEM</span>
+                    <span wire:loading wire:target="authenticate" class="flex items-center">
                         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         OTENTIKASI...
                     </span>

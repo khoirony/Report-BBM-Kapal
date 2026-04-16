@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -9,33 +10,39 @@ use Livewire\Component;
 
 class Login extends Component
 {
-    public $email = '';
+    public $login = ''; 
     public $password = '';
 
     protected $rules = [
-        'email' => 'required|email',
+        'login' => 'required',
         'password' => 'required',
     ];
 
-    public function login()
+    public function authenticate()
     {
         $this->validate();
 
-        $throttleKey = Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+        $throttleKey = Str::transliterate(Str::lower($this->login).'|'.request()->ip());
 
         if (RateLimiter::tooManyAttempts($throttleKey, 7)) {
             $seconds = RateLimiter::availableIn($throttleKey);
             
-            $this->addError('email', 'Terlalu banyak percobaan login. Silakan coba lagi dalam ' . $seconds . ' detik.');
+            $this->addError('login', 'Terlalu banyak percobaan login. Silakan coba lagi dalam ' . $seconds . ' detik.');
             return;
         }
 
-        if (Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
+        // Cari user berdasarkan email, username, atau NIP
+        $user = User::where('email', $this->login)
+                    ->orWhere('username', $this->login)
+                    ->orWhere('nip', $this->login)
+                    ->first();
+
+        // Jika user ditemukan, gunakan emailnya untuk proses autentikasi bawaan Laravel
+        if ($user && Auth::attempt(['email' => $user->email, 'password' => $this->password])) {
             RateLimiter::clear($throttleKey);
             
             session()->regenerate();
             
-            // AMBIL SLUG ROLE DARI RELASI DAN UBAH FORMATNYA
             $roleSlug = Auth::user()->role->slug;
             $dashboardRoute = '/dashboard-' . str_replace('_', '-', $roleSlug);
             
@@ -44,7 +51,7 @@ class Login extends Component
 
         RateLimiter::hit($throttleKey);
 
-        $this->addError('email', 'Kredensial tidak cocok dengan data kami.');
+        $this->addError('login', 'Kredensial tidak cocok dengan data kami.');
     }
 
     public function render()

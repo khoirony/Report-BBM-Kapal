@@ -62,12 +62,14 @@ class KapalSeeder extends Seeder
             $ukpdIdFinal = $ukpdId ?? 4;
             
             $safeKapalName = Str::slug($namaKapal, '_');
-            $nakhodaEmail = "nakhoda_{$safeKapalName}@gmail.com";
+            $nakhodaUsername = "nakhoda_{$safeKapalName}";
+            $nakhodaEmail = "{$nakhodaUsername}@gmail.com";
 
             $nakhodaUser = User::updateOrCreate(
                 ['email' => $nakhodaEmail], 
                 [
                     'name'              => 'Nakhoda ' . $namaKapal,
+                    'username'          => $nakhodaUsername,
                     'email_verified_at' => now(),
                     'password'          => $defaultPassword,
                     'role_id'           => $nakhodaRoleId,
