@@ -17,8 +17,8 @@ class SuratTugasPengisianBBM extends Component
 {
     use WithPagination, WithFileUploads;
 
-    // 1. Tambahkan $tanggal_pelaksanaan di sini
-    public $surat_id, $laporan_pengisian_id, $nomor_surat, $lokasi, $tanggal_pelaksanaan, $waktu_pelaksanaan, $tanggal_surat;
+    // 1. Tambahkan $pakaian di sini
+    public $surat_id, $laporan_pengisian_id, $nomor_surat, $lokasi, $pakaian, $tanggal_pelaksanaan, $waktu_pelaksanaan, $tanggal_surat;
     public $petugasList = [];
     public $isOpen = false;
     
@@ -165,9 +165,10 @@ class SuratTugasPengisianBBM extends Component
     public function create()
     {
         $this->resetInputFields();
-        $this->tanggal_pelaksanaan = date('Y-m-d'); // 2. Set default value hari ini
+        $this->tanggal_pelaksanaan = date('Y-m-d'); 
         $this->waktu_pelaksanaan = '08:00 - Selesai';
         $this->tanggal_surat = date('Y-m-d');
+        // $this->pakaian = 'PDL'; // Opsional: Beri nilai default jika perlu
         
         $this->petugasList = [
             ['nama_petugas' => '', 'jabatan' => 'Nakhoda'],
@@ -204,7 +205,8 @@ class SuratTugasPengisianBBM extends Component
         $this->laporan_pengisian_id = '';
         $this->nomor_surat = '';
         $this->lokasi = '';
-        $this->tanggal_pelaksanaan = ''; // 3. Bersihkan form
+        $this->pakaian = ''; // 2. Reset pakaian
+        $this->tanggal_pelaksanaan = ''; 
         $this->waktu_pelaksanaan = '';
         $this->tanggal_surat = '';
         $this->petugasList = [];
@@ -212,11 +214,12 @@ class SuratTugasPengisianBBM extends Component
 
     public function store()
     {
-        // 4. Tambahkan validasi tanggal_pelaksanaan
+        // 3. Validasi pakaian
         $this->validate([
             'laporan_pengisian_id' => 'required',
             'nomor_surat' => 'required',
             'lokasi' => 'required',
+            'pakaian' => 'required',
             'tanggal_pelaksanaan' => 'required|date', 
             'waktu_pelaksanaan' => 'required',
             'tanggal_surat' => 'required|date',
@@ -229,12 +232,13 @@ class SuratTugasPengisianBBM extends Component
 
         $laporanTerkait = LaporanSisaBbm::find($this->laporan_pengisian_id);
 
-        // 5. Masukkan ke array data untuk insert/update
+        // 4. Masukkan ke array data
         $data = [
             'laporan_sisa_bbm_id' => $this->laporan_pengisian_id,
             'ukpd_id' => $laporanTerkait ? $laporanTerkait->ukpd_id : null,
             'nomor_surat' => $this->nomor_surat,
             'lokasi' => $this->lokasi,
+            'pakaian' => $this->pakaian,
             'tanggal_pelaksanaan' => $this->tanggal_pelaksanaan,
             'waktu_pelaksanaan' => $this->waktu_pelaksanaan,
             'tanggal_surat' => $this->tanggal_surat,
@@ -287,7 +291,7 @@ class SuratTugasPengisianBBM extends Component
         $this->laporan_pengisian_id = $surat->laporan_sisa_bbm_id ?? $surat->laporan_pengisian_id; 
         $this->nomor_surat = $surat->nomor_surat;
         $this->lokasi = $surat->lokasi;
-        // 6. Tarik data tanggal dari database
+        $this->pakaian = $surat->pakaian; // 5. Tarik data pakaian
         $this->tanggal_pelaksanaan = $surat->tanggal_pelaksanaan ? \Carbon\Carbon::parse($surat->tanggal_pelaksanaan)->format('Y-m-d') : '';
         $this->waktu_pelaksanaan = $surat->waktu_pelaksanaan;
         $this->tanggal_surat = \Carbon\Carbon::parse($surat->tanggal_surat)->format('Y-m-d');

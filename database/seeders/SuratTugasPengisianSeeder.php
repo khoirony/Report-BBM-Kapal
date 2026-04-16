@@ -30,6 +30,14 @@ class SuratTugasPengisianSeeder extends Seeder
             'Pool Kendaraan Dinas Operasional'
         ];
 
+        // TAMBAHAN: List pakaian untuk dirandom
+        $listPakaian = [
+            'PDH',
+            'PDL',
+            'Baju Dinas Lapangan',
+            'Bebas Rapi'
+        ];
+
         foreach ($laporans as $laporan) {
             $tanggalPelaksanaan = Carbon::parse($laporan->tanggal_surat);
             
@@ -49,9 +57,10 @@ class SuratTugasPengisianSeeder extends Seeder
                 'ukpd_id'             => $laporan->ukpd_id,
                 'nomor_surat'         => $nomorSurat,
                 'lokasi'              => $faker->randomElement($listLokasi),
+                'pakaian'             => $faker->randomElement($listPakaian), // TAMBAHAN: Data pakaian
                 'tanggal_pelaksanaan' => $tanggalPelaksanaan->format('Y-m-d'),
                 'waktu_pelaksanaan'   => '08:00 - Selesai',
-                'tanggal_surat' => $tanggalDikeluarkan->format('Y-m-d'),
+                'tanggal_surat'       => $tanggalDikeluarkan->format('Y-m-d'),
                 'user_id'             => 3,
             ]);
 
