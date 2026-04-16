@@ -3,132 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <title>Laporan BBM {{ $laporan->kapal->nama_kapal }}</title>
-    <style>
-        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.2; color: black; margin: 0; padding: 10px 20px; }
-        .text-center { text-align: center; }
-        .text-justify { text-align: justify; }
-        .font-bold { font-weight: bold; }
-        .underline { text-decoration: underline; }
-        
-        /* Kop Surat */
-        .kop-table { width: 100%; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 15px; }
-        .logo-container { width: 15%; text-align: center; vertical-align: middle; }
-        .logo-container img { width: 75px; height: auto; }
-        .kop-text { width: 85%; text-align: center; vertical-align: middle; padding-bottom: 10px; }
-        .kop-text div { margin: 0; padding: 0; line-height: 1.2; }
-        .instansi { font-size: 13pt; font-weight: bold; }
-        .ukpd { font-size: 15pt; font-weight: bold; margin: 2px 0 !important; }
-
-        /* Content */
-        .content { padding: 0 10px; }
-        table { width: 100%; border-collapse: collapse; }
-        .table-border th, .table-border td { border: 1px solid black; padding: 4px; }
-        
-        /* Layout Tanda Tangan */
-        .signature-section { width: 100%; margin-top: 20px; }
-        .signature-table td { width: 50%; text-align: center; vertical-align: top; padding-bottom: 60px; }
-        .signature-name { font-weight: bold; text-decoration: underline; }
-        
-        .page-break { page-break-after: always; }
-        .mt-10 { margin-top: 10px; }
-        .mt-20 { margin-top: 20px; }
-    </style>
 </head>
-<body>
+<body style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.3; color: black; margin: 0; padding: 10px 20px;">
 
-    <table class="kop-table" style="width: 100%; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 15px;">
+    {{-- KOP Surat --}}
+    <table style="width: 100%; line-height: 1.1; border-collapse: collapse; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 5px;">
         <tr>
-            <td class="logo-container">
-                <img src="{{ public_path('img/logo-jaya-raya.jpg') }}" alt="Logo">
+            <td style="width: 15%; text-align: center; vertical-align: top; padding-top: 5px;">
+                <img src="{{ public_path('img/logo-jaya-raya.jpg') }}" style="height: 120px; width: 100px; object-fit: contain;" alt="Logo">
             </td>
-            <td class="kop-text">
-                <div class="instansi" style="font-size: 14pt; font-weight: bold; margin: 0; white-space: nowrap;">PEMERINTAH PROVINSI DAERAH KHUSUS IBUKOTA JAKARTA</div>
-                <div class="instansi" style="font-size: 14pt; font-weight: bold; margin: 0; white-space: nowrap;">DINAS PERHUBUNGAN</div>
-                <div class="ukpd">{{ strtoupper($laporan?->kapal?->ukpd?->nama ?? '') }}</div>
-                <div style="font-size: 10pt;">{{ $laporan?->kapal?->ukpd?->alamat }}</div>
-                <div style="font-size: 10pt;">Website: <span style="color: blue; text-decoration: underline;">www.dishub.jakarta.go.id</span> &nbsp;&nbsp;&nbsp; E-mail: {{ $laporan?->kapal?->ukpd?->email }}</div>
-                <table style="width: 100%; font-size: 10pt; margin-top: 0;">
-                    <tr>
-                        <td style="text-align: center; padding-left: 50px;">
-                            <span style="letter-spacing: 3px; font-size: 10">JAKARTA</span>
-                        </td>
-                        <td style="text-align: right; width: 100px;">
-                            Kode Pos : {{ $laporan?->kapal?->ukpd?->kode_pos ?? '-' }}
-                        </td>
-                    </tr>
-                </table>
+            <td style="width: 85%; text-align: center; vertical-align: middle;">
+                <div style="font-size: 13pt; margin: 0; padding: 0; line-height: 1.2; white-space: nowrap;">PEMERINTAH PROVINSI DAERAH KHUSUS IBUKOTA JAKARTA</div>
+                <div style="font-size: 13pt; margin: 0; padding: 0; line-height: 1.2; white-space: nowrap;">DINAS PERHUBUNGAN</div>
+                <div style="font-size: 16pt; font-weight: bold; margin: 0; padding: 0; line-height: 1.2;">{{ strtoupper($laporan?->kapal?->ukpd?->nama ?? '') }}</div>
+                <div style="font-size: 10pt; margin: 0; padding: 0; line-height: 1.2;">{{ $laporan?->kapal?->ukpd?->alamat }}</div>
+                <div style="font-size: 10pt; margin: 0; padding: 0; line-height: 1.2;">Website: <span style="color: blue; text-decoration: underline;">www.dishub.jakarta.go.id</span> &nbsp;&nbsp;&nbsp; E-mail: {{ $laporan?->kapal?->ukpd?->email }}</div>
+                <div style="margin: 0; padding: 0; line-height: 1.2;"><span style="letter-spacing: 3px; font-size: 10pt;">JAKARTA</span></div>
+                <div style="text-align: right; margin: 0; padding: 0; line-height: 1.2;"><span style="font-size: 10pt;">Kode Pos : {{ $laporan?->kapal?->ukpd?->kode_pos ?? '-' }}</span></div>
             </td>
         </tr>
     </table>
 
-    <div class="content">
-        <div class="text-center font-bold" style="font-size: 12pt;">
+    <div style="padding: 0 10px;">
+        <div style="text-align: center; font-size: 12pt;">
             BERITA ACARA LAPORAN PENGISIAN BAHAN BAKAR<br>
             MINYAK KENDARAAN DINAS KAPAL {{ strtoupper($laporan->kapal->nama_kapal) }}<br>
-            NOMOR: {{ $laporan->suratPermohonan->nomor_surat }}<br>
-            Tanggal : {{ $laporan->suratPermohonan->tanggal_surat }}
+            NOMOR: {{ $laporan->nomor_ba }}<br>
+            Tanggal : {{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : '................' }}
         </div>
 
-        <div class="mt-10 text-justify">
-            <p>Pada hari ini <b>{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('l') : '................' }}</b> 
-                tanggal <b>{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d') : '................' }}</b> 
-                bulan <b>{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('F') : '................' }}</b> 
-                tahun <b>{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('Y') : '................' }}</b> 
+        <div style="margin-top: 10px; text-align: justify;">
+            <p>Pada hari ini <span style="font-weight: bold;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('l') : '................' }}</span> 
+                tanggal <span style="font-weight: bold;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d') : '................' }}</span> 
+                bulan <span style="font-weight: bold;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('F') : '................' }}</span> 
+                tahun <span style="font-weight: bold;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('Y') : '................' }}</span> 
                 bertempat di {{ $laporan->suratPermohonan->suratTugas->lokasi ?? '-' }}</p>
             
             <p style="margin-bottom: 5px;">Berdasarkan:</p>
-            <table style="width: 100%; vertical-align: top;">
-                <tr><td style="width: 25px;">a.</td><td>Peraturan Gubernur Daerah Khusus Ibukota Jakarta Nomor 75 Tahun 2021 tentang Pemberian Bahan Bakar Minyak Kendaraan Dinas;</td></tr>
-                <tr><td style="vertical-align: top;">b.</td><td>Perjanjian Kerja Sama (PKS) Penyediaan Bahan Bakar Minyak Kendaraan Dinas Operasional (KDO) Khusus <b>{{ $laporan?->kapal?->ukpd?->nama }}</b> Dinas Perhubungan Provinsi DKI Jakarta dengan <b>{{ $laporan->suratPermohonan->penyedia->name ?? '-' }}</b> Nomor {{ $laporan->nomor_pks ?? '-' }} Tanggal {{ $laporan->tanggal_pks ?? '-' }} dan</td></tr>
-                <tr><td style="vertical-align: top;">c.</td><td>Surat Permohonan Nomor {{ $laporan->suratPermohonan->nomor_surat ?? '-' }} perihal Permohonan Pengisian Bahan Bakar Minyak pada tanggal {{ $laporan->suratPermohonan->tanggal_surat ?? '-' }} .</td></tr>
+            <table style="width: 100%; border-collapse: collapse; vertical-align: top;">
+                <tr>
+                    <td style="width: 25px; vertical-align: top;">a.</td>
+                    <td style="vertical-align: top; text-align: justify;">Peraturan Gubernur Daerah Khusus Ibukota Jakarta Nomor 75 Tahun 2021 tentang Pemberian Bahan Bakar Minyak Kendaraan Dinas;</td></tr>
+                <tr>
+                    <td style="vertical-align: top;">b.</td>
+                    <td style="vertical-align: top; text-align: justify;">Perjanjian Kerja Sama (PKS) Penyediaan Bahan Bakar Minyak Kendaraan Dinas Operasional (KDO) Khusus <span style="font-weight: bold;">{{ $laporan?->kapal?->ukpd?->nama }}</span> 
+                        Dinas Perhubungan Provinsi DKI Jakarta dengan <span style="font-weight: bold;">{{ $laporan->suratPermohonan->penyedia->name ?? '-' }}</span> Nomor <span style="font-weight: bold;">{{ $laporan->nomor_pks ?? '-' }}</span> Tanggal <span style="font-weight: bold;">{{ $laporan->tanggal_pks ? \Carbon\Carbon::parse($laporan->tanggal_pks)->locale('id')->translatedFormat('d F Y') : '................' }}</span> dan
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;">c.</td>
+                    <td style="vertical-align: top; text-align: justify;">Surat Permohonan Nomor <span style="font-weight: bold;">{{ $laporan->suratPermohonan->nomor_surat ?? '-' }}</span> perihal Permohonan Pengisian Bahan Bakar Minyak pada tanggal
+                        <span style="font-weight: bold;">{{ $laporan->suratPermohonan->tanggal_surat ? \Carbon\Carbon::parse($laporan->suratPermohonan->tanggal_surat)->locale('id')->translatedFormat('d F Y') : '................' }}</span>.
+                    </td>
+                </tr>
             </table>
 
-            <p class="mt-10">Awak Kapal yang bertugas:</p>
-            <table class="table-border">
+            <p style="margin-top: 10px;">Awak Kapal yang bertugas:</p>
+            @php
+                // Ambil data petugas dan hitung jumlahnya
+                $petugasList = $laporan->suratPermohonan->suratTugas->petugas ?? collect();
+                $jumlahPetugas = count($petugasList);
+                $minimalBaris = 7;
+            @endphp
+
+            <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr>
-                        <th style="width: 5%;">No.</th>
-                        <th style="width: 45%;">Nama</th>
-                        <th style="width: 30%;">Jabatan</th>
-                        <th style="width: 20%;">Paraf</th>
+                        <th style="border: 1px solid black; padding: 4px; width: 5%;">No.</th>
+                        <th style="border: 1px solid black; padding: 4px; width: 45%;">Nama</th>
+                        <th style="border: 1px solid black; padding: 4px; width: 30%;">Jabatan</th>
+                        <th style="border: 1px solid black; padding: 4px; width: 20%;">Paraf</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @for($i = 0; $i < 7; $i++)
+                    {{-- 1. Render data petugas yang ada --}}
+                    @foreach($petugasList as $index => $petugas)
                     <tr>
-                        <td class="text-center">{{ $i + 1 }}.</td>
-                        <td>{{ $laporan->petugas_list[$i]['nama'] ?? '' }}</td>
-                        <td>{{ $laporan->petugas_list[$i]['jabatan'] ?? '' }}</td>
-                        <td></td>
+                        <td style="border: 1px solid black; padding: 4px; text-align: center;">{{ $index + 1 }}.</td>
+                        <td style="border: 1px solid black; padding: 4px;">{{ $petugas->nama_petugas ?? '-' }}</td>
+                        <td style="border: 1px solid black; padding: 4px;">{{ $petugas->jabatan ?? '-' }}</td>
+                        <td style="border: 1px solid black; padding: 4px;"></td>
                     </tr>
-                    @endfor
+                    @endforeach
+
+                    {{-- 2. Render baris kosong tambahan JIKA data kurang dari 7 --}}
+                    @if($jumlahPetugas < $minimalBaris)
+                        @for($i = $jumlahPetugas + 1; $i <= $minimalBaris; $i++)
+                        <tr>
+                            <td style="border: 1px solid black; padding: 4px; text-align: center;">{{ $i }}.</td>
+                            <td style="border: 1px solid black; padding: 4px;">&nbsp;</td>
+                            <td style="border: 1px solid black; padding: 4px;">&nbsp;</td>
+                            <td style="border: 1px solid black; padding: 4px;">&nbsp;</td>
+                        </tr>
+                        @endfor
+                    @endif
                 </tbody>
             </table>
 
-            <p class="mt-10">Demikian Berita Acara Pengisian Bahan Bakar Minyak ini dibuat dalam rangkap secukupnya untuk dipergunakan sebagaimana mestinya.</p>
+            <p style="margin-top: 10px;">Demikian Berita Acara Pengisian Bahan Bakar Minyak ini dibuat dalam rangkap secukupnya untuk dipergunakan sebagaimana mestinya.</p>
         </div>
 
-        <div class="signature-section">
-            <table class="w-full">
+        {{-- pindah halaman --}}
+        <div style="page-break-before: always;"></div>
+        <div style="width: 100%; margin-top: 20px;">
+            <table style="width: 100%; border-collapse: collapse;">
                 <tr>
-                    <td class="text-center" style="width: 50%;">
+                    <td style="width: 50%; text-align: center; vertical-align: top;">
                         Penyedia BBM<br><br><br><br><br>
                         (.........................................)<br>
                         {{ $laporan->suratPermohonan->penyedia->name ?? '-' }}
                     </td>
-                    <td class="text-center" style="width: 50%;">
+                    <td style="width: 50%; text-align: center; vertical-align: top;">
                         Pejabat Pelaksana Teknis Kegiatan<br>
                         {{ $laporan?->kapal?->ukpd?->nama ?? '-' }}<br><br><br><br>
-                        <span class="signature-name">{{ $laporan?->kapal?->ukpd?->pptk->name ?? '-' }}</span><br>
+                        <span style="font-weight: bold; text-decoration: underline;">{{ $laporan?->kapal?->ukpd?->pptk->name ?? '-' }}</span><br>
                         NIP. {{ $laporan?->kapal?->ukpd?->pptk->nip ?? '-' }}
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="text-center" style="padding-top: 30px;">
+                    <td colspan="2" style="text-align: center; padding-top: 30px; vertical-align: top;">
                         Mengetahui,<br>
                         Kepala {{ $laporan?->kapal?->ukpd?->nama ?? '-' }}<br>
                         Dinas Perhubungan Provinsi DKI Jakarta<br><br><br><br>
-                        <span class="signature-name">{{ $laporan?->kapal?->ukpd?->kepalaUkpd->name ?? '-' }}</span><br>
+                        <span style="font-weight: bold; text-decoration: underline;">{{ $laporan?->kapal?->ukpd?->kepalaUkpd->name ?? '-' }}</span><br>
                         NIP. {{ $laporan?->kapal?->ukpd?->kepalaUkpd->nip ?? '-' }}
                     </td>
                 </tr>
@@ -136,74 +133,122 @@
         </div>
     </div>
 
-    <div class="page-break"></div>
+    <div style="page-break-after: always;"></div>
 
-    <div class="content">
-        <table style="font-size: 10pt;">
-            <tr><td style="width: 15%;">Lampiran</td><td>: Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->kapal->nama_kapal }}</td></tr>
-            <tr><td>Nomor</td><td>: .................................../PH.12.00</td></tr>
-            <tr><td>Tanggal</td><td>: ................................... 2026</td></tr>
+    <div style="padding: 0 10px; line-height: 1.5;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+            <tr><td style="width: 15%; vertical-align: top;">Lampiran</td><td style="vertical-align: top;">: Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->kapal->nama_kapal }}</td></tr>
+            <tr><td style="vertical-align: top;">Nomor</td><td style="vertical-align: top;">: {{ $laporan->nomor_ba ?? ".................................../PH.12.00" }}</td></tr>
+            <tr><td style="vertical-align: top;">Tanggal</td><td style="vertical-align: top;">: {{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : '................' }}</td></tr>
         </table>
 
-        <div class="text-center font-bold mt-10" style="font-size: 12pt;">LAPORAN PENGISIAN BBM KAPAL</div>
+        <div style="text-align: center; margin: 20px 0px; font-size: 12pt;">LAPORAN PENGISIAN BBM KAPAL</div>
 
-        <table style="width: 100%; margin-top: 10px;">
-            <tr><td style="width: 140px;">1. Hari</td><td>: {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('l') : '................' }}</td></tr>
-            <tr><td>2. Tanggal</td><td>: {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('d F Y') : '................' }}</td></tr>
-            <tr><td>3. Dasar Hukum</td><td>: {{ $laporan->laporanPengisian->dasar_hukum }}</td></tr>
-            <tr><td>4. Petugas</td><td>: .......................................................................</td></tr>
+        <table style="width: 100%; border-collapse: collapse; margin: 10px 0px;">
+            <tr><td style="width: 140px; vertical-align: top;">1. Hari</td><td style="vertical-align: top;">: {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('l') : '................' }}</td></tr>
+            <tr><td style="vertical-align: top;">2. Tanggal</td><td style="vertical-align: top;">: {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('d F Y') : '................' }}</td></tr>
+            <tr><td style="vertical-align: top;">3. Dasar Hukum</td><td style="vertical-align: top;">: {{ $laporan->laporanPengisian->dasar_hukum }}</td></tr>
+            <tr><td style="vertical-align: top;">4. Petugas</td><td style="vertical-align: top;">: .......................................................................</td></tr>
         </table>
 
-        <table class="table-border mt-10">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid black; padding: 4px; width: 5%;">No.</th>
+                    <th style="border: 1px solid black; padding: 4px; width: 45%;">Nama</th>
+                    <th style="border: 1px solid black; padding: 4px; width: 30%;">Jabatan</th>
+                    <th style="border: 1px solid black; padding: 4px; width: 20%;">Paraf</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{-- 1. Render data petugas yang ada --}}
+                @foreach($petugasList as $index => $petugas)
+                <tr>
+                    <td style="border: 1px solid black; padding: 4px; text-align: center;">{{ $index + 1 }}.</td>
+                    <td style="border: 1px solid black; padding: 4px;">{{ $petugas->nama_petugas ?? '-' }}</td>
+                    <td style="border: 1px solid black; padding: 4px;">{{ $petugas->jabatan ?? '-' }}</td>
+                    <td style="border: 1px solid black; padding: 4px;"></td>
+                </tr>
+                @endforeach
+
+                {{-- 2. Render baris kosong tambahan JIKA data kurang dari 7 --}}
+                @if($jumlahPetugas < $minimalBaris)
+                    @for($i = $jumlahPetugas + 1; $i <= $minimalBaris; $i++)
+                    <tr>
+                        <td style="border: 1px solid black; padding: 4px; text-align: center;">{{ $i }}.</td>
+                        <td style="border: 1px solid black; padding: 4px;">&nbsp;</td>
+                        <td style="border: 1px solid black; padding: 4px;">&nbsp;</td>
+                        <td style="border: 1px solid black; padding: 4px;">&nbsp;</td>
+                    </tr>
+                    @endfor
+                @endif
+            </tbody>
+        </table>
+
+        <div style="margin-top: 10px">5. Kegiatan</div>
+        <div><span style="margin-left: 18px; margin-top: 5px;">{{ $laporan->laporanPengisian->kegiatan }}</span></div>
+        <div>6. Tujuan</div>
+        <div><span style="margin-left: 18px; margin-top: 5px;">{{ $laporan->laporanPengisian->tujuan }}</span></div>
+        <div>7. Lokasi</div>
+        <div><span style="margin-left: 18px; margin-top: 5px;">{{ $laporan->laporanPengisian->lokasi_pengisian }}</span></div>
+
+        {{-- pindah halaman --}}
+        <div style="page-break-before: always;"></div>
+        <div style="margin-top: 10px;">8. Kondisi Kapal</div>
+        <table style="width: 100%; border-collapse: collapse;">
             <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 45%;">Nama</th>
-                <th style="width: 30%;">Jabatan</th>
-                <th style="width: 20%;">Paraf</th>
+                <td style="width: 25px; vertical-align: top; padding-left: 25px">a.</td>
+                <td style="width: 200px; vertical-align: top;">Nama Kapal</td><td style="vertical-align: top;">: 
+                    <span>{{ $laporan->kapal->nama_kapal }}</span></td>
             </tr>
-            @foreach($laporan->suratPermohonan->suratTugas->petugas as $index => $petugas)
             <tr>
-                <td class="text-center">{{ $i + 1 }}.</td>
-                <td>{{ $petugas->nama_petugas ?? '-' }}</td>
-                <td>{{ $petugas->jabatan ?? '-' }}</td>
-                <td></td>
+                <td style="vertical-align: top; padding-left: 25px">b.</td>
+                <td style="vertical-align: top;">BBM Awal Di Pom Bensin</td><td style="vertical-align: top;">: 
+                    {{ $laporan->laporanPengisian->jumlah_bbm_awal }} Liter</td>
             </tr>
-            @endforeach
-        </table>
-
-        <table style="width: 100%; margin-top: 10px;">
-            <tr><td style="width: 140px; vertical-align: top;">5. Kegiatan</td><td>: {{ $laporan->laporanPengisian->kegiatan }}</td></tr>
-            <tr><td style="vertical-align: top;">6. Tujuan</td><td>: {{ $laporan->laporanPengisian->tujuan }}</td></tr>
-            <tr><td style="vertical-align: top;">7. Lokasi</td><td>: {{ $laporan->laporanPengisian->lokasi_pengisian }}</td></tr>
-        </table>
-
-        <div class="font-bold mt-10">8. Kondisi Kapal</div>
-        <table style="width: 100%;">
-            <tr><td style="width: 25px;">a.</td><td style="width: 200px;">Nama Kapal</td><td>: <b>{{ $laporan->kapal->nama_kapal }}</b></td></tr>
-            <tr><td>b.</td><td>BBM Awal Di Pom Bensin</td><td>: {{ $laporan->laporanPengisian->jumlah_bbm_awal }} Liter</td></tr>
-            <tr><td>c.</td><td>Pengisian</td><td>: {{ $laporan->laporanPengisian->jumlah_bbm_pengisian }} Liter</td></tr>
-            <tr><td>d.</td><td>Pemakaian BBM dari Pom</td><td>: {{ $laporan->laporanPengisian->pemakaian_bbm }} Liter</td></tr>
-            <tr><td>e.</td><td>BBM Akhir</td><td>: {{ $laporan->laporanPengisian->jumlah_bbm_akhir }} Liter</td></tr>
-            <tr><td>f.</td><td>Jam Berangkat</td><td>: {{ $laporan->laporanPengisian->jam_berangkat }} WIB</td></tr>
-            <tr><td>g.</td><td>Jam Kembali</td><td>: {{ $laporan->laporanPengisian->jam_kembali }} WIB</td></tr>
-        </table>
-
-        <table class="signature-section" style="margin-top: 30px;">
             <tr>
-                <td class="text-center" style="width: 50%;">
+                <td style="vertical-align: top; padding-left: 25px">c.</td>
+                <td style="vertical-align: top;">Pengisian</td><td style="vertical-align: top;">: 
+                    {{ $laporan->laporanPengisian->jumlah_bbm_pengisian }} Liter</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top; padding-left: 25px">d.</td>
+                <td style="vertical-align: top;">Pemakaian BBM dari Pom</td><td style="vertical-align: top;">: 
+                    {{ $laporan->laporanPengisian->pemakaian_bbm }} Liter</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top; padding-left: 25px">e.</td>
+                <td style="vertical-align: top;">BBM Akhir</td><td style="vertical-align: top;">: 
+                    {{ $laporan->laporanPengisian->jumlah_bbm_akhir }} Liter</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top; padding-left: 25px">f.</td>
+                <td style="vertical-align: top;">Jam Berangkat</td><td style="vertical-align: top;">: 
+                    {{ $laporan->laporanPengisian->jam_berangkat }} WIB</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top; padding-left: 25px">g.</td>
+                <td style="vertical-align: top;">Jam Kembali</td><td style="vertical-align: top;">: 
+                    {{ $laporan->laporanPengisian->jam_kembali }} WIB</td>
+            </tr>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 30px;">
+            <tr>
+                <td style="width: 50%; text-align: center; vertical-align: top;">
                     Petugas SPBU<br><br><br><br><br>
                     (.........................................)
                 </td>
-                <td class="text-center" style="width: 50%;">
+                <td style="width: 50%; text-align: center; vertical-align: top;">
                     Nakhoda<br><br><br><br><br>
                     (.........................................)
                 </td>
             </tr>
             <tr>
-                <td colspan="2" class="text-center" style="padding-top: 30px;">
+                <td colspan="2" style="text-align: center; padding-top: 30px; vertical-align: top;">
                     Kepala {{ $laporan?->kapal?->ukpd?->nama ?? '-' }}<br>
                     Dinas Perhubungan Provinsi DKI Jakarta<br><br><br><br>
-                    <span class="signature-name">{{ $laporan?->kapal?->ukpd?->kepalaUkpd->name ?? '-' }}</span><br>
+                    <span style="font-weight: bold; text-decoration: underline;">{{ $laporan?->kapal?->ukpd?->kepalaUkpd->name ?? '-' }}</span><br>
                     NIP. {{ $laporan?->kapal?->ukpd?->kepalaUkpd->nip ?? '-' }}
                 </td>
             </tr>

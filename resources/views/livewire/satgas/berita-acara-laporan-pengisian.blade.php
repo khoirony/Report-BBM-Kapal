@@ -40,7 +40,7 @@
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari No. PKS atau Kapal..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari No. BA, PKS atau Kapal..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
                 </div>
         
                 <div class="flex flex-row gap-3 w-full md:w-auto">
@@ -122,8 +122,12 @@
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     {{ isset($item->tgl_ba) ? \Carbon\Carbon::parse($item->tgl_ba)->locale('id')->format('d M Y') : '-' }}
                                 </div>
-                                <div class="font-bold text-slate-900 text-sm tracking-tight mb-1" title="Nomor PKS">
-                                    {{ $item->nomor_pks ?? 'Tanpa Referensi PKS' }}
+                                
+                                <div class="font-bold text-indigo-700 text-sm tracking-tight mb-0.5" title="Nomor Berita Acara">
+                                    BA: {{ $item->nomor_ba ?? 'Belum ada No. BA' }}
+                                </div>
+                                <div class="font-semibold text-slate-600 text-xs tracking-tight mb-1" title="Nomor PKS">
+                                    PKS: {{ $item->nomor_pks ?? 'Tanpa Referensi PKS' }}
                                 </div>
                                 
                                 <div class="bg-indigo-50/50 border border-indigo-100 rounded-lg p-2 mt-2 w-fit pr-4">
@@ -337,7 +341,6 @@
 
                         @if($laporan_pengisian_bbm_id)
                             @php 
-                                // Tambahkan relasi kapal ke dalam eager loading
                                 $lpSelected = \App\Models\LaporanPengisianBbm::with([
                                     'suratPermohonan', 
                                     'suratTugas.petugas',
@@ -394,7 +397,12 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div class="col-span-1">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Berita Acara <span class="text-rose-500">*</span></label>
+                                <input type="text" wire:model="nomor_ba" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-text" placeholder="Contoh: BA/123/2026" required>
+                            </div>
+
+                            <div class="col-span-1">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Berita Acara <span class="text-rose-500">*</span></label>
                                 <input type="date" wire:model="tanggal_ba" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer" required>
                                 <p class="text-[10px] text-slate-400 mt-1">Hari, bulan, dan tahun diekstrak otomatis oleh sistem.</p>

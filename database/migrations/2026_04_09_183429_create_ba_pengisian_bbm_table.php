@@ -20,6 +20,7 @@ return new class extends Migration
             // Field Manual/Dropdown Memory
             $table->string('nomor_pks')->nullable();
             $table->date('tanggal_pks')->nullable();
+            $table->string('nomor_ba')->nullable();
             $table->date('tgl_ba')->nullable();
             $table->string('dasar_hukum')->nullable();
             $table->string('kegiatan')->nullable();
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->string('lokasi')->nullable();
             
             $table->string('file_ba_pengisian')->nullable()->comment('Path penyimpanan file BA Pengisian BBM');
-            
+
             // Sistem Persetujuan Bertingkat
             $table->unsignedBigInteger('disetujui_penyedia_by')->nullable();
             $table->timestamp('disetujui_penyedia_at')->nullable();
