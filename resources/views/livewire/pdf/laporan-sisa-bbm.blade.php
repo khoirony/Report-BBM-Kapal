@@ -134,15 +134,15 @@
             </td>
         </tr>
         <tr>
-            <td style="width: 50%; text-align: left; vertical-align: top; border: none; padding-top: 80px; padding-left: 15%;">
-                <div style="display: inline-block; text-align: left;">
-                    (<span style="display: inline-block; width: 250px; text-align: center; border-bottom: 1px dotted black; padding-bottom: 2px;">{{ $laporan->nama_nakhoda ?? '' }}</span>)<br>
+            <td style="width: 50%; text-align: center; vertical-align: top; border: none; padding-top: 80px;">
+                <div style="text-align: center;">
+                    <span style="width: 250px; text-align: center; padding-bottom: 2px;">{{ $laporan->nama_nakhoda ?? '' }}</span><br>
                     ID. {{ $laporan->id_nakhoda ?? '' }}
                 </div>
             </td>
-            <td style="width: 50%; text-align: left; vertical-align: top; border: none; padding-top: 80px; padding-left: 15%;">
-                <div style="display: inline-block; text-align: left;">
-                    (<span style="display: inline-block; width: 250px; text-align: center; border-bottom: 1px dotted black; padding-bottom: 2px;">{{ $laporan->nama_pengawas ?? '' }}</span>)<br>
+            <td style="width: 50%; text-align: center; vertical-align: top; border: none; padding-top: 80px;">
+                <div style="text-align: center;">
+                    <span style="width: 250px; text-align: center; padding-bottom: 2px;">{{ $laporan->nama_pengawas ?? '' }}</span><br>
                     NIP. {{ $laporan->id_pengawas ?? '' }} 
                 </div>
             </td>
