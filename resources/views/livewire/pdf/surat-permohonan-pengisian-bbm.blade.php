@@ -2,120 +2,93 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <style>
-        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.2; color: black; margin: 0; padding: 10px 20px; }
-        .text-center { text-align: center; }
-        .text-justify { text-align: justify; }
-        .font-bold { font-weight: bold; }
-        .underline { text-decoration: underline; }
-        
-        /* Kop Surat */
-        .kop-table { width: 100%; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 15px; }
-        .logo-container { width: 12%; text-align: center; vertical-align: middle; }
-        .logo-container img { width: 75px; height: auto; }
-        .kop-text { width: 88%; text-align: center; vertical-align: middle; }
-        .instansi-utama { font-size: 14pt; margin: 0; font-weight: bold; }
-
-        /* Header Utama (Mencegah Gap) */
-        .main-header { width: 100%; margin-bottom: 10px; }
-        .main-header td { vertical-align: top; padding: 0; }
-        
-        .sub-header-left { width: 100%; }
-        .sub-header-left td { padding: 1px 0; vertical-align: top; }
-        
-        .sub-header-right { width: 100%; }
-        .sub-header-right td { padding: 1px 0; vertical-align: top; }
-
-        /* Tabel Petugas */
-        .table-border { width: 100%; border-collapse: collapse; margin: 10px 0; }
-        .table-border th, .table-border td { border: 1px solid black; padding: 4px 8px; height: 22px; }
-        
-        /* Bagian Detail BBM */
-        .detail-bbm-table { width: 100%; margin-top: 10px; }
-        .detail-bbm-table td { padding: 1px 0; }
-
-        /* Footer Tanda Tangan */
-        .ttd-container { width: 100%; margin-top: 30px; }
-        .ttd-table { width: 100%; border: none; }
-        .ttd-table td { vertical-align: top; text-align: center; }
-
-        .mt-20 { margin-top: 20px; }
-    </style>
+    <title>Surat Permohonan Pengisian BBM</title>
 </head>
-<body>
+<body style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.1; color: black; margin: 0; padding: 10px 20px;">
 
-    <table class="kop-table" style="width: 100%; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 15px;">
+    {{-- KOP Surat --}}
+    <table style="width: 100%; border-collapse: collapse; border-bottom: 3px solid black; padding-bottom: 10px; margin-bottom: 5px;">
         <tr>
-            <td class="logo-container" style="width: 12%; text-align: center; vertical-align: middle;">
-                <img src="{{ public_path('img/logo-jaya-raya.jpg') }}" alt="Logo" style="width: 75px; height: auto;">
+            <td style="width: 15%; text-align: center; vertical-align: top; padding-top: 5px;">
+                <img src="{{ public_path('img/logo-jaya-raya.jpg') }}" style="height: 120px; width: 100px; object-fit: contain;" alt="Logo">
             </td>
-            <td class="kop-text" style="width: 88%; text-align: center; vertical-align: middle;">
-                <div class="instansi-utama" style="font-size: 14pt; font-weight: bold; margin: 0; white-space: nowrap;">
+            <td style="width: 85%; text-align: center; vertical-align: middle;">
+                <div style="font-size: 13pt; margin: 0; padding: 0; line-height: 1.2; white-space: nowrap;">
                     PEMERINTAH PROVINSI DAERAH KHUSUS IBUKOTA JAKARTA
                 </div>
-                <div class="instansi-utama" style="font-size: 14pt; font-weight: bold; margin: 0; white-space: nowrap;">
+                <div style="font-size: 13pt; margin: 0; padding: 0; line-height: 1.2; white-space: nowrap;">
                     DINAS PERHUBUNGAN
                 </div>
-                <div class="instansi-utama" style="font-size: 14pt; font-weight: bold; margin: 0;">
+                <div style="font-size: 16pt; font-weight: bold; margin: 0; padding: 0; line-height: 1.2;">
                     {{ strtoupper($surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '-') }}
                 </div>
-                
-                <p style="font-size: 10pt; margin: 5px 0 0 0; line-height: 1.2;">
-                    {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->alamat ?? '-' }}<br>
-                    Website: <span style="color: blue; text-decoration: underline;">www.dishub.jakarta.go.id</span> &nbsp;&nbsp;&nbsp; E-mail : {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->email ?? '-' }}
-                </p>
-    
-                <table style="width: 100%; font-size: 10pt; margin-top: 0;">
-                    <tr>
-                        <td style="text-align: center; padding-left: 50px;">
-                            <span style="letter-spacing: 3px; font-size: 10">JAKARTA</span>
-                        </td>
-                        <td style="text-align: right; width: 100px;">
-                            Kode Pos : {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->kode_pos ?? '-' }}
-                        </td>
-                    </tr>
-                </table>
+                <div style="font-size: 10pt; margin: 0; padding: 0; line-height: 1.2;">
+                    {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->alamat ?? '-' }}
+                </div>
+                <div style="font-size: 10pt; margin: 0; padding: 0; line-height: 1.2;">
+                    Website: <span style="color: blue; text-decoration: underline;">www.dishub.jakarta.go.id</span> &nbsp;&nbsp;&nbsp; 
+                    E-mail: {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->email ?? '-' }}
+                </div>
+                <div style="margin: 0; padding: 0; line-height: 1.2;">
+                    <span style="letter-spacing: 3px; font-size: 10pt;">JAKARTA</span>
+                </div>
+                <div style="text-align: right; margin: 0; padding: 0; line-height: 1.2;">
+                    <span style="font-size: 10pt;">Kode Pos : {{ $laporan?->ukpd?->kode_pos ?? ($laporan?->sounding?->kapal?->ukpd?->kode_pos ?? '-') }}</span>
+                </div>
             </td>
         </tr>
     </table>
 
-    <table class="main-header">
+    {{-- ISI Surat --}}
+    <table style="width: 100%; border-collapse: collapse; margin-top: 0; border: none;">
         <tr>
-            <td style="width: 55%;">
-                <table class="sub-header-left">
+            <td style="width: 50%; border: none; padding: 2px 0; vertical-align: top;">
+                <table style="width: 100%; border-collapse: collapse;">
                     <tr>
-                        <td style="width: 30%;">Nomor</td>
-                        <td>: {{ $surat->nomor_surat ?? '-' }}</td>
+                        <td style="width: 25%; border: none; padding: 2px 0; vertical-align: top;">Nomor</td>
+                        <td style="width: 5%; border: none; padding: 2px 0; vertical-align: top;">:</td>
+                        <td style="width: 70%; border: none; padding: 2px 0; vertical-align: top;">{{ $surat->nomor_surat ?? '-' }}/PH.12.00</td>
                     </tr>
                     <tr>
-                        <td>Klasifikasi</td>
-                        <td>: {{ $surat->klasifikasi ?? '-' }}</td>
+                        <td style="border: none; padding: 2px 0; vertical-align: top;">Klasifikasi</td>
+                        <td style="border: none; padding: 2px 0; vertical-align: top;">:</td>
+                        <td style="border: none; padding: 2px 0; vertical-align: top;">{{ $surat->klasifikasi ?? 'Penting' }}</td>
                     </tr>
                     <tr>
-                        <td>Lampiran</td>
-                        <td>: {{ $surat->lampiran ?? '-' }}</td>
+                        <td style="border: none; padding: 2px 0; vertical-align: top;">Lampiran</td>
+                        <td style="border: none; padding: 2px 0; vertical-align: top;">:</td>
+                        <td style="border: none; padding: 2px 0; vertical-align: top;">{{ $surat->lampiran ?? '-' }}</td>
                     </tr>
                     <tr>
-                        <td>Perihal</td>
-                        <td>: <span>Permohonan<br>&nbsp;&nbsp;Pengisian BBM</span></td>
+                        <td style="border: none; padding: 2px 0; vertical-align: top;">Perihal</td>
+                        <td style="border: none; padding: 2px 0; vertical-align: top;">:</td>
+                        <td style="border: none; padding: 2px 0; vertical-align: top;">
+                            <span>Permohonan<br>&nbsp;&nbsp;Pengisian BBM</span>
+                        </td>
                     </tr>
                 </table>
             </td>
-            <td style="width: 45%;">
-                <table class="sub-header-right">
+            <td style="width: 50%; border: none; padding: 2px 0 2px 20px; vertical-align: top;">
+                <table style="width: 100%; border-collapse: collapse;">
                     <tr>
-                        <td style="width: 25%;">Jakarta,</td>
-                        <td>{{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '........................' }}</td>
+                        <td colspan="2" style="text-align: left; border: none; padding: 2px 0; padding-left: 50px; vertical-align: top;">
+                            Jakarta, <span style="font-weight: bold;">{{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '........................' }}</span>
+                        </td>
                     </tr>
                     <tr>
-                        <td colspan="2" style="padding-top: 10px;">Kepada</td>
+                        <td colspan="2" style="border: none; padding: 2px 0; padding-left: 50px; vertical-align: top;">
+                            <br><br>
+                            Kepada
+                        </td>
                     </tr>
                     <tr>
-                        <td colspan="2">
-                            Kepala {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama }}<br>
+                        <td style="width: 10%; border: none; padding: 2px 0; vertical-align: top;">Yth.</td>
+                        <td style="width: 90%; border: none; padding: 2px 0; vertical-align: top;">
+                            Kepala <span style="font-weight: bold;">{{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama }}</span><br>
                             Dinas Perhubungan Provinsi DKI<br>
+                            Jakarta<br>
                             di<br>
-                            Jakarta
+                            <span style="padding-left: 20px;">Jakarta</span>
                         </td>
                     </tr>
                 </table>
@@ -123,19 +96,19 @@
         </tr>
     </table>
 
-    <div class="mt-20 text-justify">
-        <p style="text-indent: 50px; margin-bottom: 10px;">
-            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami. Adapun kapal yang dimaksud adalah KM. <strong>{{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }}</strong>
+    <div style="margin-top: 20px; text-align: justify;">
+        <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">
+            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami yang akan dilaksanakan pada {{ $surat->suratTugas->tanggal_dikeluarkan ? \Carbon\Carbon::parse($surat->tanggal_surat)->locale('id')->translatedFormat('l, d F Y') : '......................' }} pukul {{ $surat->suratTugas->waktu_pelaksanaan ?? '...........' }}. Adapun kapal yang dimaksud adalah KM. <strong style="font-weight: bold;">{{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }}</strong>
         </p>
-        <p style="text-indent: 50px; margin-bottom: 10px;">Berikut nama beserta jabatan yang bertanggung jawab atas nama kapal yang di maksud sebagai berikut :</p>
+        <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">Berikut nama beserta jabatan yang bertanggung jawab atas nama kapal yang di maksud sebagai berikut :</p>
     </div>
 
-    <table class="table-border">
+    <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
         <thead>
             <tr>
-                <th style="width: 8%;">No</th>
-                <th>NAMA</th>
-                <th style="width: 40%;">JABATAN</th>
+                <th style="width: 8%; border: 1px solid black; padding: 4px 8px; height: 22px;">No</th>
+                <th style="border: 1px solid black; padding: 4px 8px; height: 22px;">NAMA</th>
+                <th style="width: 40%; border: 1px solid black; padding: 4px 8px; height: 22px;">JABATAN</th>
             </tr>
         </thead>
         <tbody>
@@ -143,47 +116,48 @@
             @for($i = 0; $i < $maxRows; $i++)
                 @php $petugas = $surat->suratTugas->petugas[$i] ?? null; @endphp
                 <tr>
-                    <td class="text-center">{{ $i + 1 }}.</td>
-                    <td>{{ $petugas->nama_petugas ?? '' }}</td>
-                    <td>{{ $petugas->jabatan ?? '' }}</td>
+                    <td style="text-align: center; border: 1px solid black; padding: 4px 8px; height: 22px;">{{ $i + 1 }}.</td>
+                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">{{ $petugas->nama_petugas ?? '' }}</td>
+                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">{{ $petugas->jabatan ?? '' }}</td>
                 </tr>
             @endfor
         </tbody>
     </table>
 
-    <div class="mt-10">
-        <p>Adapun kebutuhan Bahan Bakar Minyak (BBM) yang di gunakan untuk Kapal tersebut jenis <strong>{{ $surat->jenis_bbm ?? 'Pertamax / Dexlite' }}</strong> dengan jumlah kebutuhan <strong>{{ number_format($surat->jumlah_bbm, 0, ',', '.') ?? '..........' }}</strong> Liter</p>
+    <div style="margin-top: 10px;">
+        <p style="margin: 0 0 10px 0;">Adapun kebutuhan Bahan Bakar Minyak (BBM) yang di gunakan untuk Kapal tersebut jenis <strong style="font-weight: bold;">{{ $surat->jenis_bbm ?? 'Pertamax / Dexlite' }}</strong> dengan jumlah kebutuhan <strong style="font-weight: bold;">{{ number_format($surat->jumlah_bbm, 0, ',', '.') ?? '..........' }}</strong> Liter</p>
         
-        <table class="detail-bbm-table">
+        <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
             <tr>
-                <td style="width: 30%;">Tempat Pengambilan</td>
-                <td>: {{ $surat->tempat_pengambilan_bbm ?? 'Stasiun Pengisian Bahan Bakar Umum' }}</td>
+                <td style="width: 30%; padding: 1px 0;">Tempat Pengambilan</td>
+                <td style="padding: 1px 0;">: {{ $surat->tempat_pengambilan_bbm ?? 'Stasiun Pengisian Bahan Bakar Umum' }}</td>
             </tr>
             <tr>
-                <td>Nomor Lembaga Penyalur</td>
-                <td>: {{ $surat->nomor_izin_penyedia ?? 'SPBU 3P-144.01' }}</td>
+                <td style="padding: 1px 0;">Nomor Lembaga Penyalur</td>
+                <td style="padding: 1px 0;">: {{ $surat->nomor_izin_penyedia ?? 'SPBU 3P-144.01' }}</td>
             </tr>
             <tr>
-                <td>Lokasi</td>
-                <td>: {{ $surat->lokasi_pengambilan ?? 'Pelabuhan Sunda Kelapa' }}</td>
+                <td style="padding: 1px 0;">Lokasi</td>
+                <td style="padding: 1px 0;">: {{ $surat->lokasi_pengambilan ?? 'Pelabuhan Sunda Kelapa' }}</td>
             </tr>
         </table>
     </div>
 
-    <p class="mt-20 text-justify" style="text-indent: 50px;">
+    <div style="page-break-before: always;"></div>
+    <p style="margin-top: 20px; text-align: justify; text-indent: 50px; margin-bottom: 0;">
         Demikian permohonan ini kami sampaikan atas perhatiannya diucapkan terima kasih.
     </p>
 
-    <div class="ttd-container">
-        <table class="ttd-table">
+    <div style="width: 100%; margin-top: 30px;">
+        <table style="width: 100%; border: none; border-collapse: collapse;">
             <tr>
-                <td style="width: 50%;">
+                <td style="width: 50%; vertical-align: top; text-align: center;">
                     <br>
                     <br>
                     Nakhoda / ABK<br>
                     KM. {{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '................' }}
                 </td>
-                <td style="width: 50%;">
+                <td style="width: 50%; vertical-align: top; text-align: center;">
                     Jakarta, {{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '........................' }}<br>
                     Pejabat Pelaksana Teknis Kegiatan<br>
                     {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama }}<br>
@@ -194,12 +168,13 @@
     </div>
 
     <div style="margin-top: 80px;">
-        <table class="ttd-table">
+        <table style="width: 100%; border: none; border-collapse: collapse;">
             <tr>
-                <td style="width: 50%;"></td>
-                <td style="width: 50%;">
-                    {{-- Mengambil dari database, jika kosong tampilkan default Suparto Napitu --}}
-                    <span class="font-bold underline">{{ $surat->nama_pejabat_ttd ?? 'Suparto Napitu, ST, MM.' }}</span><br>
+                <td style="width: 50%; vertical-align: top; text-align: center;">
+                    (.........................................)
+                </td>
+                <td style="width: 50%; vertical-align: top; text-align: center;">
+                    <span style="font-weight: bold; text-decoration: underline;">{{ $surat->nama_pejabat_ttd ?? 'Suparto Napitu, ST, MM.' }}</span><br>
                     NIP. {{ $surat->nip_pejabat_ttd ?? '197602142010011014' }}
                 </td>
             </tr>

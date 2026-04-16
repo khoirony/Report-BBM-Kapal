@@ -64,8 +64,8 @@
                     </tr>
                     <tr>
                         <td colspan="2" style="border: none; padding: 2px 0; padding-left: 50px; vertical-align: top;">
-                            Kepada
                             <br><br>
+                            Kepada
                         </td>
                     </tr>
                     <tr>

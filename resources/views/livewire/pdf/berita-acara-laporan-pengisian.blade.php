@@ -100,11 +100,11 @@
                 </tbody>
             </table>
 
+            {{-- pindah halaman --}}
+            <div style="page-break-before: always;"></div>
             <p style="margin-top: 10px;">Demikian Berita Acara Pengisian Bahan Bakar Minyak ini dibuat dalam rangkap secukupnya untuk dipergunakan sebagaimana mestinya.</p>
         </div>
 
-        {{-- pindah halaman --}}
-        <div style="page-break-before: always;"></div>
         <div style="width: 100%; margin-top: 20px;">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>

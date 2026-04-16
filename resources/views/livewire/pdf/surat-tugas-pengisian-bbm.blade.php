@@ -90,7 +90,7 @@
             </li>
         </ol>
 
-
+        <div style="page-break-before: always;"></div>
         <p style="text-indent: 50px; margin-top: 10px; margin-bottom: 10px;">
             Surat tugas ini dibuat untuk dilaksanakan sebaik–baiknya dan penuh tanggung jawab.
         </p>
