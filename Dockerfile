@@ -1,6 +1,6 @@
 FROM php:8.4-fpm
 
-# 1. Instal dependensi sistem (Library yang dibutuhkan oleh ekstensi PHP)
+# 1. Instal dependensi sistem (Termasuk Library untuk GD)
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -9,16 +9,21 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
-    libicu-dev
+    libicu-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev
 
-# 2. Instal semua ekstensi PHP sekaligus dalam satu layer
-RUN docker-php-ext-install \
+# 2. Konfigurasi dan Instal semua ekstensi PHP sekaligus
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
     pdo_mysql \
     mbstring \
     bcmath \
     xml \
     zip \
-    intl
+    intl \
+    gd
 
 # 3. Ambil Composer terbaru dari image resmi
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
