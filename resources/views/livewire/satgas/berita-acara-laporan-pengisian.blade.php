@@ -118,9 +118,15 @@
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
                                 <span class="text-[10px] font-bold text-indigo-500 uppercase lg:hidden mb-2 block tracking-wider">Info BA & Kapal</span>
                                 
-                                <div class="flex items-center text-xs text-slate-500 font-medium mb-1.5">
-                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    {{ isset($item->tgl_ba) ? \Carbon\Carbon::parse($item->tgl_ba)->locale('id')->format('d M Y') : '-' }}
+                                <div class="flex flex-col gap-1 mb-2">
+                                    <div class="flex items-center text-[11px] text-slate-500 font-medium">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        Tgl BA: <span class="text-slate-700 ml-1">{{ isset($item->tgl_ba) ? \Carbon\Carbon::parse($item->tgl_ba)->locale('id')->format('d M Y') : '-' }}</span>
+                                    </div>
+                                    <div class="flex items-center text-[11px] text-slate-500 font-medium">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Tgl Pelaksanaan: <span class="text-indigo-600 font-bold ml-1">{{ isset($item->tgl_pelaksanaan) ? \Carbon\Carbon::parse($item->tgl_pelaksanaan)->locale('id')->format('d M Y') : '-' }}</span>
+                                    </div>
                                 </div>
                                 
                                 <div class="font-bold text-indigo-700 text-sm tracking-tight mb-0.5" title="Nomor Berita Acara">
@@ -181,7 +187,7 @@
         
                                 <div class="flex items-center text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 shadow-sm inline-flex px-2 py-1 rounded-md mb-3 w-fit">
                                     <svg class="w-3.5 h-3.5 mr-1.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    Tgl Isi: {{ isset($item->laporanPengisian?->tanggal) ? \Carbon\Carbon::parse($item->laporanPengisian->tanggal)->format('d/m/Y') : '-' }}
+                                    Tgl Isi (Master): {{ isset($item->laporanPengisian?->tanggal) ? \Carbon\Carbon::parse($item->laporanPengisian->tanggal)->format('d/m/Y') : '-' }}
                                 </div>
         
                                 @php $petugasList = $item->laporanPengisian?->suratTugas?->petugas ?? []; @endphp
@@ -304,7 +310,7 @@
 
         @if($isOpen)
         <div class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-all">
-            <div @click.away="$wire.closeModal()" class="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+            <div @click.away="$wire.closeModal()" class="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
                 
                 <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
                     <div class="flex items-center space-x-3">
@@ -395,7 +401,7 @@
 
                         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2">Informasi Manual Berita Acara</h4>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
                             <div class="col-span-1">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Berita Acara <span class="text-rose-500">*</span></label>
@@ -405,7 +411,13 @@
                             <div class="col-span-1">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Berita Acara <span class="text-rose-500">*</span></label>
                                 <input type="date" wire:model="tanggal_ba" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer" required>
-                                <p class="text-[10px] text-slate-400 mt-1">Hari, bulan, dan tahun diekstrak otomatis oleh sistem.</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Tanggal dokumen surat terbit.</p>
+                            </div>
+
+                            <div class="col-span-1">
+                                <label class="block text-[11px] font-bold text-indigo-500 uppercase tracking-wider mb-2">Tanggal Pelaksanaan <span class="text-rose-500">*</span></label>
+                                <input type="date" wire:model="tanggal_pelaksanaan" class="w-full px-4 py-3 bg-slate-50 border border-indigo-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer" required>
+                                <p class="text-[10px] text-slate-400 mt-1">Tanggal kejadian pengisian di lapangan.</p>
                             </div>
 
                         </div>

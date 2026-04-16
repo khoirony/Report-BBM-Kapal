@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Laporan Pengisian</title>
+
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.3; color: black; margin: 0; padding: 10px 20px;">
     <div style="padding: 0 10px; line-height: 1.5;">

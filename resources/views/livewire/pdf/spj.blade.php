@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Cover SPJ</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif; color: black; margin: 10; padding: 0; line-height: 1.5;">
 

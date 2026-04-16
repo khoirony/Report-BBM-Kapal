@@ -18,8 +18,9 @@ class BeritaAcaraLaporanPengisian extends Component
 
     // Properti Data Form
     public $laporan_id, $laporan_pengisian_bbm_id, $kapal_id;
-    public $nomor_ba; // Penambahan properti Nomor BA
+    public $nomor_ba;
     public $tanggal_ba; 
+    public $tanggal_pelaksanaan;
     public $nomor_pks, $tanggal_pks;
     
     // Property untuk menampung file upload inline di tabel
@@ -80,7 +81,7 @@ class BeritaAcaraLaporanPengisian extends Component
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('nomor_pks', 'like', "%{$this->search}%")
-                ->orWhere('nomor_ba', 'like', "%{$this->search}%") // Tambahan pencarian nomor BA
+                ->orWhere('nomor_ba', 'like', "%{$this->search}%")
                 ->orWhereHas('kapal', function($k) {
                     $k->where('nama_kapal', 'like', "%{$this->search}%");
                 });
@@ -117,7 +118,6 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->sortBy = 'latest'; $this->resetPage();
     }
 
-    // Penarikan otomatis kapal dari Laporan Master yang bersarang
     public function updatedLaporanPengisianBbmId($value)
     {
         $lp = LaporanPengisianBbm::with('suratTugas.LaporanSisaBbm.sounding')->find($value);
@@ -150,12 +150,13 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->laporan_id = $ba->id;
         $this->laporan_pengisian_bbm_id = $ba->laporan_pengisian_bbm_id;
         $this->kapal_id = $ba->kapal_id;
-        $this->nomor_ba = $ba->nomor_ba; // Penarikan data Nomor BA
+        $this->nomor_ba = $ba->nomor_ba;
         $this->nomor_pks = $ba->nomor_pks;
         $this->tanggal_pks = $ba->tanggal_pks;
 
-        // Perbaikan format tanggal agar kompatibel dengan input type="date"
-        $this->tanggal_ba = Carbon::parse($ba->tgl_ba)->format('Y-m-d');
+        // Load data tanggal ke Form
+        $this->tanggal_ba = $ba->tgl_ba ? Carbon::parse($ba->tgl_ba)->format('Y-m-d') : null;
+        $this->tanggal_pelaksanaan = $ba->tgl_pelaksanaan ? Carbon::parse($ba->tgl_pelaksanaan)->format('Y-m-d') : null;
 
         $this->isOpen = true;
     }
@@ -168,8 +169,9 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->laporan_id = null;
         $this->laporan_pengisian_bbm_id = '';
         $this->kapal_id = '';
-        $this->nomor_ba = ''; // Reset Nomor BA
+        $this->nomor_ba = '';
         $this->tanggal_ba = date('Y-m-d');
+        $this->tanggal_pelaksanaan = date('Y-m-d');
         $this->nomor_pks = '';
         $this->tanggal_pks = '';
     }
@@ -178,20 +180,22 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->validate([
             'laporan_pengisian_bbm_id' => 'required',
             'kapal_id' => 'required',
-            'nomor_ba' => 'required|string|max:255', // Validasi Nomor BA
+            'nomor_ba' => 'required|string|max:255',
             'tanggal_ba' => 'required|date',
+            'tanggal_pelaksanaan' => 'required|date',
         ]);
 
-        $parsedDate = Carbon::parse($this->tanggal_ba)->locale('id');
+        $parsedDateBA = Carbon::parse($this->tanggal_ba)->locale('id');
 
         BaPengisianBbm::updateOrCreate(['id' => $this->laporan_id], [
             'laporan_pengisian_bbm_id' => $this->laporan_pengisian_bbm_id,
             'kapal_id' => $this->kapal_id,
-            'nomor_ba' => $this->nomor_ba, // Penyimpanan Nomor BA
-            'hari' => $parsedDate->isoFormat('dddd'),
-            'tgl_ba' => $parsedDate->format('Y-m-d'), // Perbaikan format simpan tanggal
-            'bulan_ba' => $parsedDate->isoFormat('MMMM'),
-            'tahun_ba' => $parsedDate->format('Y'),
+            'nomor_ba' => $this->nomor_ba,
+            'hari' => $parsedDateBA->isoFormat('dddd'),
+            'tgl_ba' => $parsedDateBA->format('Y-m-d'),
+            'bulan_ba' => $parsedDateBA->isoFormat('MMMM'),
+            'tahun_ba' => $parsedDateBA->format('Y'),
+            'tgl_pelaksanaan' => Carbon::parse($this->tanggal_pelaksanaan)->format('Y-m-d'),
             'nomor_pks' => $this->nomor_pks,
             'tanggal_pks' => $this->tanggal_pks ?: null,
             'user_id' => auth()->id(),

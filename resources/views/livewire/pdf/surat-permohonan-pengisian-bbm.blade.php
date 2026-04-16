@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Surat Permohonan Pengisian BBM</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.1; color: black; margin: 0; padding: 10px 20px;">
 

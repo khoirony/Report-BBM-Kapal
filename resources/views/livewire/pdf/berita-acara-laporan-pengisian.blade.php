@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Berita Acara Laporan Pengisian {{ $laporan->kapal->nama_kapal }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.3; color: black; margin: 0; padding: 10px 20px;">
 
@@ -33,10 +34,10 @@
         </div>
 
         <div style="margin-top: 10px; text-align: justify;">
-            <p>Pada hari ini <span style="font-weight: bold;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('l') : '................' }}</span> 
-                tanggal <span style="font-weight: bold;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d') : '................' }}</span> 
-                bulan <span style="font-weight: bold;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('F') : '................' }}</span> 
-                tahun <span style="font-weight: bold;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('Y') : '................' }}</span> 
+            <p>Pada hari ini <span style="font-weight: bold;">{{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('l') : '................' }}</span> 
+                tanggal <span style="font-weight: bold;">{{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('d') : '................' }}</span> 
+                bulan <span style="font-weight: bold;">{{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('F') : '................' }}</span> 
+                tahun <span style="font-weight: bold;">{{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('Y') : '................' }}</span> 
                 bertempat di {{ $laporan->suratPermohonan->suratTugas->lokasi ?? '-' }}</p>
             
             <p style="margin-bottom: 5px;">Berdasarkan:</p>

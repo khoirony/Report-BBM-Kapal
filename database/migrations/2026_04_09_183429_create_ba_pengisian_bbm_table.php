@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('tanggal_pks')->nullable();
             $table->string('nomor_ba')->nullable();
             $table->date('tgl_ba')->nullable();
+            $table->date('tgl_pelaksanaan')->nullable();
             $table->string('dasar_hukum')->nullable();
             $table->string('kegiatan')->nullable();
             $table->text('tujuan')->nullable();
