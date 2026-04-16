@@ -63,7 +63,7 @@ class PdfController extends Controller
         $pdf = Pdf::loadView('pdf.surat-tugas-pengisian-bbm', ['surat' => $surat]);
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $surat->tanggal_dikeluarkan) . '.pdf';
+        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $surat->tanggal_surat) . '.pdf';
 
         return $pdf->stream($namaFile);
     }

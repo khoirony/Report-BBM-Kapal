@@ -10,7 +10,7 @@ class SuratTugasPengisian extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
-    protected $casts = ['tanggal_dikeluarkan' => 'date'];
+    protected $casts = ['tanggal_surat' => 'date'];
 
     public function BaPengisianBbm()
     {

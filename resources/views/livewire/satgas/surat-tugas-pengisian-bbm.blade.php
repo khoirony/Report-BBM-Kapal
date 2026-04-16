@@ -129,7 +129,7 @@
                                 <div class="font-bold text-slate-900 mb-1 tracking-tight">{{ $surat->nomor_surat }}</div>
                                 <div class="flex items-center text-xs text-slate-500 font-medium">
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    {{ \Carbon\Carbon::parse($surat->tanggal_dikeluarkan)->translatedFormat('d M Y') }}
+                                    {{ \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d M Y') }}
                                 </div>
                             </td>
         
@@ -311,23 +311,27 @@
 
                                     <p class="text-[10px] text-gray-500 mt-1">Data Kapal & Tanggal akan otomatis terisi di PDF berdasarkan Laporan ini.</p>
                                 </div>
-    
+
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Surat <span class="text-rose-500">*</span></label>
                                         <input type="text" wire:model="nomor_surat" placeholder="Contoh: 001/PH.12.00/2026" class="px-4 py-2.5 bg-white border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Dikeluarkan <span class="text-rose-500">*</span></label>
-                                        <input type="date" wire:model="tanggal_dikeluarkan" class="px-4 py-2.5 bg-white border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Surat <span class="text-rose-500">*</span></label>
+                                        <input type="date" wire:model="tanggal_surat" class="px-4 py-2.5 bg-white border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Lokasi Pengisian <span class="text-rose-500">*</span></label>
                                     <input type="text" wire:model="lokasi" placeholder="Contoh: SPBU Pertamina 31.102..." class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Pelaksanaan <span class="text-rose-500">*</span></label>
+                                    <input type="date" wire:model="tanggal_pelaksanaan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Waktu Pelaksanaan <span class="text-rose-500">*</span></label>

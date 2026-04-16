@@ -98,7 +98,7 @@
 
     <div style="margin-top: 20px; text-align: justify;">
         <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">
-            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami yang akan dilaksanakan pada {{ $surat->suratTugas->tanggal_dikeluarkan ? \Carbon\Carbon::parse($surat->tanggal_surat)->locale('id')->translatedFormat('l, d F Y') : '......................' }} pukul {{ $surat->suratTugas->waktu_pelaksanaan ?? '...........' }}. Adapun kapal yang dimaksud adalah KM. <strong style="font-weight: bold;">{{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }}</strong>
+            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami yang akan dilaksanakan pada {{ $surat->suratTugas->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->locale('id')->translatedFormat('l, d F Y') : '......................' }} pukul {{ $surat->suratTugas->waktu_pelaksanaan ?? '...........' }}. Adapun kapal yang dimaksud adalah KM. <strong style="font-weight: bold;">{{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }}</strong>
         </p>
         <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">Berikut nama beserta jabatan yang bertanggung jawab atas nama kapal yang di maksud sebagai berikut :</p>
     </div>

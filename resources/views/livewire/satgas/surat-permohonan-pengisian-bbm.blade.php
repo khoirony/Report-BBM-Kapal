@@ -326,7 +326,7 @@
                                 @foreach($surat_tugas_list as $st)
                                     <option value="{{ $st->id }}">
                                         {{ $st->nomor_surat }} | 
-                                        {{ \Carbon\Carbon::parse($st->tanggal_dikeluarkan)->locale('id')->translatedFormat('l, d/M/Y') }} 
+                                        {{ \Carbon\Carbon::parse($st->tanggal_surat)->locale('id')->translatedFormat('l, d/M/Y') }} 
                                         (Kapal: {{ $st->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})
                                     </option>
                                 @endforeach

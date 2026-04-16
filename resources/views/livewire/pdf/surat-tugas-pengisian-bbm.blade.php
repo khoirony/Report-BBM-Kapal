@@ -60,12 +60,12 @@
                             <tr>
                                 <td style="width: 140px; vertical-align: top; padding: 2px 0;">Hari</td>
                                 <td style="width: 10px; vertical-align: top; padding: 2px 0;">:</td>
-                                <td style="vertical-align: top; padding: 2px 0;">{{ $surat->tanggal_dikeluarkan ? \Carbon\Carbon::parse($surat->tanggal_dikeluarkan)->locale('id')->translatedFormat('l') : '.....................' }}</td>
+                                <td style="vertical-align: top; padding: 2px 0;">{{ $surat->tanggal_pelaksanaan ? \Carbon\Carbon::parse($surat->tanggal_pelaksanaan)->locale('id')->translatedFormat('l') : '.....................' }}</td>
                             </tr>
                             <tr>
                                 <td style="vertical-align: top; padding: 2px 0;">Tanggal</td>
                                 <td style="vertical-align: top; padding: 2px 0;">:</td>
-                                <td style="vertical-align: top; padding: 2px 0;">{{ $surat->tanggal_dikeluarkan ? \Carbon\Carbon::parse($surat->tanggal_dikeluarkan)->translatedFormat('d F Y') : '.....................' }}</td>
+                                <td style="vertical-align: top; padding: 2px 0;">{{ $surat->tanggal_pelaksanaan ? \Carbon\Carbon::parse($surat->tanggal_pelaksanaan)->translatedFormat('d F Y') : '.....................' }}</td>
                             </tr>
                             <tr>
                                 <td style="vertical-align: top; padding: 2px 0;">Pukul</td>
@@ -102,7 +102,7 @@
                 <td style="width: 50%; border: none;"></td>
                 <td style="width: 50%; text-align: center; vertical-align: top; border: none;">
                     Dikeluarkan di Jakarta<br>
-                    Pada tanggal {{ $surat->tanggal_dikeluarkan ? \Carbon\Carbon::parse($surat->tanggal_dikeluarkan)->translatedFormat('d F Y') : '.....................' }}<br>
+                    Pada tanggal {{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '.....................' }}<br>
                     Kepala {{ $surat?->ukpd?->nama ?? '-' }}<br>
                     Dinas Perhubungan Provinsi DKI Jakarta
                     <br><br><br><br><br>
@@ -127,7 +127,7 @@
             </tr>
             <tr>
                 <td style="vertical-align: top; padding: 2px 0;">Tanggal</td>
-                <td style="vertical-align: top; padding: 2px 0;">: {{ $surat->tanggal_dikeluarkan ? \Carbon\Carbon::parse($surat->tanggal_dikeluarkan)->translatedFormat('d F Y') : '.....................' }}</td>
+                <td style="vertical-align: top; padding: 2px 0;">: {{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '.....................' }}</td>
             </tr>
         </table>
     </div>

@@ -5,9 +5,9 @@ namespace Database\Seeders;
 use App\Models\SuratTugasPengisian;
 use App\Models\LaporanSisaBbm;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB; // Ditambahkan untuk insert tabel relasi
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Faker\Factory as Faker; // Ditambahkan untuk generate nama random
+use Faker\Factory as Faker;
 
 class SuratTugasPengisianSeeder extends Seeder
 {
@@ -20,10 +20,9 @@ class SuratTugasPengisianSeeder extends Seeder
             return;
         }
 
-        $faker = Faker::create('id_ID'); // Inisialisasi Faker dengan locale Indonesia
-        $nomorUrut = 1; // Mulai nomor surat dari 1
+        $faker = Faker::create('id_ID');
+        $nomorUrut = 1;
 
-        // Array contoh lokasi pengisian BBM
         $listLokasi = [
             'SPBU Pertamina 31.102.02 MT Haryono',
             'SPBU Pertamina 34.105.04 Cempaka Putih',
@@ -32,8 +31,9 @@ class SuratTugasPengisianSeeder extends Seeder
         ];
 
         foreach ($laporans as $laporan) {
-            // Tanggal dikeluarkan biasanya H-1 atau sama dengan tanggal pelaksanaan
-            $tanggalDikeluarkan = Carbon::parse($laporan->tanggal_surat)->subDay();
+            $tanggalPelaksanaan = Carbon::parse($laporan->tanggal_surat);
+            
+            $tanggalDikeluarkan = $tanggalPelaksanaan->copy()->subDay();
             
             // Jika H-1 jatuh di hari Minggu (0), mundurkan ke hari Jumat
             if ($tanggalDikeluarkan->dayOfWeek === Carbon::SUNDAY) {
@@ -48,9 +48,10 @@ class SuratTugasPengisianSeeder extends Seeder
                 'laporan_sisa_bbm_id' => $laporan->id,
                 'ukpd_id'             => $laporan->ukpd_id,
                 'nomor_surat'         => $nomorSurat,
-                'lokasi'              => $faker->randomElement($listLokasi), // Assign lokasi random dari array
+                'lokasi'              => $faker->randomElement($listLokasi),
+                'tanggal_pelaksanaan' => $tanggalPelaksanaan->format('Y-m-d'),
                 'waktu_pelaksanaan'   => '08:00 - Selesai',
-                'tanggal_dikeluarkan' => $tanggalDikeluarkan->format('Y-m-d'),
+                'tanggal_surat' => $tanggalDikeluarkan->format('Y-m-d'),
                 'user_id'             => 3,
             ]);
 

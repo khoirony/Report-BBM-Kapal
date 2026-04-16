@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('nomor_surat');
             $table->string('lokasi');
             $table->string('waktu_pelaksanaan')->default('08:00 - Selesai');
-            $table->date('tanggal_dikeluarkan');
+            $table->string('tanggal_pelaksanaan')->nullable();
+            $table->date('tanggal_surat');
             $table->string('file_surat_tugas')->nullable()->comment('Path penyimpanan file surat tugas');
             $table->integer('user_id')->nullable();
             $table->timestamps();

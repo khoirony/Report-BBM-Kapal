@@ -4,8 +4,8 @@ namespace App\Livewire\Satgas;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\WithFileUploads; // Tambahkan trait ini
-use Illuminate\Support\Facades\Storage; // Tambahkan ini
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 use App\Models\SuratTugasPengisian;
 use App\Models\Kapal;
 use App\Models\LaporanSisaBbm;
@@ -17,8 +17,8 @@ class SuratTugasPengisianBBM extends Component
 {
     use WithPagination, WithFileUploads;
 
-    // Properti Form Modal
-    public $surat_id, $laporan_pengisian_id, $nomor_surat, $lokasi, $waktu_pelaksanaan, $tanggal_dikeluarkan;
+    // 1. Tambahkan $tanggal_pelaksanaan di sini
+    public $surat_id, $laporan_pengisian_id, $nomor_surat, $lokasi, $tanggal_pelaksanaan, $waktu_pelaksanaan, $tanggal_surat;
     public $petugasList = [];
     public $isOpen = false;
     
@@ -41,25 +41,21 @@ class SuratTugasPengisianBBM extends Component
     public function updatingFilterTanggalDari() { $this->resetPage(); }
     public function updatingFilterTanggalSampai() { $this->resetPage(); }
 
-    // Otomatis berjalan ketika user memilih file di tabel
     public function updatedUploadFiles($value, $key)
     {
         $this->validate([
-            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $suratTugas = SuratTugasPengisian::findOrFail($key);
 
-        // Hapus file lama jika ada
         if ($suratTugas->file_surat_tugas && Storage::disk('public')->exists($suratTugas->file_surat_tugas)) {
             Storage::disk('public')->delete($suratTugas->file_surat_tugas);
         }
 
-        // Simpan file baru
         $path = $value->store('uploads/surat_tugas', 'public');
         $suratTugas->update(['file_surat_tugas' => $path]);
 
-        // Bersihkan memori file sementara
         unset($this->upload_files[$key]);
 
         session()->flash('message', 'Dokumen Surat Tugas berhasil diupload!');
@@ -76,7 +72,6 @@ class SuratTugasPengisianBBM extends Component
         $this->resetPage();
     }
 
-    // Fungsi baru untuk memuat Laporan Sisa BBM yang belum terpakai
     public function loadLaporanList($currentLaporanId = null)
     {
         $usedLaporanIds = SuratTugasPengisian::whereNotNull('laporan_sisa_bbm_id')
@@ -139,15 +134,15 @@ class SuratTugasPengisianBBM extends Component
         }
         
         if ($this->filterTanggalDari) {
-            $query->whereDate('tanggal_dikeluarkan', '>=', $this->filterTanggalDari);
+            $query->whereDate('tanggal_surat', '>=', $this->filterTanggalDari);
         }
         if ($this->filterTanggalSampai) {
-            $query->whereDate('tanggal_dikeluarkan', '<=', $this->filterTanggalSampai);
+            $query->whereDate('tanggal_surat', '<=', $this->filterTanggalSampai);
         }
 
         match($this->sortBy) {
-            'oldest' => $query->orderBy('tanggal_dikeluarkan', 'asc'),
-            default => $query->orderBy('tanggal_dikeluarkan', 'desc'), 
+            'oldest' => $query->orderBy('tanggal_surat', 'asc'),
+            default => $query->orderBy('tanggal_surat', 'desc'), 
         };
 
         $surat_tugas = $query->paginate(10);
@@ -170,8 +165,9 @@ class SuratTugasPengisianBBM extends Component
     public function create()
     {
         $this->resetInputFields();
+        $this->tanggal_pelaksanaan = date('Y-m-d'); // 2. Set default value hari ini
         $this->waktu_pelaksanaan = '08:00 - Selesai';
-        $this->tanggal_dikeluarkan = date('Y-m-d');
+        $this->tanggal_surat = date('Y-m-d');
         
         $this->petugasList = [
             ['nama_petugas' => '', 'jabatan' => 'Nakhoda'],
@@ -179,7 +175,6 @@ class SuratTugasPengisianBBM extends Component
             ['nama_petugas' => '', 'jabatan' => 'ABK']
         ];
         
-        // Memuat list Laporan yang murni belum terpakai
         $this->loadLaporanList();
         
         $this->openModal();
@@ -209,19 +204,22 @@ class SuratTugasPengisianBBM extends Component
         $this->laporan_pengisian_id = '';
         $this->nomor_surat = '';
         $this->lokasi = '';
+        $this->tanggal_pelaksanaan = ''; // 3. Bersihkan form
         $this->waktu_pelaksanaan = '';
-        $this->tanggal_dikeluarkan = '';
+        $this->tanggal_surat = '';
         $this->petugasList = [];
     }
 
     public function store()
     {
+        // 4. Tambahkan validasi tanggal_pelaksanaan
         $this->validate([
             'laporan_pengisian_id' => 'required',
             'nomor_surat' => 'required',
             'lokasi' => 'required',
+            'tanggal_pelaksanaan' => 'required|date', 
             'waktu_pelaksanaan' => 'required',
-            'tanggal_dikeluarkan' => 'required|date',
+            'tanggal_surat' => 'required|date',
             'petugasList.*.nama_petugas' => 'required',
             'petugasList.*.jabatan' => 'required',
         ],[
@@ -231,13 +229,15 @@ class SuratTugasPengisianBBM extends Component
 
         $laporanTerkait = LaporanSisaBbm::find($this->laporan_pengisian_id);
 
+        // 5. Masukkan ke array data untuk insert/update
         $data = [
             'laporan_sisa_bbm_id' => $this->laporan_pengisian_id,
             'ukpd_id' => $laporanTerkait ? $laporanTerkait->ukpd_id : null,
             'nomor_surat' => $this->nomor_surat,
             'lokasi' => $this->lokasi,
+            'tanggal_pelaksanaan' => $this->tanggal_pelaksanaan,
             'waktu_pelaksanaan' => $this->waktu_pelaksanaan,
-            'tanggal_dikeluarkan' => $this->tanggal_dikeluarkan,
+            'tanggal_surat' => $this->tanggal_surat,
         ];
 
         if (!$this->surat_id) {
@@ -287,8 +287,10 @@ class SuratTugasPengisianBBM extends Component
         $this->laporan_pengisian_id = $surat->laporan_sisa_bbm_id ?? $surat->laporan_pengisian_id; 
         $this->nomor_surat = $surat->nomor_surat;
         $this->lokasi = $surat->lokasi;
+        // 6. Tarik data tanggal dari database
+        $this->tanggal_pelaksanaan = $surat->tanggal_pelaksanaan ? \Carbon\Carbon::parse($surat->tanggal_pelaksanaan)->format('Y-m-d') : '';
         $this->waktu_pelaksanaan = $surat->waktu_pelaksanaan;
-        $this->tanggal_dikeluarkan = \Carbon\Carbon::parse($surat->tanggal_dikeluarkan)->format('Y-m-d');
+        $this->tanggal_surat = \Carbon\Carbon::parse($surat->tanggal_surat)->format('Y-m-d');
         
         $petugasRecords = DB::table('petugas_surat_tugas')
                             ->where('surat_tugas_pengisian_id', $surat->id)
@@ -306,7 +308,6 @@ class SuratTugasPengisianBBM extends Component
             $this->petugasList[] = ['nama_petugas' => '', 'jabatan' => ''];
         }
 
-        // Memuat list laporan termasuk yang dipakai pada surat tugas ini
         $this->loadLaporanList($this->laporan_pengisian_id);
 
         $this->openModal();
