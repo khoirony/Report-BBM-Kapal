@@ -26,6 +26,8 @@ return new class extends Migration
             $table->text('tujuan')->nullable();
             $table->string('lokasi')->nullable();
             
+            $table->string('file_ba_pengisian')->nullable()->comment('Path penyimpanan file BA Pengisian BBM');
+            
             // Sistem Persetujuan Bertingkat
             $table->unsignedBigInteger('disetujui_penyedia_by')->nullable();
             $table->timestamp('disetujui_penyedia_at')->nullable();

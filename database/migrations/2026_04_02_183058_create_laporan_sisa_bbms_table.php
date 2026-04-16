@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('klasifikasi')->nullable();
             $table->string('lampiran')->nullable();
             $table->string('perihal')->default('Laporan Perhitungan Jumlah Sisa BBM Kapal Sebelum Pengisian');
+            $table->string('file_laporan')->nullable()->comment('Path penyimpanan file dokumen laporan');
             $table->string('nama_nakhoda');
             $table->string('id_nakhoda')->nullable()->comment('Menyimpan Nomor Pegawai/NIP/NRK Nakhoda');
             $table->string('nama_pengawas');

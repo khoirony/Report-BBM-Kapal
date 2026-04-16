@@ -8,17 +8,22 @@ use App\Models\LaporanPengisianBbm;
 use App\Models\Ukpd;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads; // Tambahkan ini
+use Illuminate\Support\Facades\Storage; // Tambahkan ini
 use Carbon\Carbon;
 
 class BeritaAcaraLaporanPengisian extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads; // Gunakan trait di sini
 
     // Properti Data Form
     public $laporan_id, $laporan_pengisian_bbm_id, $kapal_id;
-    public $tanggal_ba; // Menggantikan hari, tgl, bulan, tahun
+    public $tanggal_ba; 
     public $nomor_pks, $tanggal_pks;
     
+    // Property untuk menampung file upload inline di tabel
+    public $upload_files = [];
+
     // Properti UI & Filter
     public $isOpen = false;
     public $search = '';
@@ -36,6 +41,30 @@ class BeritaAcaraLaporanPengisian extends Component
                                     ->distinct()
                                     ->pluck('nomor_pks')
                                     ->toArray();
+    }
+
+    // Otomatis berjalan ketika user memilih file di tabel
+    public function updatedUploadFiles($value, $key)
+    {
+        $this->validate([
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
+        ]);
+
+        $ba = BaPengisianBbm::findOrFail($key);
+
+        // Hapus file lama jika ada
+        if ($ba->file_ba_pengisian && Storage::disk('public')->exists($ba->file_ba_pengisian)) {
+            Storage::disk('public')->delete($ba->file_ba_pengisian);
+        }
+
+        // Simpan file baru
+        $path = $value->store('uploads/ba_pengisian', 'public');
+        $ba->update(['file_ba_pengisian' => $path]);
+
+        // Bersihkan memori file sementara
+        unset($this->upload_files[$key]);
+
+        session()->flash('message', 'Dokumen Berita Acara berhasil diupload!');
     }
 
     public function render()
@@ -72,7 +101,6 @@ class BeritaAcaraLaporanPengisian extends Component
             'kapals' => Kapal::orderBy('nama_kapal', 'asc')->get(),
             'ukpds' => Ukpd::orderBy('nama', 'asc')->get(),
             
-            // 3. Tambahkan whereNotIn untuk menyaring data yang sudah terpakai
             'laporan_pengisian_list' => LaporanPengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal'])
                 ->whereNotIn('id', $laporanTerpakai) 
                 ->latest()
@@ -171,7 +199,14 @@ class BeritaAcaraLaporanPengisian extends Component
     }
 
     public function delete($id) {
-        BaPengisianBbm::findOrFail($id)->delete();
+        $ba = BaPengisianBbm::findOrFail($id);
+        
+        // Hapus file fisik jika ada sebelum menghapus data
+        if ($ba->file_ba_pengisian && Storage::disk('public')->exists($ba->file_ba_pengisian)) {
+            Storage::disk('public')->delete($ba->file_ba_pengisian);
+        }
+
+        $ba->delete();
         session()->flash('message', 'Berita Acara berhasil dihapus.');
     }
 }

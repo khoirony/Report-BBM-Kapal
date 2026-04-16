@@ -238,20 +238,46 @@
                             <td class="block lg:table-cell px-2 py-4 lg:px-6 lg:py-5 lg:text-right align-middle">
                                 <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto">
                                     
-                                    <a href="{{ route('laporan-sisa-bbm.pdf.preview', $laporan->id) }}" target="_blank" class="w-full justify-center inline-flex items-center text-slate-700 font-semibold bg-slate-100 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-slate-200 hover:border-slate-800 shadow-sm">
-                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                        <span>PDF</span>
+                                    <div x-data="{ uploading: false, progress: 0 }"
+                                         x-on:livewire-upload-start="uploading = true"
+                                         x-on:livewire-upload-finish="uploading = false"
+                                         x-on:livewire-upload-error="uploading = false"
+                                         x-on:livewire-upload-progress="progress = $event.detail.progress">
+                                        
+                                        <input type="file" x-ref="fileInput_{{ $laporan->id }}" wire:model="upload_files.{{ $laporan->id }}" class="hidden" accept=".pdf,.png,.jpg,.jpeg">
+                            
+                                        @if($laporan->file_laporan)
+                                            <div class="flex gap-2">
+                                                <a href="{{ Storage::url($laporan->file_laporan) }}" target="_blank" class="flex-1 justify-center inline-flex items-center text-emerald-700 font-semibold bg-emerald-50 hover:bg-emerald-600 hover:text-white px-2 py-2 rounded-lg transition-all duration-200 border border-emerald-200 hover:border-emerald-600 shadow-sm text-[11px]" title="Lihat Dokumen Laporan">
+                                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                                    Lihat File
+                                                </a>
+                                                <button @click="$refs.fileInput_{{ $laporan->id }}.click()" class="justify-center inline-flex items-center text-amber-600 hover:text-white font-semibold bg-amber-50 hover:bg-amber-600 px-2 py-2 rounded-lg transition-all duration-200 border border-amber-100 text-[11px]" title="Update File Laporan">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                                </button>
+                                            </div>
+                                        @else
+                                            <button @click="$refs.fileInput_{{ $laporan->id }}.click()" class="w-full justify-center inline-flex items-center text-blue-700 font-semibold bg-blue-50 hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-blue-200 hover:border-blue-600 shadow-sm text-xs" :disabled="uploading">
+                                                <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                                <span x-show="!uploading">Upload Dokumen</span>
+                                                <span x-show="uploading" x-text="`Uploading... ${progress}%`"></span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <a href="{{ route('laporan-sisa-bbm.pdf.preview', $laporan->id) }}" target="_blank" class="w-full justify-center inline-flex items-center text-slate-700 font-semibold bg-slate-100 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 border border-slate-200 hover:border-slate-800 shadow-sm text-xs">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        <span>Preview PDF</span>
                                     </a>
-
+                            
                                     <div class="flex gap-2">
-                                        <button wire:click="edit({{ $laporan->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100">
-                                            <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                            <span class="lg:hidden">Edit</span>
+                                        <button wire:click="edit({{ $laporan->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100 text-xs">
+                                            <svg class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <span class="lg:hidden ml-1">Edit</span>
                                         </button>
                                         
-                                        <button wire:click="delete({{ $laporan->id }})" onclick="confirm('Yakin ingin menghapus laporan ini?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100">
-                                            <svg class="w-4 h-4 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            <span class="lg:hidden">Hapus</span>
+                                        <button wire:click="delete({{ $laporan->id }})" onclick="confirm('Yakin ingin menghapus laporan ini beserta filenya?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100 text-xs">
+                                            <svg class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <span class="lg:hidden ml-1">Hapus</span>
                                         </button>
                                     </div>
                                 </div>

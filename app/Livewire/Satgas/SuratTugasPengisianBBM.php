@@ -4,6 +4,8 @@ namespace App\Livewire\Satgas;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads; // Tambahkan trait ini
+use Illuminate\Support\Facades\Storage; // Tambahkan ini
 use App\Models\SuratTugasPengisian;
 use App\Models\Kapal;
 use App\Models\LaporanSisaBbm;
@@ -13,15 +15,16 @@ use Illuminate\Support\Facades\DB;
 
 class SuratTugasPengisianBBM extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     // Properti Form Modal
     public $surat_id, $laporan_pengisian_id, $nomor_surat, $lokasi, $waktu_pelaksanaan, $tanggal_dikeluarkan;
     public $petugasList = [];
     public $isOpen = false;
     
-    // Properti baru untuk menampung list Laporan Sisa BBM
     public $laporanList = [];
+    
+    public $upload_files = [];
 
     // Properti Search, Filter & Sort
     public $search = '';
@@ -38,6 +41,30 @@ class SuratTugasPengisianBBM extends Component
     public function updatingFilterTanggalDari() { $this->resetPage(); }
     public function updatingFilterTanggalSampai() { $this->resetPage(); }
 
+    // Otomatis berjalan ketika user memilih file di tabel
+    public function updatedUploadFiles($value, $key)
+    {
+        $this->validate([
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
+        ]);
+
+        $suratTugas = SuratTugasPengisian::findOrFail($key);
+
+        // Hapus file lama jika ada
+        if ($suratTugas->file_surat_tugas && Storage::disk('public')->exists($suratTugas->file_surat_tugas)) {
+            Storage::disk('public')->delete($suratTugas->file_surat_tugas);
+        }
+
+        // Simpan file baru
+        $path = $value->store('uploads/surat_tugas', 'public');
+        $suratTugas->update(['file_surat_tugas' => $path]);
+
+        // Bersihkan memori file sementara
+        unset($this->upload_files[$key]);
+
+        session()->flash('message', 'Dokumen Surat Tugas berhasil diupload!');
+    }
+
     public function resetFilters()
     {
         $this->search = '';
@@ -52,12 +79,10 @@ class SuratTugasPengisianBBM extends Component
     // Fungsi baru untuk memuat Laporan Sisa BBM yang belum terpakai
     public function loadLaporanList($currentLaporanId = null)
     {
-        // Ambil ID Laporan yang sudah dibuatkan Surat Tugas
         $usedLaporanIds = SuratTugasPengisian::whereNotNull('laporan_sisa_bbm_id')
             ->pluck('laporan_sisa_bbm_id')
             ->toArray();
 
-        // Jika mode Edit, kecualikan laporan saat ini agar tetap muncul di dropdown
         if ($currentLaporanId) {
             $usedLaporanIds = array_diff($usedLaporanIds, [$currentLaporanId]);
         }
@@ -68,7 +93,6 @@ class SuratTugasPengisianBBM extends Component
             $queryLaporan->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
-        // Saring agar Laporan yang sudah terpakai tidak muncul
         if (!empty($usedLaporanIds)) {
             $queryLaporan->whereNotIn('id', $usedLaporanIds);
         }
@@ -92,7 +116,6 @@ class SuratTugasPengisianBBM extends Component
                       $p->where('nama_petugas', 'like', '%' . $this->search . '%'); 
                   })
                   ->orWhereHas('LaporanSisaBbm', function($l) {
-                      // PERBAIKAN DI SINI: keterangan dan nama_kapal dimasukkan ke dalam relasi sounding
                       $l->whereHas('sounding', function($s) {
                           $s->where('keterangan', 'like', '%' . $this->search . '%')
                             ->orWhereHas('kapal', function($k) {
@@ -297,7 +320,13 @@ class SuratTugasPengisianBBM extends Component
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
-        $query->findOrFail($id)->delete();
+        $suratTugas = $query->findOrFail($id);
+        
+        if ($suratTugas->file_surat_tugas && Storage::disk('public')->exists($suratTugas->file_surat_tugas)) {
+            Storage::disk('public')->delete($suratTugas->file_surat_tugas);
+        }
+
+        $suratTugas->delete();
         
         session()->flash('message', 'Surat Tugas dihapus.');
     }

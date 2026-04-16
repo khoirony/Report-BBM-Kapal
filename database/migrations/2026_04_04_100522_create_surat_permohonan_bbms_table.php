@@ -36,6 +36,7 @@ return new class extends Migration
             ])->nullable();
             $table->string('jenis_bbm')->nullable();
             $table->decimal('jumlah_bbm', 10, 2)->nullable()->comment('Dalam satuan liter');
+            $table->string('file_surat_permohonan')->nullable()->comment('Path penyimpanan file surat permohonan');
             $table->integer('user_id')->nullable();
             $table->enum('progress', ['not started', 'on progress', 'done'])->default('not started');
             $table->unsignedBigInteger('disetujui_pptk_by')->nullable();

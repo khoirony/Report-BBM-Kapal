@@ -363,8 +363,24 @@
 
                             <div class="col-span-1 sm:col-span-2">
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Keterangan / Titik Sounding <span class="text-rose-500">*</span></label>
-                                <textarea wire:model="keterangan" rows="3" placeholder="Contoh: Pengisian di Pom Bensin Dermaga A..." class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors resize-y" required></textarea>
-                                @error('keterangan') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                
+                                <select wire:model.live="keterangan_pilihan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors cursor-pointer" required>
+                                    <option value="">-- Pilih Keterangan --</option>
+                                    <option value="sebelum isi BBM">Sebelum isi BBM</option>
+                                    <option value="setelah isi BBM">Setelah isi BBM</option>
+                                    <option value="setelah berlayar/sampai di Pelabuhan">Setelah berlayar/sampai di Pelabuhan</option>
+                                    <option value="sebelum berangkat/dari Pelabuhan">Sebelum berangkat/dari Pelabuhan</option>
+                                    <option value="other">Lainnya (Isi Manual)</option>
+                                </select>
+                                @error('keterangan_pilihan') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                
+                                @if($keterangan_pilihan === 'other')
+                                    <div class="mt-3 animate-fade-in-up">
+                                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Keterangan Manual <span class="text-rose-500">*</span></label>
+                                        <textarea wire:model="keterangan" rows="2" placeholder="Tuliskan keterangan detail di sini..." class="px-4 py-2.5 bg-white border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors resize-y"></textarea>
+                                        @error('keterangan') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                    </div>
+                                @endif
                             </div>
 
                         </div>

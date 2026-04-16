@@ -8,10 +8,12 @@ use App\Models\Sounding;
 use App\Models\Ukpd; 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads; // Tambahkan ini
+use Illuminate\Support\Facades\Storage; // Tambahkan ini
 
 class LaporanSisaBBM extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads; // Gunakan trait di sini
 
     // Filter & Search
     public $search = '';
@@ -21,9 +23,12 @@ class LaporanSisaBBM extends Component
     public $filterTanggalDari = '';
     public $filterTanggalSampai = '';
 
-    // Form Properties (Ditambahkan id_nakhoda dan id_pengawas)
+    // Form Properties
     public $laporan_id, $nomor, $kapal_id, $sounding_id, $tanggal_surat, $klasifikasi, $lampiran, $perihal, $nama_nakhoda, $id_nakhoda, $nama_pengawas, $id_pengawas;
     
+    // Property untuk menampung file upload inline di tabel
+    public $upload_files = [];
+
     public $available_soundings = [];
     public $isOpen = false;
 
@@ -32,6 +37,30 @@ class LaporanSisaBBM extends Component
     public function updatingFilterUkpd() { $this->resetPage(); } 
     public function updatingFilterTanggalDari() { $this->resetPage(); }
     public function updatingFilterTanggalSampai() { $this->resetPage(); }
+
+    // Otomatis berjalan ketika user memilih file di tabel
+    public function updatedUploadFiles($value, $key)
+    {
+        $this->validate([
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
+        ]);
+
+        $laporan = SisaBBM::findOrFail($key);
+
+        // Hapus file lama jika ada (opsional, agar storage tidak penuh)
+        if ($laporan->file_laporan && Storage::disk('public')->exists($laporan->file_laporan)) {
+            Storage::disk('public')->delete($laporan->file_laporan);
+        }
+
+        // Simpan file baru
+        $path = $value->store('uploads/laporan_sisa_bbm', 'public');
+        $laporan->update(['file_laporan' => $path]);
+
+        // Bersihkan memori file sementara
+        unset($this->upload_files[$key]);
+
+        session()->flash('message', 'Dokumen Laporan berhasil diupload!');
+    }
 
     public function render()
     {
@@ -204,7 +233,14 @@ class LaporanSisaBBM extends Component
 
     public function delete($id)
     {
-        SisaBBM::find($id)->delete();
+        $laporan = SisaBBM::findOrFail($id);
+        
+        // Hapus file fisik jika ada sebelum menghapus data
+        if ($laporan->file_laporan && Storage::disk('public')->exists($laporan->file_laporan)) {
+            Storage::disk('public')->delete($laporan->file_laporan);
+        }
+        
+        $laporan->delete();
         session()->flash('message', 'Laporan berhasil dihapus.');
     }
 }

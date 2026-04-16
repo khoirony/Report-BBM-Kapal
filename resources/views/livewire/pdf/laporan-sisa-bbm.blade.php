@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Laporan Sisa BBM - {{ $laporan->sounding->kapal->nama_kapal ?? '-' }}</title>
     <style>
-        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.2; color: black; margin: 0; padding: 10px 20px; }
+        body { font-family: 'Arial'; font-size: 12pt; line-height: 1.2; color: black; margin: 0; padding: 10px 20px; }
         .text-center { text-align: center; }
         .text-justify { text-align: justify; }
         .font-bold { font-weight: bold; }
@@ -15,7 +15,7 @@
         .logo-container { width: 12%; text-align: center; vertical-align: middle; }
         .logo-container img { width: 75px; height: auto; }
         .kop-text { width: 88%; text-align: center; vertical-align: middle; }
-        .instansi-utama { font-size: 14pt; margin: 0; font-weight: bold; }
+        .instansi-utama { font-size: 13pt; margin: 0; font-weight: bold; }
 
         /* Header Utama (Mencegah Gap) */
         .main-header { width: 100%; margin-bottom: 10px; }
@@ -46,16 +46,16 @@
     <table class="kop-table">
         <tr>
             <td class="logo-container">
-                <img src="{{ public_path('img/logo-jaya-raya.jpg') }}" alt="Logo">
+                <img src="{{ public_path('img/logo-jaya-raya.jpg') }}" style="height: 120px; width: 100px; object-fit: contain;" alt="Logo">
             </td>
             <td class="kop-text">
                 <div class="instansi-utama">PEMERINTAH PROVINSI DAERAH KHUSUS IBUKOTA JAKARTA</div>
                 <div class="instansi-utama">DINAS PERHUBUNGAN</div>
-                <div class="instansi-utama">
+                <div style="font-size: 16pt; margin: 0; font-weight: bold;">
                     {{ strtoupper($laporan?->ukpd?->nama ?? ($laporan?->sounding?->kapal?->ukpd?->nama ?? '')) }}
                 </div>
                 
-                <p style="font-size: 10pt; margin: 5px 0 0 0; line-height: 1.2;">
+                <p style="font-size: 11pt; margin: 5px 0 0 0; line-height: 1.2;">
                     {{ $laporan?->ukpd?->alamat ?? ($laporan?->sounding?->kapal?->ukpd?->alamat ?? '') }}<br>
                     Website: www.dishub.jakarta.go.id &nbsp;&nbsp;&nbsp; E-mail : {{ $laporan?->ukpd?->email ?? ($laporan?->sounding?->kapal?->ukpd?->email ?? '') }}
                 </p>
@@ -64,8 +64,10 @@
                     <tr>
                         <td style="text-align: center; padding-left: 50px;">
                             <span style="letter-spacing: 3px; font-size: 10pt;">JAKARTA</span>
+                            <br>
                         </td>
                         <td style="text-align: right; width: 100px;">
+                            <br>
                             Kode Pos : {{ $laporan?->ukpd?->kode_pos ?? ($laporan?->sounding?->kapal?->ukpd?->kode_pos ?? '') }}
                         </td>
                     </tr>
@@ -101,19 +103,24 @@
             <td style="width: 45%;">
                 <table class="sub-header-right">
                     <tr>
-                        <td style="width: 25%;">Jakarta,</td>
+                        <td style="width: 25%; padding-left: 30px">Jakarta,</td>
                         <td>{{ $laporan->tanggal_surat ? \Carbon\Carbon::parse($laporan->tanggal_surat)->translatedFormat('d F Y') : '........................' }}</td>
                     </tr>
                     <tr>
-                        <td colspan="2" style="padding-top: 10px;">Kepada</td>
+                        <td colspan="2" style="padding-top: 10px; padding-left: 30px">Kepada</td>
                     </tr>
                     <tr>
-                        <td colspan="2">
+                        <td>
+                            Yth.
+                        </td>
+                        <td style="width:90%">
                             Pejabat Pelaksana Teknis Kegiatan<br>
                             BBM Kapal {{ $laporan?->ukpd?->nama ?? ($laporan?->sounding?->kapal?->ukpd?->nama ?? '') }}<br>
                             Dinas Perhubungan Provinsi DKI<br>
                             di<br>
-                            Jakarta
+                            <span style="margin-left: 30px">
+                                Jakarta
+                            </span>
                         </td>
                     </tr>
                 </table>

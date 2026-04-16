@@ -4,6 +4,8 @@ namespace App\Livewire\Satgas;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads; // Tambahkan ini
+use Illuminate\Support\Facades\Storage; // Tambahkan ini
 use App\Models\SuratPermohonanPengisian;
 use App\Models\SuratTugasPengisian;
 use App\Models\Kapal;
@@ -13,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class SuratPermohonanPengisianBBM extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads; // Gunakan trait di sini
 
     public $surat_tugas_list, $kapals;
     public $permohonan_id, $surat_tugas_id, $nomor_surat, $tanggal_surat, $klasifikasi, $lampiran;
@@ -23,6 +25,9 @@ class SuratPermohonanPengisianBBM extends Component
     // Properti Khusus "Lainnya"
     public $jenis_penyedia_bbm_lainnya = '';
     public $jenis_bbm_lainnya = '';
+
+    // Property untuk menampung file upload inline di tabel
+    public $upload_files = [];
 
     // Kontrol Modal
     public $isModalOpen = false;
@@ -88,6 +93,30 @@ class SuratPermohonanPengisianBBM extends Component
                 $this->tempat_pengambilan_bbm = $suratTugas->lokasi;
             }
         }
+    }
+
+    // Otomatis berjalan ketika user memilih file di tabel
+    public function updatedUploadFiles($value, $key)
+    {
+        $this->validate([
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
+        ]);
+
+        $permohonan = SuratPermohonanPengisian::findOrFail($key);
+
+        // Hapus file lama jika ada
+        if ($permohonan->file_surat_permohonan && Storage::disk('public')->exists($permohonan->file_surat_permohonan)) {
+            Storage::disk('public')->delete($permohonan->file_surat_permohonan);
+        }
+
+        // Simpan file baru
+        $path = $value->store('uploads/surat_permohonan', 'public');
+        $permohonan->update(['file_surat_permohonan' => $path]);
+
+        // Bersihkan memori file sementara
+        unset($this->upload_files[$key]);
+
+        session()->flash('message', 'Dokumen Surat Permohonan berhasil diupload!');
     }
 
     public function render()
@@ -269,7 +298,14 @@ class SuratPermohonanPengisianBBM extends Component
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
         }
         
-        $query->findOrFail($id)->delete();
+        $permohonan = $query->findOrFail($id);
+        
+        // Hapus file fisik jika ada
+        if ($permohonan->file_surat_permohonan && Storage::disk('public')->exists($permohonan->file_surat_permohonan)) {
+            Storage::disk('public')->delete($permohonan->file_surat_permohonan);
+        }
+
+        $permohonan->delete();
         session()->flash('message', 'Surat Permohonan Berhasil Dihapus.');
     }
 

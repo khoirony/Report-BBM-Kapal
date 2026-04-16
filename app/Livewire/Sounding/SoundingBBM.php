@@ -13,8 +13,8 @@ class SoundingBBM extends Component
 {
     use WithPagination;
 
-    // Properti Form Modal
-    public $sounding_id, $kapal_id, $keterangan, $tanggal_sounding, $bbm_awal, $pengisian, $pemakaian, $bbm_akhir, $jam_berangkat, $jam_kembali;
+    // Tambahkan properti $keterangan_pilihan
+    public $sounding_id, $kapal_id, $keterangan_pilihan, $keterangan, $tanggal_sounding, $bbm_awal, $pengisian, $pemakaian, $bbm_akhir, $jam_berangkat, $jam_kembali;
     public $isModalOpen = false;
 
     // Properti Search, Filter, & Sort
@@ -25,6 +25,14 @@ class SoundingBBM extends Component
     public $filterUkpd = ''; 
     public $filterTanggalAwal = '';
     public $filterTanggalAkhir = '';
+
+    // Array opsi standar
+    private $opsi_keterangan = [
+        'sebelum isi BBM',
+        'setelah isi BBM',
+        'setelah berlayar/sampai di Pelabuhan',
+        'sebelum berangkat/dari Pelabuhan',
+    ];
 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingSortBy() { $this->resetPage(); }
@@ -59,7 +67,6 @@ class SoundingBBM extends Component
             });
         }
 
-        // 1. Fitur Search
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('keterangan', 'like', '%' . $this->search . '%')
@@ -73,7 +80,6 @@ class SoundingBBM extends Component
             });
         }
 
-        // 2. Fitur Filter
         if ($this->filterKapal) {
             $query->where('kapal_id', $this->filterKapal);
         }
@@ -135,6 +141,7 @@ class SoundingBBM extends Component
     {
         $this->sounding_id = '';
         $this->kapal_id = '';
+        $this->keterangan_pilihan = ''; // Tambahan reset
         $this->keterangan = '';
         $this->tanggal_sounding = '';
         $this->bbm_awal = 0;
@@ -147,22 +154,32 @@ class SoundingBBM extends Component
 
     public function store()
     {
-        $this->validate([
+        // Validasi dasar
+        $rules = [
             'kapal_id' => 'required',
-            'keterangan' => 'required|string|max:255',
+            'keterangan_pilihan' => 'required|string',
             'tanggal_sounding' => 'required|date',
             'bbm_awal' => 'required|numeric',
             'pengisian' => 'required|numeric',
             'pemakaian' => 'required|numeric',
             'jam_berangkat' => 'required',
             'jam_kembali' => 'required',
-        ]);
+        ];
 
+        // Tambahkan validasi manual jika "other" dipilih
+        if ($this->keterangan_pilihan === 'other') {
+            $rules['keterangan'] = 'required|string|max:255';
+        }
+
+        $this->validate($rules);
+
+        // Tentukan hasil final untuk disimpan ke database
+        $finalKeterangan = $this->keterangan_pilihan === 'other' ? $this->keterangan : $this->keterangan_pilihan;
         $bbm_akhir_calc = (float)$this->bbm_awal + (float)$this->pengisian - (float)$this->pemakaian;
 
         $data = [
             'kapal_id' => $this->kapal_id,
-            'keterangan' => $this->keterangan,
+            'keterangan' => $finalKeterangan,
             'tanggal_sounding' => $this->tanggal_sounding,
             'bbm_awal' => $this->bbm_awal,
             'pengisian' => $this->pengisian,
@@ -198,7 +215,6 @@ class SoundingBBM extends Component
         
         $this->sounding_id = $id;
         $this->kapal_id = $sounding->kapal_id;
-        $this->keterangan = $sounding->keterangan;
         $this->tanggal_sounding = $sounding->tanggal_sounding;
         $this->bbm_awal = $sounding->bbm_awal;
         $this->pengisian = $sounding->pengisian;
@@ -206,6 +222,15 @@ class SoundingBBM extends Component
         $this->bbm_akhir = $sounding->bbm_akhir;
         $this->jam_berangkat = $sounding->jam_berangkat;
         $this->jam_kembali = $sounding->jam_kembali;
+
+        // Cek apakah keterangan dari database ada di daftar standar
+        if (in_array($sounding->keterangan, $this->opsi_keterangan)) {
+            $this->keterangan_pilihan = $sounding->keterangan;
+            $this->keterangan = '';
+        } else {
+            $this->keterangan_pilihan = 'other';
+            $this->keterangan = $sounding->keterangan;
+        }
     
         $this->openModal();
     }
