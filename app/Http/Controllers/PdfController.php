@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BaPengisianBbm;
+use App\Models\LaporanPengisianBbm;
 use Illuminate\Http\Request;
 use App\Models\LaporanSebelumPengisian;
 use App\Models\LaporanSisaBbm;
@@ -28,7 +29,28 @@ class PdfController extends Controller
         // Atur ukuran kertas ke A4 (Portrait)
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Berita_Acara_' . str_replace(' ', '_', $laporan->kapal->nama_kapal ?? 'Kapal') . '_' . $laporan->tgl_ba . '.pdf';
+        $namaFile = 'Berita_Acara_' . $laporan->tgl_ba . '.pdf';
+
+        // Gunakan stream() untuk menampilkan preview di browser, bukan download()
+        return $pdf->stream($namaFile);
+    }
+
+    public function previewLaporanPengisian($id)
+    {
+        // Ambil data laporan beserta relasinya (Sama seperti logika di Livewire sebelumnya)
+        $laporan = LaporanPengisianBbm::with([
+            'suratPermohonan', 
+            'suratTugas.petugas',
+            'suratTugas.LaporanSisaBbm.sounding.kapal'
+        ])->findOrFail($id);
+
+        // Render view PDF
+        $pdf = Pdf::loadView('pdf.laporan-pengisian', ['laporan' => $laporan]);
+
+        // Atur ukuran kertas ke A4 (Portrait)
+        $pdf->setPaper('A4', 'portrait');
+
+        $namaFile = 'Laporan_Pengisian_' . $laporan->tanggal . '.pdf';
 
         // Gunakan stream() untuk menampilkan preview di browser, bukan download()
         return $pdf->stream($namaFile);
@@ -41,8 +63,7 @@ class PdfController extends Controller
         $pdf = Pdf::loadView('pdf.surat-tugas-pengisian-bbm', ['surat' => $surat]);
         $pdf->setPaper('A4', 'portrait');
 
-        $namaKapal = $surat->laporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal';
-        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $namaKapal) . '.pdf';
+        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $surat->tanggal_dikeluarkan) . '.pdf';
 
         return $pdf->stream($namaFile);
     }
@@ -54,8 +75,7 @@ class PdfController extends Controller
         $pdf = Pdf::loadView('pdf.surat-permohonan-pengisian-bbm', ['surat' => $surat]);
         $pdf->setPaper('A4', 'portrait');
 
-        $namaKapal = $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal';
-        $namaFile = 'Surat_Permohonan_BBM_' . str_replace(' ', '_', $namaKapal) . '.pdf';
+        $namaFile = 'Surat_Permohonan_BBM_' . str_replace(' ', '_', $surat->tanggal_surat) . '.pdf';
 
         return $pdf->stream($namaFile);
     }

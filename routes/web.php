@@ -131,6 +131,7 @@ Route::middleware('auth')->group(function () {
         // --- CETAK PDF ---
         Route::get('/laporan-sisa-bbm/{id}/pdf', [PdfController::class, 'previewLaporanSisaBbm'])->name('laporan-sisa-bbm.pdf.preview');
         Route::get('/berita-acara-laporan-pengisian/{id}/pdf', [PdfController::class, 'previewBeritaAcaraLaporanPengisian'])->name('berita-acara.pdf.preview');
+        Route::get('/laporan-pengisian/{id}/pdf', [PdfController::class, 'previewLaporanPengisian'])->name('laporan-pengisian.pdf.preview');
         Route::get('/surat-tugas/{id}/pdf', [PdfController::class, 'previewSuratTugas'])->name('surattugas.pdf.preview');
         Route::get('/surat-permohonan/{id}/pdf', [PdfController::class, 'previewSuratPermohonan'])->name('suratpermohonan.pdf.preview');
     });

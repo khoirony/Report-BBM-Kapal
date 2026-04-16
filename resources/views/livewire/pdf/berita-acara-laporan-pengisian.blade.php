@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan BBM {{ $laporan->kapal->nama_kapal }}</title>
+    <title>Berita Acara Laporan Pengisian {{ $laporan->kapal->nama_kapal }}</title>
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.3; color: black; margin: 0; padding: 10px 20px;">
 
