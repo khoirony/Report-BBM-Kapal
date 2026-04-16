@@ -129,6 +129,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/tagihan-invoice', InvoiceManager::class)->middleware('role:superadmin,penyedia')->name('penyedia.invoice-tagihan');
 
         // --- CETAK PDF ---
+        Route::get('/spj/{id}/pdf', [PdfController::class, 'previewSpj'])->name('spj.pdf.preview');
         Route::get('/laporan-sisa-bbm/{id}/pdf', [PdfController::class, 'previewLaporanSisaBbm'])->name('laporan-sisa-bbm.pdf.preview');
         Route::get('/berita-acara-laporan-pengisian/{id}/pdf', [PdfController::class, 'previewBeritaAcaraLaporanPengisian'])->name('berita-acara.pdf.preview');
         Route::get('/laporan-pengisian/{id}/pdf', [PdfController::class, 'previewLaporanPengisian'])->name('laporan-pengisian.pdf.preview');

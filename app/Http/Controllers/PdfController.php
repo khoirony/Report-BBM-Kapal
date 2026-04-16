@@ -7,16 +7,36 @@ use App\Models\LaporanPengisianBbm;
 use Illuminate\Http\Request;
 use App\Models\LaporanSebelumPengisian;
 use App\Models\LaporanSisaBbm;
+use App\Models\Spj;
 use App\Models\SuratPermohonanPengisian;
 use App\Models\SuratTugasPengisian;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PdfController extends Controller
 {
+    public function previewSpj($id)
+    {
+        // Ambil data laporan beserta relasinya (Sama seperti logika di Livewire sebelumnya)
+        $spj = Spj::with([
+            'kapal.ukpd', 
+        ])->findOrFail($id);
+
+        // Render view PDF
+        $pdf = Pdf::loadView('pdf.spj', ['spj' => $spj]);
+
+        // Atur ukuran kertas ke A4 (Portrait)
+        $pdf->setPaper('A4', 'portrait');
+
+        $namaFile = 'Spj_' . $spj->created_at . '.pdf';
+
+        // Gunakan stream() untuk menampilkan preview di browser, bukan download()
+        return $pdf->stream($namaFile);
+    }
+
     public function previewBeritaAcaraLaporanPengisian($id)
     {
         // Ambil data laporan beserta relasinya (Sama seperti logika di Livewire sebelumnya)
-        $laporan = BaPengisianBbm::with([
+        $beritaAcara = BaPengisianBbm::with([
             'kapal.ukpd', 
             'laporanPengisian.suratPermohonan', 
             'laporanPengisian.suratTugas.petugas',
@@ -24,12 +44,12 @@ class PdfController extends Controller
         ])->findOrFail($id);
 
         // Render view PDF
-        $pdf = Pdf::loadView('pdf.berita-acara-laporan-pengisian', ['laporan' => $laporan]);
+        $pdf = Pdf::loadView('pdf.berita-acara-laporan-pengisian', ['laporan' => $beritaAcara]);
 
         // Atur ukuran kertas ke A4 (Portrait)
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Berita_Acara_' . $laporan->tgl_ba . '.pdf';
+        $namaFile = 'Berita_Acara_' . $beritaAcara->created_at . '.pdf';
 
         // Gunakan stream() untuk menampilkan preview di browser, bukan download()
         return $pdf->stream($namaFile);
@@ -50,7 +70,7 @@ class PdfController extends Controller
         // Atur ukuran kertas ke A4 (Portrait)
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Laporan_Pengisian_' . $laporan->tanggal . '.pdf';
+        $namaFile = 'Laporan_Pengisian_' . $laporan->created_at . '.pdf';
 
         // Gunakan stream() untuk menampilkan preview di browser, bukan download()
         return $pdf->stream($namaFile);
@@ -63,7 +83,7 @@ class PdfController extends Controller
         $pdf = Pdf::loadView('pdf.surat-tugas-pengisian-bbm', ['surat' => $surat]);
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $surat->tanggal_surat) . '.pdf';
+        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $surat->created_at) . '.pdf';
 
         return $pdf->stream($namaFile);
     }
@@ -75,7 +95,7 @@ class PdfController extends Controller
         $pdf = Pdf::loadView('pdf.surat-permohonan-pengisian-bbm', ['surat' => $surat]);
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Surat_Permohonan_BBM_' . str_replace(' ', '_', $surat->tanggal_surat) . '.pdf';
+        $namaFile = 'Surat_Permohonan_BBM_' . str_replace(' ', '_', $surat->created_at) . '.pdf';
 
         return $pdf->stream($namaFile);
     }

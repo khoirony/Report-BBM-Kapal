@@ -18,6 +18,9 @@ return new class extends Migration
                   ->onDelete('cascade');
                   
             $table->date('tanggal_spj');
+            
+            $table->unsignedBigInteger('total_biaya')->default(0);
+            
             $table->string('file_spj'); // Menyimpan path file PDF/dokumen SPJ
             
             // Status persetujuan bertingkat

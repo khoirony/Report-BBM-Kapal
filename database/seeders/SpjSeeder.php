@@ -31,8 +31,8 @@ class SpjSeeder extends Seeder
                     'nomor_spj'   => 'SPJ/001/BBM/2026',
                     'kapal_id'    => $kapal->id,
                     'tanggal_spj' => Carbon::now()->subDays(5)->format('Y-m-d'),
+                    'total_biaya' => 7500000,
                     'file_spj'    => 'uploads/spj/dummy_spj_1.pdf',
-                    // Status persetujuan: Menunggu PPTK
                     'disetujui_pptk_by'        => null,
                     'disetujui_pptk_at'        => null,
                     'disetujui_kepala_ukpd_by' => null,
@@ -44,9 +44,9 @@ class SpjSeeder extends Seeder
                     'nomor_spj'   => 'SPJ/002/BBM/2026',
                     'kapal_id'    => $kapal->id,
                     'tanggal_spj' => Carbon::now()->subDays(2)->format('Y-m-d'),
+                    'total_biaya' => 12450000,
                     'file_spj'    => 'uploads/spj/dummy_spj_2.pdf',
-                    // Status persetujuan: Sudah disetujui PPTK, Menunggu Kepala UKPD
-                    'disetujui_pptk_by'        => $pptk ? $pptk->id : $satgas->id, // Fallback jika tidak ada user pptk
+                    'disetujui_pptk_by'        => $pptk ? $pptk->id : $satgas->id,
                     'disetujui_pptk_at'        => Carbon::now()->subDay(),
                     'disetujui_kepala_ukpd_by' => null,
                     'disetujui_kepala_ukpd_at' => null,
