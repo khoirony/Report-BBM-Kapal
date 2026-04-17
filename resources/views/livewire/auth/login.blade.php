@@ -43,7 +43,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
-                        <input wire:model.blur="login" type="text" required placeholder="admin@dishub.go.id, username, atau NIP"
+                        <input wire:model.blur="login" type="text" required placeholder="example@dishub.go.id"
                                class="block w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm transition duration-200 outline-none shadow-sm">
                     </div>
                     @error('login') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
