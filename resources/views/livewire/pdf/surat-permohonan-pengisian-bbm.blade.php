@@ -126,7 +126,7 @@
     </table>
 
     <div style="margin-top: 10px;">
-        <p style="margin: 0 0 10px 0;">Adapun kebutuhan Bahan Bakar Minyak (BBM) yang di gunakan untuk Kapal tersebut jenis <strong style="font-weight: bold;">{{ $surat->jenis_bbm ?? 'Pertamax / Dexlite' }}</strong> dengan jumlah kebutuhan <strong style="font-weight: bold;">{{ number_format($surat->jumlah_bbm, 0, ',', '.') ?? '..........' }}</strong> Liter</p>
+        <p style="margin: 0 0 10px 0;">Adapun kebutuhan Bahan Bakar Minyak (BBM) yang di gunakan untuk Kapal tersebut jenis {{ $surat->jenis_bbm ?? 'Pertamax / Dexlite' }} dengan jumlah kebutuhan {{ number_format($surat->jumlah_bbm, 0, ',', '.') ?? '..........' }} Liter</p>
         
         <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
             <tr>
@@ -183,12 +183,13 @@
     <div style="margin-top: 80px;">
         <table style="width: 100%; border: none; border-collapse: collapse;">
             <tr>
-                <td style="width: 50%; vertical-align: top; text-align: center;">
-                    (.........................................)
+                <td style="width: 50%; vertical-align: top; text-align: center; line-height: 1.5;">
+                    <span style="text-decoration: underline;">{{ $surat->nama_nakhoda ?? '' }}</span><br>
+                    ID. {{ $surat->id_nakhoda ?: '..........................................' }}
                 </td>
-                <td style="width: 50%; vertical-align: top; text-align: center;">
-                    <span style="font-weight: bold; text-decoration: underline;">{{ $surat->nama_pejabat_ttd ?? 'Suparto Napitu, ST, MM.' }}</span><br>
-                    NIP. {{ $surat->nip_pejabat_ttd ?? '197602142010011014' }}
+                <td style="width: 50%; vertical-align: top; text-align: center;  line-height: 1.5;">
+                    <span style="text-decoration: underline;">{{ $surat->nama_pptk ?? '' }}</span><br>
+                    NIP. {{ $surat->id_pptk ?: '..........................................' }}
                 </td>
             </tr>
         </table>

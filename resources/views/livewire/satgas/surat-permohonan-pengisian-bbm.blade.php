@@ -114,10 +114,11 @@
                 <table class="w-full text-sm text-left text-gray-600 block md:table">
                     <thead class="hidden md:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
                         <tr>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Nomor & Tanggal</th>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Kapal & Surat Tugas</th>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Rincian Penyedia BBM</th>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider text-right w-1/4">Aksi</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Nomor & Tanggal</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Kapal & Surat Tugas</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Rincian Penyedia BBM</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Penanggung Jawab</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider text-right w-1/5">Aksi</th>
                         </tr>
                     </thead>
                     
@@ -211,6 +212,26 @@
                                     </div>
                                 </td>
 
+                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
+                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Penanggung Jawab</span>
+                                    
+                                    <div class="mb-2">
+                                        <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider block mb-0.5">Nakhoda</span>
+                                        <div class="font-bold text-slate-800 text-xs truncate">{{ $item->nama_nakhoda ?? 'Belum diisi' }}</div>
+                                        @if($item->id_nakhoda)
+                                            <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">NIP: {{ $item->id_nakhoda }}</div>
+                                        @endif
+                                    </div>
+
+                                    <div>
+                                        <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider block mb-0.5">PPTK</span>
+                                        <div class="font-bold text-slate-800 text-xs truncate">{{ $item->nama_pptk ?? 'Belum diisi' }}</div>
+                                        @if($item->id_pptk)
+                                            <div class="text-[10px] text-emerald-600 font-semibold mt-0.5">NIP: {{ $item->id_pptk }}</div>
+                                        @endif
+                                    </div>
+                                </td>
+
                                 <td class="flex justify-end md:table-cell px-4 py-4 md:px-6 md:py-5 md:text-right align-middle">
                                     <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto">
                                 
@@ -280,7 +301,7 @@
                             </tr>
                         @empty
                         <tr class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none border border-gray-100 md:border-none">
-                            <td colspan="4" class="block md:table-cell px-6 py-16 text-center text-gray-500">
+                            <td colspan="5" class="block md:table-cell px-6 py-16 text-center text-gray-500">
                                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
                                     <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                 </div>
@@ -430,8 +451,89 @@
                                     @error('jumlah_bbm') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                                 </div>
                             </div>
-
                         </div>
+
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 border-b border-slate-100 pb-2 mt-6">Penanggung Jawab</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <div x-data="{
+                                users: {{ json_encode($nakhoda_users ?? []) }},
+                                selectedUser: '',
+                                fillData() {
+                                    if (this.selectedUser) {
+                                        let u = this.users.find(u => u.id == this.selectedUser);
+                                        if (u) {
+                                            $wire.nama_nakhoda = u.name;
+                                            $wire.id_nakhoda = u.nip || '';
+                                        }
+                                    }
+                                }
+                            }" class="space-y-4 bg-white/50 p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <label class="block text-sm font-bold text-indigo-700 mb-1.5">Pilih Data Nakhoda</label>
+                                    <select x-model="selectedUser" @change="fillData()" class="px-4 py-2.5 bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 rounded-xl block w-full cursor-pointer focus:ring-2 focus:ring-indigo-500">
+                                        <option value="">-- Cari di Master User Nakhoda --</option>
+                                        <template x-for="u in users" :key="u.id">
+                                            <option :value="u.id" x-text="u.name + (u.nip ? ' - ' + u.nip : '')"></option>
+                                        </template>
+                                    </select>
+                                    <p class="text-[10px] text-slate-500 mt-1.5">Otomatis mengisi form, atau ketik manual jika data tidak ada.</p>
+                                </div>
+
+                                <div class="space-y-4 pt-3 border-t border-slate-100">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Nakhoda <span class="text-rose-500">*</span></label>
+                                        <input type="text" wire:model="nama_nakhoda" placeholder="Nama Lengkap Nakhoda..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
+                                        @error('nama_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK Nakhoda</label>
+                                        <input type="text" wire:model="id_nakhoda" placeholder="Contoh: 19800101..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
+                                        @error('id_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div x-data="{
+                                users: {{ json_encode($pptk_users ?? []) }},
+                                selectedUser: '',
+                                fillData() {
+                                    if (this.selectedUser) {
+                                        let u = this.users.find(u => u.id == this.selectedUser);
+                                        if (u) {
+                                            $wire.nama_pptk = u.name;
+                                            $wire.id_pptk = u.nip || '';
+                                        }
+                                    }
+                                }
+                            }" class="space-y-4 bg-white/50 p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <label class="block text-sm font-bold text-indigo-700 mb-1.5">Pilih Data PPTK</label>
+                                    <select x-model="selectedUser" @change="fillData()" class="px-4 py-2.5 bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 rounded-xl block w-full cursor-pointer focus:ring-2 focus:ring-indigo-500">
+                                        <option value="">-- Cari di Master User PPTK --</option>
+                                        <template x-for="u in users" :key="u.id">
+                                            <option :value="u.id" x-text="u.name + (u.nip ? ' - ' + u.nip : '')"></option>
+                                        </template>
+                                    </select>
+                                    <p class="text-[10px] text-slate-500 mt-1.5">Otomatis mengisi form, atau ketik manual jika data tidak ada.</p>
+                                </div>
+
+                                <div class="space-y-4 pt-3 border-t border-slate-100">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama PPTK <span class="text-rose-500">*</span></label>
+                                        <input type="text" wire:model="nama_pptk" placeholder="Nama Lengkap PPTK..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
+                                        @error('nama_pptk') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK PPTK</label>
+                                        <input type="text" wire:model="id_pptk" placeholder="Contoh: 19900202..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
+                                        @error('id_pptk') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
                     </form>
                 </div>
 

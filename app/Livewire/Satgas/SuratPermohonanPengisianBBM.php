@@ -4,8 +4,8 @@ namespace App\Livewire\Satgas;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\WithFileUploads; // Tambahkan ini
-use Illuminate\Support\Facades\Storage; // Tambahkan ini
+use Livewire\WithFileUploads; 
+use Illuminate\Support\Facades\Storage; 
 use App\Models\SuratPermohonanPengisian;
 use App\Models\SuratTugasPengisian;
 use App\Models\Kapal;
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class SuratPermohonanPengisianBBM extends Component
 {
-    use WithPagination, WithFileUploads; // Gunakan trait di sini
+    use WithPagination, WithFileUploads; 
 
     public $surat_tugas_list, $kapals;
     public $permohonan_id, $surat_tugas_id, $nomor_surat, $tanggal_surat, $klasifikasi, $lampiran;
@@ -25,6 +25,8 @@ class SuratPermohonanPengisianBBM extends Component
     // Properti Khusus "Lainnya"
     public $jenis_penyedia_bbm_lainnya = '';
     public $jenis_bbm_lainnya = '';
+
+    public $nama_nakhoda, $id_nakhoda, $nama_pptk, $id_pptk;
 
     // Property untuk menampung file upload inline di tabel
     public $upload_files = [];
@@ -99,7 +101,7 @@ class SuratPermohonanPengisianBBM extends Component
     public function updatedUploadFiles($value, $key)
     {
         $this->validate([
-            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', 
         ]);
 
         $permohonan = SuratPermohonanPengisian::findOrFail($key);
@@ -174,10 +176,20 @@ class SuratPermohonanPengisianBBM extends Component
             $q->where('slug', 'penyedia');
         })->orderBy('name', 'asc')->get();
 
+        $nakhoda_users = User::whereHas('role', function($q) {
+            $q->where('slug', 'nakhoda'); 
+        })->get(['id', 'name', 'nip']); 
+
+        $pptk_users = User::whereHas('role', function($q) {
+            $q->where('slug', 'pptk'); 
+        })->get(['id', 'name', 'nip']);
+
         return view('livewire.satgas.surat-permohonan-pengisian-bbm', [
             'permohonans' => $query->paginate(10),
             'ukpds' => $ukpds,
-            'penyediaList' => $penyediaList
+            'penyediaList' => $penyediaList,
+            'nakhoda_users' => $nakhoda_users,
+            'pptk_users' => $pptk_users
         ])->layout('layouts.app');
     }
 
@@ -210,6 +222,11 @@ class SuratPermohonanPengisianBBM extends Component
         $this->tempat_pengambilan_bbm = $permohonan->tempat_pengambilan_bbm;
         $this->metode_pengiriman = $permohonan->metode_pengiriman;
         $this->jumlah_bbm = $permohonan->jumlah_bbm;
+
+        $this->nama_nakhoda = $permohonan->nama_nakhoda;
+        $this->id_nakhoda = $permohonan->id_nakhoda;
+        $this->nama_pptk = $permohonan->nama_pptk;
+        $this->id_pptk = $permohonan->id_pptk;
         
         $jenisPenyediaStandard = ['Stasiun Pengisian Bahan Bakar Umum (SPBU)', 'Agen BBM'];
         if (in_array($permohonan->jenis_penyedia_bbm, $jenisPenyediaStandard) || empty($permohonan->jenis_penyedia_bbm)) {
@@ -244,6 +261,10 @@ class SuratPermohonanPengisianBBM extends Component
             'tempat_pengambilan_bbm' => 'nullable|string|max:255',
             'metode_pengiriman' => 'nullable|in:Ambil ditempat,Pengiriman Jalur Darat,Pengiriman Jalur Laut',
             'jumlah_bbm' => 'nullable|numeric|min:0',
+            'nama_nakhoda' => 'required|string|max:255',
+            'id_nakhoda' => 'nullable|string|max:255',
+            'nama_pptk' => 'required|string|max:255',
+            'id_pptk' => 'nullable|string|max:255',
         ]);
 
         $suratTugas = SuratTugasPengisian::find($this->surat_tugas_id);
@@ -264,6 +285,10 @@ class SuratPermohonanPengisianBBM extends Component
             'metode_pengiriman' => $this->metode_pengiriman,
             'jenis_bbm' => $finalJenisBbm,
             'jumlah_bbm' => $this->jumlah_bbm ? str_replace(',', '.', $this->jumlah_bbm) : null,
+            'nama_nakhoda' => $this->nama_nakhoda,
+            'id_nakhoda' => $this->id_nakhoda,
+            'nama_pptk' => $this->nama_pptk,
+            'id_pptk' => $this->id_pptk,
         ];
 
         if (!$this->permohonan_id) {
@@ -286,7 +311,8 @@ class SuratPermohonanPengisianBBM extends Component
         $this->reset([
             'permohonan_id', 'surat_tugas_id', 'nomor_surat', 'tanggal_surat', 'klasifikasi', 
             'penyedia_id', 'jenis_penyedia_bbm', 'jenis_penyedia_bbm_lainnya', 
-            'tempat_pengambilan_bbm', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm'
+            'tempat_pengambilan_bbm', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm',
+            'nama_nakhoda', 'id_nakhoda', 'nama_pptk', 'id_pptk'
         ]);
         $this->lampiran = '1 (satu) berkas';
     }

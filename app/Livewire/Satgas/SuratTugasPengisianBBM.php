@@ -10,6 +10,7 @@ use App\Models\SuratTugasPengisian;
 use App\Models\Kapal;
 use App\Models\LaporanSisaBbm;
 use App\Models\Ukpd;
+use App\Models\User; // Tambahkan import User
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -17,13 +18,14 @@ class SuratTugasPengisianBBM extends Component
 {
     use WithPagination, WithFileUploads;
 
-    // 1. Tambahkan $pakaian di sini
     public $surat_id, $laporan_pengisian_id, $nomor_surat, $lokasi, $pakaian, $tanggal_pelaksanaan, $waktu_pelaksanaan, $tanggal_surat;
+    
+    public $nama_kepala_ukpd, $id_kepala_ukpd;
+
     public $petugasList = [];
     public $isOpen = false;
     
     public $laporanList = [];
-    
     public $upload_files = [];
 
     // Properti Search, Filter & Sort
@@ -63,12 +65,7 @@ class SuratTugasPengisianBBM extends Component
 
     public function resetFilters()
     {
-        $this->search = '';
-        $this->filterKapal = '';
-        $this->filterUkpd = '';
-        $this->filterTanggalDari = '';
-        $this->filterTanggalSampai = '';
-        $this->sortBy = 'latest';
+        $this->reset(['search', 'filterKapal', 'filterUkpd', 'filterTanggalDari', 'filterTanggalSampai', 'sortBy']);
         $this->resetPage();
     }
 
@@ -155,10 +152,15 @@ class SuratTugasPengisianBBM extends Component
 
         $ukpds = Ukpd::orderBy('nama', 'asc')->get();
 
+        $kepala_users = User::whereHas('role', function($q) {
+            $q->where('slug', 'kepala_ukpd'); 
+        })->get(['id', 'name', 'nip']);
+
         return view('livewire.satgas.surat-tugas-pengisian-bbm', [
             'surat_tugas' => $surat_tugas,
             'kapals' => $kapals,
-            'ukpds' => $ukpds
+            'ukpds' => $ukpds,
+            'kepala_users' => $kepala_users
         ])->layout('layouts.app');
     }
 
@@ -168,7 +170,6 @@ class SuratTugasPengisianBBM extends Component
         $this->tanggal_pelaksanaan = date('Y-m-d'); 
         $this->waktu_pelaksanaan = '08:00 - Selesai';
         $this->tanggal_surat = date('Y-m-d');
-        // $this->pakaian = 'PDL'; // Opsional: Beri nilai default jika perlu
         
         $this->petugasList = [
             ['nama_petugas' => '', 'jabatan' => 'Nakhoda'],
@@ -177,7 +178,6 @@ class SuratTugasPengisianBBM extends Component
         ];
         
         $this->loadLaporanList();
-        
         $this->openModal();
     }
 
@@ -205,16 +205,19 @@ class SuratTugasPengisianBBM extends Component
         $this->laporan_pengisian_id = '';
         $this->nomor_surat = '';
         $this->lokasi = '';
-        $this->pakaian = ''; // 2. Reset pakaian
+        $this->pakaian = '';
         $this->tanggal_pelaksanaan = ''; 
         $this->waktu_pelaksanaan = '';
         $this->tanggal_surat = '';
+        
+        $this->nama_kepala_ukpd = '';
+        $this->id_kepala_ukpd = '';
+        
         $this->petugasList = [];
     }
 
     public function store()
     {
-        // 3. Validasi pakaian
         $this->validate([
             'laporan_pengisian_id' => 'required',
             'nomor_surat' => 'nullable',
@@ -223,16 +226,18 @@ class SuratTugasPengisianBBM extends Component
             'tanggal_pelaksanaan' => 'required|date', 
             'waktu_pelaksanaan' => 'required',
             'tanggal_surat' => 'required|date',
+            'nama_kepala_ukpd' => 'required|string', // Validasi baru
+            'id_kepala_ukpd' => 'nullable|string',   // Validasi baru
             'petugasList.*.nama_petugas' => 'required',
             'petugasList.*.jabatan' => 'required',
         ],[
             'petugasList.*.nama_petugas.required' => 'Nama petugas wajib diisi.',
             'petugasList.*.jabatan.required' => 'Jabatan petugas wajib diisi.',
+            'nama_kepala_ukpd.required' => 'Nama Kepala UKPD wajib diisi.'
         ]);
 
         $laporanTerkait = LaporanSisaBbm::find($this->laporan_pengisian_id);
 
-        // 4. Masukkan ke array data
         $data = [
             'laporan_sisa_bbm_id' => $this->laporan_pengisian_id,
             'ukpd_id' => $laporanTerkait ? $laporanTerkait->ukpd_id : null,
@@ -242,6 +247,8 @@ class SuratTugasPengisianBBM extends Component
             'tanggal_pelaksanaan' => $this->tanggal_pelaksanaan,
             'waktu_pelaksanaan' => $this->waktu_pelaksanaan,
             'tanggal_surat' => $this->tanggal_surat,
+            'nama_kepala_ukpd' => $this->nama_kepala_ukpd, // Masukkan data baru
+            'id_kepala_ukpd' => $this->id_kepala_ukpd,     // Masukkan data baru
         ];
 
         if (!$this->surat_id) {
@@ -291,10 +298,13 @@ class SuratTugasPengisianBBM extends Component
         $this->laporan_pengisian_id = $surat->laporan_sisa_bbm_id ?? $surat->laporan_pengisian_id; 
         $this->nomor_surat = $surat->nomor_surat;
         $this->lokasi = $surat->lokasi;
-        $this->pakaian = $surat->pakaian; // 5. Tarik data pakaian
+        $this->pakaian = $surat->pakaian;
         $this->tanggal_pelaksanaan = $surat->tanggal_pelaksanaan ? \Carbon\Carbon::parse($surat->tanggal_pelaksanaan)->format('Y-m-d') : '';
         $this->waktu_pelaksanaan = $surat->waktu_pelaksanaan;
         $this->tanggal_surat = \Carbon\Carbon::parse($surat->tanggal_surat)->format('Y-m-d');
+        
+        $this->nama_kepala_ukpd = $surat->nama_kepala_ukpd;
+        $this->id_kepala_ukpd = $surat->id_kepala_ukpd;
         
         $petugasRecords = DB::table('petugas_surat_tugas')
                             ->where('surat_tugas_pengisian_id', $surat->id)

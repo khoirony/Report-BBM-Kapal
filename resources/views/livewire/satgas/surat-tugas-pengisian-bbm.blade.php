@@ -113,8 +113,8 @@
                         <tr>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Nomor & Tanggal</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Armada & Laporan BBM</th>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Giat & Lokasi</th>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6">Personel</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Giat & Lokasi</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">P. Jawab & Personel</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -132,7 +132,7 @@
                                     {{ \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d M Y') }}
                                 </div>
                             </td>
-        
+            
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
                                 <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Armada & Laporan BBM</span>
                                 
@@ -166,7 +166,7 @@
                                     </span>
                                 @endif
                             </td>
-        
+            
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top whitespace-normal">
                                 <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Giat & Lokasi</span>
                                 
@@ -182,7 +182,7 @@
                                         {{ \Carbon\Carbon::parse($surat->tanggal_pelaksanaan)->translatedFormat('d M Y') }}
                                     </div>
                                     @endif
-        
+            
                                     <div class="flex items-center text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100" title="Waktu Pelaksanaan">
                                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         {{ $surat->waktu_pelaksanaan }}
@@ -196,10 +196,23 @@
                                     @endif
                                 </div>
                             </td>
-        
+            
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
-                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Personel Bertugas</span>
+                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">P. Jawab & Personel</span>
                                 
+                                <div class="mb-3">
+                                    <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider block mb-0.5">Kepala UKPD</span>
+                                    @if($surat->nama_kepala_ukpd)
+                                        <div class="font-bold text-slate-800 text-xs truncate leading-tight">{{ $surat->nama_kepala_ukpd }}</div>
+                                        @if($surat->id_kepala_ukpd)
+                                            <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">NIP: {{ $surat->id_kepala_ukpd }}</div>
+                                        @endif
+                                    @else
+                                        <span class="text-xs text-slate-400 italic">Belum diisi</span>
+                                    @endif
+                                </div>
+            
+                                <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider block mb-1">Petugas Bertugas</span>
                                 @if($surat->petugas->count() > 0)
                                     <div x-data="{ open: false }" class="relative inline-block w-full lg:w-auto">
                                         <button type="button" @click="open = !open" @click.outside="open = false" class="w-full lg:w-auto justify-between lg:justify-start inline-flex items-center gap-2 px-3 py-2 lg:py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-100">
@@ -214,7 +227,7 @@
                                             </div>
                                             <svg class="w-3 h-3 text-slate-400 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                         </button>
-        
+            
                                         <div x-show="open" x-transition.opacity.duration.200ms class="absolute z-50 left-0 lg:left-auto lg:right-0 mt-2 w-full lg:w-64 bg-white rounded-xl shadow-xl shadow-slate-200/50 border border-slate-200 p-2" style="display: none;">
                                             <div class="text-[10px] uppercase font-bold text-slate-400 px-2 pb-1.5 mb-1.5 border-b border-slate-100 tracking-wider">Daftar Personel</div>
                                             <div class="max-h-48 overflow-y-auto custom-scrollbar space-y-1">
@@ -233,7 +246,7 @@
                                     </span>
                                 @endif
                             </td>
-        
+            
                             <td class="block lg:table-cell px-2 py-4 lg:px-6 lg:py-5 lg:text-right align-middle">
                                 <div class="flex flex-col gap-2 w-full lg:max-w-[140px] lg:ml-auto mt-2 lg:mt-0">
                                     
@@ -281,7 +294,7 @@
                                     </div>
                                 </div>
                             </td>
-        
+            
                         </tr>
                         @empty
                         <tr class="block lg:table-row">
@@ -302,7 +315,7 @@
 
         @if($isOpen)
         <div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 transition-opacity">
-            <div class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl transform transition-all max-h-[90vh] flex flex-col">
+            <div class="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl transform transition-all max-h-[90vh] flex flex-col">
                 
                 <div class="flex items-center justify-between p-4 sm:p-6 border-b border-slate-100 rounded-t-2xl bg-slate-50/50">
                     <h3 class="text-lg sm:text-xl font-bold text-gray-900">
@@ -313,7 +326,7 @@
 
                 <div class="overflow-y-auto flex-1 p-4 sm:p-6 custom-scrollbar">
                     <form wire:submit.prevent="store" id="form-surat">
-                        <div class="space-y-5">
+                        <div class="space-y-6">
                             
                             <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 space-y-4">
                                 <div>
@@ -363,7 +376,48 @@
                                 </div>
                             </div>
 
-                            <div class="border-t border-slate-100 my-4"></div>
+                            <div class="border-t border-slate-100 my-2"></div>
+
+                            <div x-data="{
+                                users: {{ json_encode($kepala_users ?? []) }},
+                                selectedUser: '',
+                                fillData() {
+                                    if (this.selectedUser) {
+                                        let u = this.users.find(u => u.id == this.selectedUser);
+                                        if (u) {
+                                            $wire.nama_kepala_ukpd = u.name;
+                                            $wire.id_kepala_ukpd = u.nip || '';
+                                        }
+                                    }
+                                }
+                            }" class="space-y-4 bg-white/50 p-4 rounded-xl border border-slate-200">
+                                
+                                <div>
+                                    <label class="block text-sm font-bold text-indigo-700 mb-1.5">Penanggung Jawab (Kepala UKPD)</label>
+                                    <select x-model="selectedUser" @change="fillData()" class="px-4 py-2.5 bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 rounded-xl block w-full cursor-pointer focus:ring-2 focus:ring-indigo-500">
+                                        <option value="">-- Cari di Master User Kepala (Opsional) --</option>
+                                        <template x-for="u in users" :key="u.id">
+                                            <option :value="u.id" x-text="u.name + (u.nip ? ' - ' + u.nip : '')"></option>
+                                        </template>
+                                    </select>
+                                    <p class="text-[10px] text-slate-500 mt-1.5">Pilih untuk isi otomatis, atau ketik manual di bawah jika data belum ada di master user.</p>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-100">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Kepala UKPD <span class="text-rose-500">*</span></label>
+                                        <input type="text" wire:model="nama_kepala_ukpd" placeholder="Masukkan Nama Kepala..." class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl block w-full text-sm" required>
+                                        @error('nama_kepala_ukpd') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK</label>
+                                        <input type="text" wire:model="id_kepala_ukpd" placeholder="Masukkan NIP/NRK..." class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl block w-full text-sm">
+                                        @error('id_kepala_ukpd') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-slate-100 my-2"></div>
 
                             <div>
                                 <div class="flex justify-between items-center mb-3">
@@ -409,7 +463,7 @@
                     </form>
                 </div>
 
-                <div class="flex flex-col sm:flex-row items-center justify-end p-4 sm:p-6 border-t border-slate-100 rounded-b-2xl bg-slate-50/80 gap-3">
+                <div class="flex flex-col sm:flex-row items-center justify-end p-4 sm:p-6 border-t border-slate-100 rounded-b-2xl bg-slate-50/80 gap-3 mt-auto">
                     <button wire:click="closeModal()" type="button" class="w-full sm:w-auto px-5 py-2.5 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold shadow-sm transition-colors order-2 sm:order-1">Batal</button>
                     <button type="submit" form="form-surat" class="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors order-1 sm:order-2">Simpan Surat Tugas</button>
                 </div>
