@@ -275,6 +275,18 @@
                                 @error('email') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">NIP</label>
+                                <input type="text" wire:model="nip" placeholder="Opsional" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all">
+                                @error('nip') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">Username <span class="text-rose-500">*</span></label>
+                                <input type="text" wire:model="username" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all" required>
+                                @error('username') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
                             <div x-data="{ showPassword: false }">
                                 <label class="block text-sm font-semibold text-slate-800 mb-2">Password {!! $modalMode === 'create' ? '<span class="text-rose-500">*</span>' : '' !!}</label>
                                 
@@ -301,7 +313,6 @@
                             <div>
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Role Sistem <span class="text-rose-500">*</span></label>
                                 
-                                {{-- UPDATE: Looping role dinamis dari database untuk dropdown form --}}
                                 <select wire:model="role_id" class="w-full px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer shadow-sm" required>
                                     <option value="">-- Pilih Role --</option>
                                     @foreach($roles as $r)

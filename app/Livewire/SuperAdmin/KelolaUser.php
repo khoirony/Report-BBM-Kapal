@@ -14,8 +14,7 @@ class KelolaUser extends Component
 {
     use WithPagination;
 
-    // Properti Form
-    public $userId, $name, $email, $password, $ukpd_id, $role_id;
+    public $userId, $name, $username, $nip, $email, $password, $ukpd_id, $role_id;
     public $is_verified = true; 
 
     // Properti Filter, Search, Sort
@@ -48,13 +47,15 @@ class KelolaUser extends Component
     public function openModal($mode = 'create', $id = null)
     {
         $this->resetValidation();
-        $this->reset(['userId', 'name', 'email', 'password', 'ukpd_id', 'role_id', 'is_verified']);
+        $this->reset(['userId', 'name', 'username', 'nip', 'email', 'password', 'ukpd_id', 'role_id', 'is_verified']);
         $this->modalMode = $mode;
 
         if ($mode === 'edit' && $id) {
             $user = User::findOrFail($id);
             $this->userId = $user->id;
             $this->name = $user->name;
+            $this->username = $user->username;
+            $this->nip = $user->nip;
             $this->email = $user->email;
             $this->ukpd_id = $user->ukpd_id;
             $this->role_id = $user->role_id;
@@ -77,6 +78,18 @@ class KelolaUser extends Component
     {
         $rules = [
             'name' => 'required|string|max:255',
+            'username' => [
+                'required', 
+                'string', 
+                'max:255', 
+                Rule::unique('users')->ignore($this->userId)
+            ],
+            'nip' => [
+                'nullable', 
+                'string', 
+                'max:255', 
+                Rule::unique('users')->ignore($this->userId)
+            ],
             'email' => [
                 'required', 
                 'email', 
@@ -98,6 +111,8 @@ class KelolaUser extends Component
 
         $data = [
             'name' => $this->name,
+            'username' => $this->username,
+            'nip' => $this->nip,
             'email' => $this->email,
             'role_id' => $this->role_id,
             'ukpd_id' => empty($this->ukpd_id) ? null : $this->ukpd_id, 
@@ -160,7 +175,9 @@ class KelolaUser extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($subQuery) {
                     $subQuery->where('name', 'like', '%' . $this->search . '%')
-                             ->orWhere('email', 'like', '%' . $this->search . '%');
+                             ->orWhere('email', 'like', '%' . $this->search . '%')
+                             ->orWhere('username', 'like', '%' . $this->search . '%')
+                             ->orWhere('nip', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->filterRole, function ($query) {

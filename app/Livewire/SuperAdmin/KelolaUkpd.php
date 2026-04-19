@@ -4,7 +4,7 @@ namespace App\Livewire\SuperAdmin;
 
 use App\Models\User;
 use App\Models\Ukpd;
-use App\Models\Role; // Tambahkan Model Role
+use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -14,20 +14,20 @@ class KelolaUkpd extends Component
     use WithPagination;
 
     // ================= Properti UKPD =================
-    public $ukpd_id, $nama, $singkatan, $alamat, $email, $kode_pos, $user_nip;
+    public $ukpd_id, $nama, $singkatan, $alamat, $email, $kode_pos;
     public $search = '';
     public $isOpen = false;
 
     // ================= Properti User =================
-    // UPDATE: Gunakan user_role_id alih-alih user_role
-    public $user_id, $user_name, $user_email, $user_password, $user_role_id, $user_ukpd_id;
+    // UPDATE: Ditambahkan user_username dan user_nip
+    public $user_id, $user_name, $user_username, $user_nip, $user_email, $user_password, $user_role_id, $user_ukpd_id;
     public $isUserModalOpen = false;
     
     // Properti Filter & Sort User
     public $searchUser = '';
     public $sortByUser = 'created_at';
     public $sortDirectionUser = 'desc';
-    public $filterRoleUser = ''; // Akan menyimpan role_id
+    public $filterRoleUser = ''; 
     public $filterUkpdUser = '';
     public $filterVerifikasiUser = '';
 
@@ -45,21 +45,20 @@ class KelolaUkpd extends Component
             ->orderBy('id', 'desc')
             ->paginate(10, ['*'], 'ukpdPage');
 
-        // Ambil Daftar Role khusus UKPD dari tabel Roles (Sesuaikan kondisi 'name' dengan data di database Anda)
         $rolesList = Role::whereIn('name', ['admin_ukpd', 'kepala_ukpd', 'Admin UKPD', 'Kepala UKPD'])->get();
         $roleIds = $rolesList->pluck('id')->toArray();
 
-        // Query Tabel User (Hanya yang memiliki role_id UKPD tersebut)
         $queryUser = User::with(['ukpd', 'role'])->whereIn('role_id', $roleIds);
 
         if (!empty($this->searchUser)) {
             $queryUser->where(function ($query) {
                 $query->where('name', 'like', '%' . $this->searchUser . '%')
-                      ->orWhere('email', 'like', '%' . $this->searchUser . '%');
+                      ->orWhere('email', 'like', '%' . $this->searchUser . '%')
+                      ->orWhere('username', 'like', '%' . $this->searchUser . '%') // Pencarian Username
+                      ->orWhere('nip', 'like', '%' . $this->searchUser . '%');     // Pencarian NIP
             });
         }
 
-        // UPDATE: Filter berdasarkan role_id
         if (!empty($this->filterRoleUser)) {
             $queryUser->where('role_id', $this->filterRoleUser);
         }
@@ -76,11 +75,9 @@ class KelolaUkpd extends Component
             }
         }
 
-        // Ambil data user
         $dataUser = $queryUser->orderBy($this->sortByUser, $this->sortDirectionUser)
             ->paginate(10, ['*'], 'userPage');
 
-        // List UKPD untuk dropdown form
         $listUkpd = Ukpd::orderBy('nama', 'asc')->get();
 
         return view('livewire.super-admin.kelola-ukpd', [
@@ -93,7 +90,6 @@ class KelolaUkpd extends Component
 
     public function sortByFieldUser($field)
     {
-        // Pengecualian khusus jika mengklik filter "role" di table header, kita sorting berdasarkan role_id
         $sortField = $field === 'role' ? 'role_id' : $field;
 
         if ($this->sortByUser === $sortField) {
@@ -125,8 +121,11 @@ class KelolaUkpd extends Component
 
     public function store() {
         $this->validate([
-            'nama' => 'required|string|max:255', 'singkatan' => 'nullable|string|max:255',
-            'alamat' => 'nullable|string', 'email' => 'nullable|email|max:255', 'kode_pos' => 'nullable|string|max:10',
+            'nama' => 'required|string|max:255', 
+            'singkatan' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string', 
+            'email' => 'nullable|email|max:255', 
+            'kode_pos' => 'nullable|string|max:10',
         ]);
         Ukpd::updateOrCreate(['id' => $this->ukpd_id], [
             'nama' => $this->nama, 'singkatan' => $this->singkatan, 'alamat' => $this->alamat,
@@ -163,22 +162,25 @@ class KelolaUkpd extends Component
     {
         $this->user_id = '';
         $this->user_name = '';
+        $this->user_username = ''; // Reset username
+        $this->user_nip = '';      // Reset nip
         $this->user_email = '';
         $this->user_password = '';
         $this->user_role_id = '';
         $this->user_ukpd_id = '';
-        $this->user_nip = '';
         $this->resetValidation();
     }
 
     public function storeUser()
     {
+        // UPDATE: Validasi NIP (Nullable) & Username (Wajib)
         $rules = [
             'user_name' => 'required|string|max:255',
+            'user_username' => 'required|string|max:255|unique:users,username,' . $this->user_id,
+            'user_nip' => 'nullable|string|max:50|unique:users,nip,' . $this->user_id,
             'user_email' => 'required|email|max:255|unique:users,email,' . $this->user_id,
-            'user_role_id' => 'required|exists:roles,id', // UPDATE Validasi ke tabel roles
+            'user_role_id' => 'required|exists:roles,id',
             'user_ukpd_id' => 'required|exists:ukpds,id',
-            'user_nip' => 'required|string|max:50|unique:users,nip,' . $this->user_id,
         ];
 
         if (!$this->user_id || $this->user_password) {
@@ -189,9 +191,10 @@ class KelolaUkpd extends Component
 
         $data = [
             'name' => $this->user_name,
-            'nip' => $this->user_nip,
+            'username' => $this->user_username, // Simpan username
+            'nip' => $this->user_nip,           // Simpan NIP
             'email' => $this->user_email,
-            'role_id' => $this->user_role_id, // UPDATE Field Role ID
+            'role_id' => $this->user_role_id,
             'ukpd_id' => $this->user_ukpd_id,
         ];
 
@@ -211,10 +214,11 @@ class KelolaUkpd extends Component
         
         $this->user_id = $id;
         $this->user_name = $user->name;
+        $this->user_username = $user->username; // Inisialisasi username
+        $this->user_nip = $user->nip;           // Inisialisasi NIP
         $this->user_email = $user->email;
         $this->user_role_id = $user->role_id;
         $this->user_ukpd_id = $user->ukpd_id;
-        $this->user_nip = $user->nip;
 
         $this->isUserModalOpen = true;
     }

@@ -134,7 +134,7 @@
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <input type="text" wire:model.live.debounce.300ms="searchUser" placeholder="Cari nama atau email..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-emerald-500 block w-full transition-colors shadow-sm outline-none">
+                    <input type="text" wire:model.live.debounce.300ms="searchUser" placeholder="Cari nama, NIP atau username..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-emerald-500 block w-full transition-colors shadow-sm outline-none">
                 </div>
         
                 <div class="flex flex-row gap-3 w-full md:w-auto">
@@ -251,7 +251,7 @@
                                             {{ $user->email }}
                                         </div>
                                         <div class="text-xs text-slate-500 font-medium mt-0.5 flex items-center">
-                                            NIP: {{ $user->nip }}
+                                            NIP: {{ $user->nip ?: '-' }}
                                         </div>
                                     </div>
                                 </div>
@@ -415,10 +415,16 @@
                                 @error('user_name') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="col-span-1 sm:col-span-2">
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">NIP <span class="text-rose-500">*</span></label>
-                                <input type="text" wire:model="user_nip" placeholder="Nomor Induk Pegawai..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">NIP</label>
+                                <input type="text" wire:model="user_nip" placeholder="Opsional" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all">
                                 @error('user_nip') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">Username <span class="text-rose-500">*</span></label>
+                                <input type="text" wire:model="user_username" placeholder="Contoh: agus_setiawan" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
+                                @error('user_username') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
                             
                             <div>
