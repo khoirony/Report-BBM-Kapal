@@ -15,14 +15,8 @@
        class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-100 transition-transform duration-300 ease-in-out transform lg:translate-x-0 lg:static lg:inset-0 shadow-2xl lg:shadow-none flex flex-col">
     
        <div class="flex items-center justify-between h-16 border-b border-gray-100 px-6">
-        <a href="#" class="flex items-center gap-3 group">
-            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white shadow-md shadow-indigo-200 transition-transform duration-300 group-hover:scale-105 shrink-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="5" r="3"></circle>
-                    <line x1="12" y1="22" x2="12" y2="8"></line>
-                    <path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
-                </svg>
-            </div>
+        <a href="#" class="flex items-center gap-1 group">
+            <img src="img/logo-dishub-jakarta.jpeg" alt="Logo Dishub" class="h-13">
             
             <div class="flex flex-col">
                 <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-0.5">

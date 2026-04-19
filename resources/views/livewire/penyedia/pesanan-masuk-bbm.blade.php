@@ -138,7 +138,7 @@
                                 <td class="block md:table-cell px-2 py-2 md:px-6 md:py-5 align-top">
                                     <span class="md:hidden text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-2 block border-b border-slate-50 pb-1">Info Surat</span>
                                     
-                                    <div class="font-bold text-slate-900 mb-1">{{ $item->nomor_surat ?? 'Tanpa Nomor' }}</div>
+                                    <div class="font-bold text-slate-900 mb-1">{{ $item->nomor_surat ?: 'No. Surat Belum Ada' }}</div>
                                     <div class="text-xs text-slate-500 flex items-center mb-3">
                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                         {{ \Carbon\Carbon::parse($item->tanggal_surat)->format('d M Y') }}

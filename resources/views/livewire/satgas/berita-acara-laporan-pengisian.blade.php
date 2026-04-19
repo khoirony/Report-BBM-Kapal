@@ -404,8 +404,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
                             <div class="col-span-1">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Berita Acara <span class="text-rose-500">*</span></label>
-                                <input type="text" wire:model="nomor_ba" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-text" placeholder="Contoh: BA/123/2026" required>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Berita Acara</label>
+                                <input type="text" wire:model="nomor_ba" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-text" placeholder="Contoh: BA/123/2026">
                             </div>
 
                             <div class="col-span-1">

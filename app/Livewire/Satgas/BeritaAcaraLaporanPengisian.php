@@ -180,7 +180,7 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->validate([
             'laporan_pengisian_bbm_id' => 'required',
             'kapal_id' => 'required',
-            'nomor_ba' => 'required|string|max:255',
+            'nomor_ba' => 'nullable|string|max:255',
             'tanggal_ba' => 'required|date',
             'tanggal_pelaksanaan' => 'required|date',
         ]);

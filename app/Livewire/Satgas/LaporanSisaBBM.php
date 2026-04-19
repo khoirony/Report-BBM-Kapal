@@ -173,7 +173,7 @@ class LaporanSisaBBM extends Component
     public function store()
     {
         $this->validate([
-            'nomor' => 'required|string',
+            'nomor' => 'nullable|string',
             'kapal_id' => 'required',
             'sounding_id' => 'required',
             'tanggal_surat' => 'required|date',

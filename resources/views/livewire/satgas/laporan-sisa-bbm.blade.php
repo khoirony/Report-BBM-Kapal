@@ -345,8 +345,8 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Surat <span class="text-rose-500">*</span></label>
-                                    <input type="text" wire:model="nomor" placeholder="001/PH.12.00" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Surat</label>
+                                    <input type="text" wire:model="nomor" placeholder="001/PH.12.00" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
                                     @error('nomor') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 </div>
                                 <div>

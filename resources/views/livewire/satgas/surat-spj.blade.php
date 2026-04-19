@@ -307,8 +307,8 @@
                             </div>
                     
                             <div class="col-span-1 md:col-span-2">
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Nomor SPJ <span class="text-rose-500">*</span></label>
-                                <input type="text" wire:model="nomor_spj" placeholder="Masukkan nomor surat..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all" required>
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">Nomor SPJ</label>
+                                <input type="text" wire:model="nomor_spj" placeholder="Masukkan nomor surat..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all">
                                 @error('nomor_spj') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
                     

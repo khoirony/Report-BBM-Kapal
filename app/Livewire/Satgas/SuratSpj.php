@@ -105,7 +105,7 @@ class SuratSpj extends Component
     public function store()
     {
         $this->validate([
-            'nomor_spj'              => 'required|unique:spjs,nomor_spj,' . $this->spj_id,
+            'nomor_spj'              => 'nullable|unique:spjs,nomor_spj',
             'kapal_id'               => 'required|exists:kapals,id',
             'proses_penyedia_bbm_id' => 'nullable|exists:proses_penyedia_bbms,id',
             'tanggal_spj'            => 'required|date',

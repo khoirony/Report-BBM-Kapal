@@ -325,7 +325,7 @@
                                 <option value="">-- Pilih Surat Tugas --</option>
                                 @foreach($surat_tugas_list as $st)
                                     <option value="{{ $st->id }}">
-                                        {{ $st->nomor_surat }} | 
+                                        {{ $st?->nomor_surat ?: 'No. Surat Belum Ada' }} | 
                                         {{ \Carbon\Carbon::parse($st->tanggal_surat)->locale('id')->translatedFormat('l, d/M/Y') }} 
                                         (Kapal: {{ $st->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})
                                     </option>
@@ -338,8 +338,8 @@
                         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 border-b border-slate-100 pb-2">Informasi Administrasi Surat</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Surat <span class="text-rose-500">*</span></label>
-                                <input type="text" wire:model="nomor_surat" placeholder="Contoh: 001/PH.12.00" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Surat</label>
+                                <input type="text" wire:model="nomor_surat" placeholder="Contoh: 001/PH.12.00" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
                                 @error('nomor_surat') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                             </div>
                             <div>

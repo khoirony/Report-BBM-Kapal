@@ -238,7 +238,7 @@ class SuratPermohonanPengisianBBM extends Component
     {
         $this->validate([
             'surat_tugas_id' => 'required',
-            'nomor_surat' => 'required',
+            'nomor_surat' => 'nullable',
             'tanggal_surat' => 'required|date',
             'penyedia_id' => 'nullable|exists:users,id',
             'tempat_pengambilan_bbm' => 'nullable|string|max:255',

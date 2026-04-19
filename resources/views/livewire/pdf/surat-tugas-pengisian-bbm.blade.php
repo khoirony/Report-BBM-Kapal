@@ -16,7 +16,7 @@
 
     <div style="margin-bottom: 20px; text-align: center; line-height: 2;">
         <div style="font-size: 12pt; text-transform: uppercase;">SURAT PERINTAH TUGAS</div>
-        <div style="font-weight: normal;">NOMOR : {{ $surat->nomor_surat ?? ' ' }}</div>
+        <div style="font-weight: normal;">NOMOR : {{ $surat->nomor_surat ?? '...................' }}</div>
     </div>
 
     <div style="text-align: center; margin-bottom: 16px;">

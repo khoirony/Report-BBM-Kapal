@@ -217,7 +217,7 @@ class SuratTugasPengisianBBM extends Component
         // 3. Validasi pakaian
         $this->validate([
             'laporan_pengisian_id' => 'required',
-            'nomor_surat' => 'required',
+            'nomor_surat' => 'nullable',
             'lokasi' => 'required',
             'pakaian' => 'required',
             'tanggal_pelaksanaan' => 'required|date', 
