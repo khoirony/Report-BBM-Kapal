@@ -64,7 +64,7 @@
                         <td style="border: none; padding: 2px 0; vertical-align: top;">Perihal</td>
                         <td style="border: none; padding: 2px 0; vertical-align: top;">:</td>
                         <td style="border: none; padding: 2px 0; vertical-align: top;">
-                            <span>Permohonan<br>&nbsp;&nbsp;Pengisian BBM</span>
+                            <span>Permohonan Pengisian<br>BBM Kapal</span>
                         </td>
                     </tr>
                 </table>
@@ -130,16 +130,28 @@
         
         <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
             <tr>
-                <td style="width: 30%; padding: 1px 0;">Tempat Pengambilan</td>
+                <td style="width: 35%; padding: 1px 0;">Tempat Pengambilan</td>
                 <td style="padding: 1px 0;">: {{ $surat->tempat_pengambilan_bbm ?? 'Stasiun Pengisian Bahan Bakar Umum' }}</td>
             </tr>
             <tr>
-                <td style="padding: 1px 0;">Nomor Lembaga Penyalur</td>
-                <td style="padding: 1px 0;">: {{ $surat->nomor_izin_penyedia ?? ' ' }}</td>
+                <td style="padding: 1px 0;">Jenis Penyedia BBM</td>
+                <td style="padding: 1px 0;">: {{ $surat->jenis_penyedia_bbm ?? ' ' }}</td>
             </tr>
             <tr>
-                <td style="padding: 1px 0;">Lokasi</td>
-                <td style="padding: 1px 0;">: {{ $surat->lokasi_pengambilan ?? 'Pelabuhan Sunda Kelapa' }}</td>
+                <td style="padding: 1px 0;">Tempat Pengambilan</td>
+                <td style="padding: 1px 0;">: {{ $surat->tempat_pengambilan_bbm ?? ' ' }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 1px 0;">Nomor SPBU/Agen/Penyedia</td>
+                <td style="padding: 1px 0;">: {{ $surat->prosesPenyedia->nomor_izin_penyedia ?? ' ' }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 1px 0;">Lokasi Pengisian</td>
+                <td style="padding: 1px 0;">: {{ $surat->suratTugas->lokasi ?? 'Pelabuhan Sunda Kelapa' }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 1px 0;">Metode Pengiriman</td>
+                <td style="padding: 1px 0;">: {{ $surat->metode_pengiriman ?? ' ' }}</td>
             </tr>
         </table>
     </div>
