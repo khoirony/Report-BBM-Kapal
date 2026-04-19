@@ -88,7 +88,7 @@
             
             <div class="text-center mt-6 pt-6 border-t border-gray-100">
                 <p class="text-xs text-gray-400 font-medium italic">
-                    Unit Pengelola Angkutan Perairan &copy; {{ date('Y') }}
+                    Bidang Pelayaran dan Penerbangan &copy; {{ date('Y') }}
                 </p>
             </div>
         </form>
