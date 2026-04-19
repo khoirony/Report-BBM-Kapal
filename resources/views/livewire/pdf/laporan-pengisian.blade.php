@@ -10,7 +10,7 @@
     <div style="padding: 0 10px; line-height: 1.5;">
         <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
             <tr><td style="width: 15%; vertical-align: top;">Lampiran</td><td style="vertical-align: top;">: Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal }}</td></tr>
-            <tr><td style="vertical-align: top;">Nomor</td><td style="vertical-align: top;">: {{ $laporan->nomor_ba ?? ".................................../PH.12.00" }}</td></tr>
+            <tr><td style="vertical-align: top;">Nomor</td><td style="vertical-align: top;">: {{ $laporan->nomor_ba ?? " " }}</td></tr>
             <tr><td style="vertical-align: top;">Tanggal</td><td style="vertical-align: top;">: {{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : '................' }}</td></tr>
         </table>
 
@@ -138,7 +138,7 @@
         <p style="font-weight: bold;">Dokumentasi Proses:</p>
         
         @php
-            $path = storage_path('app/public/' . $laporan->suratPermohonan->pencatatanHasil->foto_proses);
+            $path = storage_path('app/public/' . $laporan?->suratPermohonan?->pencatatanHasil?->foto_proses ?? '');
             $base64 = '';
             if(file_exists($path) && !is_dir($path)){
                 $type = pathinfo($path, PATHINFO_EXTENSION);
@@ -160,7 +160,7 @@
         <p style="font-weight: bold;">Dokumentasi Meter:</p>
         
         @php
-            $path = storage_path('app/public/' . $laporan->suratPermohonan->pencatatanHasil->foto_flow_meter);
+            $path = storage_path('app/public/' . $laporan?->suratPermohonan?->pencatatanHasil?->foto_flow_meter ?? '');
             $base64 = '';
             if(file_exists($path) && !is_dir($path)){
                 $type = pathinfo($path, PATHINFO_EXTENSION);
@@ -182,7 +182,7 @@
         <p style="font-weight: bold;">Dokumentasi Struk/Nota:</p>
         
         @php
-            $path = storage_path('app/public/' . $laporan->suratPermohonan->pencatatanHasil->foto_struk);
+            $path = storage_path('app/public/' . $laporan?->suratPermohonan?->pencatatanHasil?->foto_struk ?? '');
             $base64 = '';
             if(file_exists($path) && !is_dir($path)){
                 $type = pathinfo($path, PATHINFO_EXTENSION);

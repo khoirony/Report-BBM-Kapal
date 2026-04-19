@@ -16,7 +16,7 @@
 
     <div style="margin-bottom: 20px; text-align: center; line-height: 2;">
         <div style="font-size: 12pt; text-transform: uppercase;">SURAT PERINTAH TUGAS</div>
-        <div style="font-weight: normal;">NOMOR : {{ $surat->nomor_surat ?? '          /PH.12.00' }}</div>
+        <div style="font-weight: normal;">NOMOR : {{ $surat->nomor_surat ?? ' ' }}</div>
     </div>
 
     <div style="text-align: center; margin-bottom: 16px;">
@@ -124,7 +124,7 @@
             </tr>
             <tr>
                 <td style="vertical-align: top; padding: 2px 0;">Nomor</td>
-                <td style="vertical-align: top; padding: 2px 0;">: {{ $surat->nomor_surat ?? '          /PH.12.00' }}</td>
+                <td style="vertical-align: top; padding: 2px 0;">: {{ $surat->nomor_surat ?? ' ' }}</td>
             </tr>
             <tr>
                 <td style="vertical-align: top; padding: 2px 0;">Tanggal</td>

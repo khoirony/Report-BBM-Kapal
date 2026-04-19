@@ -48,7 +48,7 @@
                     <tr>
                         <td style="width: 25%; border: none; padding: 2px 0; vertical-align: top;">Nomor</td>
                         <td style="width: 5%; border: none; padding: 2px 0; vertical-align: top;">:</td>
-                        <td style="width: 70%; border: none; padding: 2px 0; vertical-align: top;">{{ $surat->nomor_surat ?? '-' }}/PH.12.00</td>
+                        <td style="width: 70%; border: none; padding: 2px 0; vertical-align: top;">{{ $surat->nomor_surat ?? ' ' }}</td>
                     </tr>
                     <tr>
                         <td style="border: none; padding: 2px 0; vertical-align: top;">Klasifikasi</td>
@@ -85,7 +85,7 @@
                     <tr>
                         <td style="width: 10%; border: none; padding: 2px 0; vertical-align: top;">Yth.</td>
                         <td style="width: 90%; border: none; padding: 2px 0; vertical-align: top;">
-                            Kepala <span style="font-weight: bold;">{{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama }}</span><br>
+                            Kepala {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '....................' }}<br>
                             Dinas Perhubungan Provinsi DKI<br>
                             Jakarta<br>
                             di<br>
@@ -99,7 +99,7 @@
 
     <div style="margin-top: 20px; text-align: justify;">
         <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">
-            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami yang akan dilaksanakan pada {{ $surat->suratTugas->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->locale('id')->translatedFormat('l, d F Y') : '......................' }} pukul {{ $surat->suratTugas->waktu_pelaksanaan ?? '...........' }}. Adapun kapal yang dimaksud adalah KM. <strong style="font-weight: bold;">{{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }}</strong>
+            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami yang akan dilaksanakan pada {{ $surat->suratTugas->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->locale('id')->translatedFormat('l, d F Y') : '......................' }} pukul {{ $surat->suratTugas->waktu_pelaksanaan ?? '...........' }}. Adapun kapal yang dimaksud adalah <strong style="font-weight: bold;">{{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }}</strong>
         </p>
         <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">Berikut nama beserta jabatan yang bertanggung jawab atas nama kapal yang di maksud sebagai berikut :</p>
     </div>
@@ -135,7 +135,7 @@
             </tr>
             <tr>
                 <td style="padding: 1px 0;">Nomor Lembaga Penyalur</td>
-                <td style="padding: 1px 0;">: {{ $surat->nomor_izin_penyedia ?? 'SPBU 3P-144.01' }}</td>
+                <td style="padding: 1px 0;">: {{ $surat->nomor_izin_penyedia ?? ' ' }}</td>
             </tr>
             <tr>
                 <td style="padding: 1px 0;">Lokasi</td>
@@ -156,7 +156,7 @@
                     <br>
                     <br>
                     Nakhoda / ABK<br>
-                    KM. {{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '................' }}
+                    {{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '................' }}
                 </td>
                 <td style="width: 50%; vertical-align: top; text-align: center;">
                     Jakarta, {{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '........................' }}<br>

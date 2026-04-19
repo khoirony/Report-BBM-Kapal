@@ -29,7 +29,7 @@
         <div style="text-align: center; font-size: 12pt;">
             BERITA ACARA LAPORAN PENGISIAN BAHAN BAKAR<br>
             MINYAK KENDARAAN DINAS KAPAL {{ strtoupper($laporan->kapal->nama_kapal) }}<br>
-            NOMOR: {{ $laporan->nomor_ba }}<br>
+            NOMOR: {{ $laporan->nomor_ba ?? ' ' }}<br>
             Tanggal : {{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : '................' }}
         </div>
 
@@ -48,12 +48,12 @@
                 <tr>
                     <td style="vertical-align: top;">b.</td>
                     <td style="vertical-align: top; text-align: justify;">Perjanjian Kerja Sama (PKS) Penyediaan Bahan Bakar Minyak Kendaraan Dinas Operasional (KDO) Khusus <span style="font-weight: bold;">{{ $laporan?->kapal?->ukpd?->nama }}</span> 
-                        Dinas Perhubungan Provinsi DKI Jakarta dengan <span style="font-weight: bold;">{{ $laporan->suratPermohonan->penyedia->name ?? '-' }}</span> Nomor <span style="font-weight: bold;">{{ $laporan->nomor_pks ?? '-' }}</span> Tanggal <span style="font-weight: bold;">{{ $laporan->tanggal_pks ? \Carbon\Carbon::parse($laporan->tanggal_pks)->locale('id')->translatedFormat('d F Y') : '................' }}</span> dan
+                        Dinas Perhubungan Provinsi DKI Jakarta dengan <span style="font-weight: bold;">{{ $laporan->suratPermohonan->penyedia->name ?? '-' }}</span> Nomor <span style="font-weight: bold;">{{ $laporan->nomor_pks ?? '.......................' }}</span> Tanggal <span style="font-weight: bold;">{{ $laporan->tanggal_pks ? \Carbon\Carbon::parse($laporan->tanggal_pks)->locale('id')->translatedFormat('d F Y') : '................' }}</span> dan
                     </td>
                 </tr>
                 <tr>
                     <td style="vertical-align: top;">c.</td>
-                    <td style="vertical-align: top; text-align: justify;">Surat Permohonan Nomor <span style="font-weight: bold;">{{ $laporan->suratPermohonan->nomor_surat ?? '-' }}</span> perihal Permohonan Pengisian Bahan Bakar Minyak pada tanggal
+                    <td style="vertical-align: top; text-align: justify;">Surat Permohonan Nomor <span style="font-weight: bold;">{{ $laporan->suratPermohonan->nomor_surat ?? '.......................' }}</span> perihal Permohonan Pengisian Bahan Bakar Minyak pada tanggal
                         <span style="font-weight: bold;">{{ $laporan->suratPermohonan->tanggal_surat ? \Carbon\Carbon::parse($laporan->suratPermohonan->tanggal_surat)->locale('id')->translatedFormat('d F Y') : '................' }}</span>.
                     </td>
                 </tr>
@@ -139,7 +139,7 @@
     <div style="padding: 0 10px; line-height: 1.5;">
         <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
             <tr><td style="width: 15%; vertical-align: top;">Lampiran</td><td style="vertical-align: top;">: Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->kapal->nama_kapal }}</td></tr>
-            <tr><td style="vertical-align: top;">Nomor</td><td style="vertical-align: top;">: {{ $laporan->nomor_ba ?? ".................................../PH.12.00" }}</td></tr>
+            <tr><td style="vertical-align: top;">Nomor</td><td style="vertical-align: top;">: {{ $laporan->nomor_ba ?? " " }}</td></tr>
             <tr><td style="vertical-align: top;">Tanggal</td><td style="vertical-align: top;">: {{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : '................' }}</td></tr>
         </table>
 

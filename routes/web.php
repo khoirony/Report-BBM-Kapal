@@ -136,4 +136,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/surat-tugas/{id}/pdf', [PdfController::class, 'previewSuratTugas'])->name('surattugas.pdf.preview');
         Route::get('/surat-permohonan/{id}/pdf', [PdfController::class, 'previewSuratPermohonan'])->name('suratpermohonan.pdf.preview');
     });
+
+});
+
+Route::get('/sys-info/developer-info', function () {
+    return response()->json([
+        'developed_by' => 'khoirony.com',
+        'build_version' => '1.0.0',
+        'contact' => 'khoironyarief08@gmail.com'
+    ]);
 });

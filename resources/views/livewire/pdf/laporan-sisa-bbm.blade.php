@@ -33,7 +33,7 @@
                     <tr>
                         <td style="width: 25%; border: none; padding: 2px 0; vertical-align: top;">Nomor</td>
                         <td style="width: 5%; border: none; padding: 2px 0; vertical-align: top;">:</td>
-                        <td style="width: 70%; border: none; padding: 2px 0; vertical-align: top;">{{ $laporan->nomor ?? '-' }}/PH.12.00</td>
+                        <td style="width: 70%; border: none; padding: 2px 0; vertical-align: top;">{{ $laporan->nomor ?? '' }}</td>
                     </tr>
                     <tr>
                         <td style="border: none; padding: 2px 0; vertical-align: top;">Klasifikasi</td>
@@ -73,7 +73,7 @@
                         <td style="width: 10%; border: none; padding: 2px 0; vertical-align: top;">Yth.</td>
                         <td style="width: 90%; border: none; padding: 2px 0; vertical-align: top;">
                             Pejabat Pelaksana Teknis Kegiatan<br>
-                            BBM Kapal <span style="font-weight: bold;">{{ $laporan?->ukpd?->nama ?? ($laporan?->sounding?->kapal?->ukpd?->nama ?? '(Nama UKPD)') }}</span><br>
+                            BBM Kapal {{ $laporan?->ukpd?->nama ?? ($laporan?->sounding?->kapal?->ukpd?->nama ?? '..........') }}<br>
                             Dinas Perhubungan Provinsi DKI<br>
                             Jakarta<br>
                             di<br>
@@ -127,11 +127,11 @@
         <tr>
             <td style="width: 50%; text-align: center; vertical-align: top; border: none; padding: 0;">
                 Menyetujui,<br>
-                Nakhoda Kapal <span style="font-weight: bold;">{{ $laporan->sounding->kapal->nama_kapal ?? '(Nama Kapal)' }}</span>
+                Nakhoda Kapal {{ $laporan->sounding->kapal->nama_kapal ?? '(Nama Kapal)' }}
             </td>
             <td style="width: 50%; text-align: center; vertical-align: top; border: none; padding: 0;">
                 Mengetahui,<br>
-                Pengawas <span style="font-weight: bold;">{{ $laporan?->ukpd?->nama ?? ($laporan?->sounding?->kapal?->ukpd?->nama ?? '(Nama UKPD)') }}</span>
+                Pengawas {{ $laporan?->ukpd?->nama ?? ($laporan?->sounding?->kapal?->ukpd?->nama ?? '(Nama UKPD)') }}
             </td>
         </tr>
         <tr>
