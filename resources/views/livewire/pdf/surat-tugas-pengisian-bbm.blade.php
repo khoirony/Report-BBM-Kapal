@@ -106,7 +106,7 @@
                     Kepala {{ $surat?->ukpd?->nama ?? '-' }}<br>
                     Dinas Perhubungan Provinsi DKI Jakarta
                     <br><br><br><br><br>
-                    <div style="line-height: 1.5;">
+                    <div>
                         <span style="text-decoration: underline;">{{ $surat?->nama_kepala_ukpd ?? '' }}</span><br>
                         NIP. {{ $surat?->id_kepala_ukpd ?? '......................................' }}
                     </div>
