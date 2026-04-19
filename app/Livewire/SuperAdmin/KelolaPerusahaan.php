@@ -14,8 +14,8 @@ class KelolaPerusahaan extends Component
 {
     use WithPagination;
 
-    // Properti Form
-    public $userId, $name, $email, $password, $ukpd_id, $role_id;
+    // Properti Form (Ditambahkan username)
+    public $userId, $name, $username, $email, $password, $ukpd_id, $role_id;
     public $is_verified = true; 
 
     // Properti Search & Sort
@@ -45,7 +45,7 @@ class KelolaPerusahaan extends Component
     public function openModal($mode = 'create', $id = null)
     {
         $this->resetValidation();
-        $this->reset(['userId', 'name', 'email', 'password', 'ukpd_id', 'role_id', 'is_verified']);
+        $this->reset(['userId', 'name', 'username', 'email', 'password', 'ukpd_id', 'role_id', 'is_verified']);
         $this->modalMode = $mode;
 
         // Cari Role Penyedia secara dinamis
@@ -55,6 +55,7 @@ class KelolaPerusahaan extends Component
             $user = User::findOrFail($id);
             $this->userId = $user->id;
             $this->name = $user->name;
+            $this->username = $user->username;
             $this->email = $user->email;
             $this->ukpd_id = $user->ukpd_id;
             $this->role_id = $user->role_id;
@@ -77,6 +78,12 @@ class KelolaPerusahaan extends Component
     {
         $rules = [
             'name' => 'required|string|max:255',
+            'username' => [
+                'required', 
+                'string', 
+                'max:255', 
+                Rule::unique('users')->ignore($this->userId)
+            ],
             'email' => [
                 'required', 
                 'email', 
@@ -98,6 +105,7 @@ class KelolaPerusahaan extends Component
 
         $data = [
             'name' => $this->name,
+            'username' => $this->username,
             'email' => $this->email,
             'role_id' => $this->role_id,
             'ukpd_id' => empty($this->ukpd_id) ? null : $this->ukpd_id, 
@@ -156,6 +164,7 @@ class KelolaPerusahaan extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($subQuery) {
                     $subQuery->where('name', 'like', '%' . $this->search . '%')
+                             ->orWhere('username', 'like', '%' . $this->search . '%')
                              ->orWhere('email', 'like', '%' . $this->search . '%');
                 });
             })
