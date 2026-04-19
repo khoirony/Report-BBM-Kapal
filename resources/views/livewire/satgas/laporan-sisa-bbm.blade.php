@@ -384,28 +384,86 @@
 
                             <div class="border-t border-slate-100"></div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5">
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Nakhoda <span class="text-rose-500">*</span></label>
-                                    <input type="text" wire:model="nama_nakhoda" placeholder="Masukkan Nama Nakhoda..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
-                                    @error('nama_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+    
+                                <div x-data="{
+                                    users: {{ json_encode($nakhoda_users ?? []) }},
+                                    selectedUser: '',
+                                    fillData() {
+                                        if (this.selectedUser) {
+                                            let u = this.users.find(u => u.id == this.selectedUser);
+                                            if (u) {
+                                                $wire.nama_nakhoda = u.name;
+                                                $wire.id_nakhoda = u.nip || '';
+                                            }
+                                        }
+                                    }
+                                }" class="space-y-4 bg-white/50 p-4 rounded-xl border border-slate-200">
+                                    
+                                    <div>
+                                        <label class="block text-sm font-bold text-indigo-700 mb-1.5">Pilih Data Nakhoda</label>
+                                        <select x-model="selectedUser" @change="fillData()" class="px-4 py-2.5 bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 rounded-xl block w-full cursor-pointer focus:ring-2 focus:ring-indigo-500">
+                                            <option value="">-- Cari di Master User (Opsional) --</option>
+                                            <template x-for="u in users" :key="u.id">
+                                                <option :value="u.id" x-text="u.name + (u.nip ? ' - ' + u.nip : '')"></option>
+                                            </template>
+                                        </select>
+                                        <p class="text-[10px] text-slate-500 mt-1.5">Pilih untuk isi otomatis, atau ketik manual di bawah jika data tidak ada.</p>
+                                    </div>
+
+                                    <div class="space-y-4 pt-3 border-t border-slate-100">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Nakhoda <span class="text-rose-500">*</span></label>
+                                            <input type="text" wire:model="nama_nakhoda" placeholder="Masukkan Nama Nakhoda..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
+                                            @error('nama_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK Nakhoda</label>
+                                            <input type="text" wire:model="id_nakhoda" placeholder="Contoh: 19800101..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
+                                            @error('id_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK Nakhoda</label>
-                                    <input type="text" wire:model="id_nakhoda" placeholder="Contoh: 19800101..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
-                                    @error('id_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                                <div x-data="{
+                                    users: {{ json_encode($pengawas_users ?? []) }},
+                                    selectedUser: '',
+                                    fillData() {
+                                        if (this.selectedUser) {
+                                            let u = this.users.find(u => u.id == this.selectedUser);
+                                            if (u) {
+                                                $wire.nama_pengawas = u.name;
+                                                $wire.id_pengawas = u.nip || '';
+                                            }
+                                        }
+                                    }
+                                }" class="space-y-4 bg-white/50 p-4 rounded-xl border border-slate-200">
+                                    
+                                    <div>
+                                        <label class="block text-sm font-bold text-indigo-700 mb-1.5">Pilih Data Pengawas</label>
+                                        <select x-model="selectedUser" @change="fillData()" class="px-4 py-2.5 bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 rounded-xl block w-full cursor-pointer focus:ring-2 focus:ring-indigo-500">
+                                            <option value="">-- Cari di Master User (Opsional) --</option>
+                                            <template x-for="u in users" :key="u.id">
+                                                <option :value="u.id" x-text="u.name + (u.nip ? ' - ' + u.nip : '')"></option>
+                                            </template>
+                                        </select>
+                                        <p class="text-[10px] text-slate-500 mt-1.5">Pilih untuk isi otomatis, atau ketik manual di bawah jika data tidak ada.</p>
+                                    </div>
+
+                                    <div class="space-y-4 pt-3 border-t border-slate-100">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Pengawas <span class="text-rose-500">*</span></label>
+                                            <input type="text" wire:model="nama_pengawas" placeholder="Masukkan Nama Pengawas..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
+                                            @error('nama_pengawas') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK Pengawas</label>
+                                            <input type="text" wire:model="id_pengawas" placeholder="Contoh: 19900202..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
+                                            @error('id_pengawas') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                        </div>
+                                    </div>
                                 </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Pengawas <span class="text-rose-500">*</span></label>
-                                    <input type="text" wire:model="nama_pengawas" placeholder="Masukkan Nama Pengawas..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full" required>
-                                    @error('nama_pengawas') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK Pengawas</label>
-                                    <input type="text" wire:model="id_pengawas" placeholder="Contoh: 19900202..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
-                                    @error('id_pengawas') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                </div>
+
                             </div>
 
                         </div>

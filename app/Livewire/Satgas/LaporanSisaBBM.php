@@ -6,14 +6,15 @@ use App\Models\Kapal;
 use App\Models\LaporanSisaBbm as SisaBBM; 
 use App\Models\Sounding;
 use App\Models\Ukpd; 
+use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\WithFileUploads; // Tambahkan ini
-use Illuminate\Support\Facades\Storage; // Tambahkan ini
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 
 class LaporanSisaBBM extends Component
 {
-    use WithPagination, WithFileUploads; // Gunakan trait di sini
+    use WithPagination, WithFileUploads;
 
     // Filter & Search
     public $search = '';
@@ -118,7 +119,15 @@ class LaporanSisaBBM extends Component
 
         $ukpds = Ukpd::orderBy('nama', 'asc')->get();
 
-        return view('livewire.satgas.laporan-sisa-bbm', compact('laporans', 'kapals', 'ukpds'))
+        $nakhoda_users = User::whereHas('role', function($q) {
+            $q->where('slug', 'nakhoda'); 
+        })->get(['id', 'name', 'nip']); 
+
+        $pengawas_users = User::whereHas('role', function($q) {
+            $q->where('slug', 'pengawas'); 
+        })->get(['id', 'name', 'nip']);
+
+        return view('livewire.satgas.laporan-sisa-bbm', compact('laporans', 'kapals', 'ukpds', 'nakhoda_users', 'pengawas_users'))
             ->layout('layouts.app');
     }
 
