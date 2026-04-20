@@ -28,7 +28,7 @@
     <div style="padding: 0 10px;">
         <div style="text-align: center; font-size: 12pt;">
             BERITA ACARA LAPORAN PENGISIAN BAHAN BAKAR<br>
-            MINYAK KENDARAAN DINAS KAPAL {{ strtoupper($laporan->kapal->nama_kapal) }}<br>
+            MINYAK KENDARAAN DINAS {{ strtoupper($laporan->kapal->nama_kapal) }}<br>
             NOMOR: {{ $laporan->nomor_ba ?? ' ' }}<br>
             Tanggal : {{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : '................' }}
         </div>
@@ -137,19 +137,47 @@
     <div style="page-break-after: always;"></div>
 
     <div style="padding: 0 10px; line-height: 1.5;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
-            <tr><td style="width: 15%; vertical-align: top;">Lampiran</td><td style="vertical-align: top;">: Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->kapal->nama_kapal }}</td></tr>
-            <tr><td style="vertical-align: top;">Nomor</td><td style="vertical-align: top;">: {{ $laporan->nomor_ba ?? " " }}</td></tr>
-            <tr><td style="vertical-align: top;">Tanggal</td><td style="vertical-align: top;">: {{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : '................' }}</td></tr>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12pt;">
+            <tr>
+                <td style="width: 15%; vertical-align: top;">Lampiran</td>
+                <td style="width: 1%; vertical-align: top;">: </td>
+                <td style="vertical-align: top;">Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->kapal->nama_kapal }}</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">Nomor</td>
+                <td style="vertical-align: top;">: </td>
+                <td style="vertical-align: top;">{{ $laporan->nomor_ba ?? " " }}</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">Tanggal</td>
+                <td style="vertical-align: top;">: </td>
+                <td style="vertical-align: top;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : '................' }}</td>
+            </tr>
         </table>
 
         <div style="text-align: center; margin: 20px 0px; font-size: 12pt;">LAPORAN PENGISIAN BBM KAPAL</div>
 
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0px;">
-            <tr><td style="width: 140px; vertical-align: top;">1. Hari</td><td style="vertical-align: top;">: {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('l') : '................' }}</td></tr>
-            <tr><td style="vertical-align: top;">2. Tanggal</td><td style="vertical-align: top;">: {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('d F Y') : '................' }}</td></tr>
-            <tr><td style="vertical-align: top;">3. Dasar Hukum</td><td style="vertical-align: top;">: {{ $laporan->laporanPengisian->dasar_hukum }}</td></tr>
-            <tr><td style="vertical-align: top;">4. Petugas</td><td style="vertical-align: top;">: .......................................................................</td></tr>
+            <tr>
+                <td style="width: 140px; vertical-align: top;">1. Hari</td>
+                <td style="width: 1%; vertical-align: top;">: </td>
+                <td style="vertical-align: top;"> {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('l') : '................' }}</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">2. Tanggal</td>
+                <td style="width: 1%; vertical-align: top;">: </td>
+                <td style="vertical-align: top;"> {{ $laporan->laporanPengisian->tanggal ? \Carbon\Carbon::parse($laporan->laporanPengisian->tanggal)->locale('id')->translatedFormat('d F Y') : '................' }}</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">3. Dasar Hukum</td>
+                <td style="width: 1%; vertical-align: top;">: </td>
+                <td style="vertical-align: top;"> {!! nl2br(e(str_replace(';', '', $laporan->laporanPengisian->dasar_hukum))) !!}</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">4. Petugas</td>
+                <td style="width: 1%; vertical-align: top;">:</td>
+                <td style="vertical-align: top;"> </td>
+            </tr>
         </table>
 
         <table style="width: 100%; border-collapse: collapse;">
