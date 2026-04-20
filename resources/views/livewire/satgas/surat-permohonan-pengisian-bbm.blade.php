@@ -219,7 +219,7 @@
                                         <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider block mb-0.5">Nakhoda</span>
                                         <div class="font-bold text-slate-800 text-xs truncate">{{ $item->nama_nakhoda ?? 'Belum diisi' }}</div>
                                         @if($item->id_nakhoda)
-                                            <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">NIP: {{ $item->id_nakhoda }}</div>
+                                            <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">ID: {{ $item->id_nakhoda }}</div>
                                         @endif
                                     </div>
 

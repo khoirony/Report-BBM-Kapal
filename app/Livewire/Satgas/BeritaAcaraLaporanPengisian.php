@@ -6,6 +6,7 @@ use App\Models\BaPengisianBbm;
 use App\Models\Kapal;
 use App\Models\LaporanPengisianBbm;
 use App\Models\Ukpd;
+use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
@@ -18,20 +19,24 @@ class BeritaAcaraLaporanPengisian extends Component
 
     // Properti Data Form
     public $laporan_id, $laporan_pengisian_bbm_id, $kapal_id;
-    public $nomor_ba;
-    public $tanggal_ba; 
-    public $tanggal_pelaksanaan;
-    public $nomor_pks, $tanggal_pks;
+    public $nomor_ba, $tanggal_ba, $tanggal_pelaksanaan, $nomor_pks, $tanggal_pks;
     
-    // Property untuk menampung file upload inline di tabel
+    // Properti Pejabat
+    public $nama_pptk, $nip_pptk;
+    public $nama_kepala_ukpd, $nip_kepala_ukpd;
+    public $nama_nakhoda, $nip_nakhoda;
+    
+    // Properti Array User agar bisa dibaca oleh $wire di AlpineJS
+    public $pptk_users = [];
+    public $kepala_ukpd_users = [];
+    public $nakhoda_users = [];
+    public $pks_suggestions = [];
+    
     public $upload_files = [];
-
-    // Properti UI & Filter
     public $isOpen = false;
     public $search = '';
     public $filterUkpd = '', $filterKapal = '', $filterTanggalAwal = '', $filterTanggalAkhir = '';
     public $sortBy = 'latest';
-    public $pks_suggestions = [];
 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingFilterUkpd() { $this->resetPage(); }
@@ -43,29 +48,58 @@ class BeritaAcaraLaporanPengisian extends Component
                                     ->distinct()
                                     ->pluck('nomor_pks')
                                     ->toArray();
+                                    
+        $this->loadUserSuggestions(null); // Load default
     }
 
-    // Otomatis berjalan ketika user memilih file di tabel
+    // Fungsi khusus untuk menarik data agar bisa disimpan di public property
+    public function loadUserSuggestions($ukpdId = null)
+    {
+        $this->pptk_users = User::whereHas('role', fn($q) => $q->where('slug', 'pptk'))
+            ->when($ukpdId, fn($q) => $q->where('ukpd_id', $ukpdId))
+            ->get(['id', 'name', 'nip'])->toArray();
+
+        $this->kepala_ukpd_users = User::whereHas('role', fn($q) => $q->where('slug', 'kepala_ukpd'))
+            ->when($ukpdId, fn($q) => $q->where('ukpd_id', $ukpdId))
+            ->get(['id', 'name', 'nip'])->toArray();
+
+        $this->nakhoda_users = User::whereHas('role', fn($q) => $q->where('slug', 'nakhoda'))
+            ->when($ukpdId, fn($q) => $q->where('ukpd_id', $ukpdId))
+            ->get(['id', 'name', 'nip'])->toArray();
+    }
+
+    // Trigger saat dropdown Laporan Pengisian dipilih
+    public function updatedLaporanPengisianBbmId($value)
+    {
+        $lp = LaporanPengisianBbm::with('suratTugas.LaporanSisaBbm.sounding.kapal')->find($value);
+        if ($lp) {
+            $this->kapal_id = $lp->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id ?? '';
+            $ukpdId = $lp->suratTugas?->LaporanSisaBbm?->sounding?->kapal?->ukpd_id ?? null;
+            
+            // Filter user sesuai UKPD Kapal
+            $this->loadUserSuggestions($ukpdId);
+        } else {
+            $this->kapal_id = ''; 
+            $this->loadUserSuggestions(null);
+        }
+    }
+
     public function updatedUploadFiles($value, $key)
     {
         $this->validate([
-            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $ba = BaPengisianBbm::findOrFail($key);
 
-        // Hapus file lama jika ada
         if ($ba->file_ba_pengisian && Storage::disk('public')->exists($ba->file_ba_pengisian)) {
             Storage::disk('public')->delete($ba->file_ba_pengisian);
         }
 
-        // Simpan file baru
         $path = $value->store('uploads/ba_pengisian', 'public');
         $ba->update(['file_ba_pengisian' => $path]);
 
-        // Bersihkan memori file sementara
         unset($this->upload_files[$key]);
-
         session()->flash('message', 'Dokumen Berita Acara berhasil diupload!');
     }
 
@@ -95,15 +129,13 @@ class BeritaAcaraLaporanPengisian extends Component
 
         $query->orderBy('created_at', $this->sortBy === 'latest' ? 'desc' : 'asc');
 
-        $laporanTerpakai = BaPengisianBbm::when($this->laporan_id, function ($q) {
-            $q->where('id', '!=', $this->laporan_id);
-        })->pluck('laporan_pengisian_bbm_id')->filter()->toArray();
+        $laporanTerpakai = BaPengisianBbm::when($this->laporan_id, fn($q) => $q->where('id', '!=', $this->laporan_id))
+            ->pluck('laporan_pengisian_bbm_id')->filter()->toArray();
 
         return view('livewire.satgas.berita-acara-laporan-pengisian', [
             'laporans' => $query->paginate(10),
             'kapals' => Kapal::orderBy('nama_kapal', 'asc')->get(),
             'ukpds' => Ukpd::orderBy('nama', 'asc')->get(),
-            
             'laporan_pengisian_list' => LaporanPengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal'])
                 ->whereNotIn('id', $laporanTerpakai) 
                 ->latest()
@@ -116,17 +148,6 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->search = ''; $this->filterUkpd = ''; $this->filterKapal = '';
         $this->filterTanggalAwal = ''; $this->filterTanggalAkhir = '';
         $this->sortBy = 'latest'; $this->resetPage();
-    }
-
-    public function updatedLaporanPengisianBbmId($value)
-    {
-        $lp = LaporanPengisianBbm::with('suratTugas.LaporanSisaBbm.sounding')->find($value);
-        
-        if ($lp) {
-            $this->kapal_id = $lp->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id ?? '';
-        } else {
-            $this->kapal_id = ''; 
-        }
     }
 
     public function approve($id, $level)
@@ -153,10 +174,20 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->nomor_ba = $ba->nomor_ba;
         $this->nomor_pks = $ba->nomor_pks;
         $this->tanggal_pks = $ba->tanggal_pks;
-
-        // Load data tanggal ke Form
         $this->tanggal_ba = $ba->tgl_ba ? Carbon::parse($ba->tgl_ba)->format('Y-m-d') : null;
         $this->tanggal_pelaksanaan = $ba->tgl_pelaksanaan ? Carbon::parse($ba->tgl_pelaksanaan)->format('Y-m-d') : null;
+
+        $this->nama_pptk = $ba->nama_pptk;
+        $this->nip_pptk = $ba->nip_pptk;
+        $this->nama_kepala_ukpd = $ba->nama_kepala_ukpd;
+        $this->nip_kepala_ukpd = $ba->nip_kepala_ukpd;
+        $this->nama_nakhoda = $ba->nama_nakhoda;
+        $this->nip_nakhoda = $ba->nip_nakhoda;
+
+        // Load UKPD data for edit mode
+        $lp = LaporanPengisianBbm::with('suratTugas.LaporanSisaBbm.sounding.kapal')->find($this->laporan_pengisian_bbm_id);
+        $ukpdId = $lp?->suratTugas?->LaporanSisaBbm?->sounding?->kapal?->ukpd_id ?? null;
+        $this->loadUserSuggestions($ukpdId);
 
         $this->isOpen = true;
     }
@@ -174,6 +205,15 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->tanggal_pelaksanaan = date('Y-m-d');
         $this->nomor_pks = '';
         $this->tanggal_pks = '';
+
+        $this->nama_pptk = '';
+        $this->nip_pptk = '';
+        $this->nama_kepala_ukpd = '';
+        $this->nip_kepala_ukpd = '';
+        $this->nama_nakhoda = '';
+        $this->nip_nakhoda = '';
+        
+        $this->loadUserSuggestions(null);
     }
 
     public function store() {
@@ -183,6 +223,12 @@ class BeritaAcaraLaporanPengisian extends Component
             'nomor_ba' => 'nullable|string|max:255',
             'tanggal_ba' => 'required|date',
             'tanggal_pelaksanaan' => 'required|date',
+            'nama_pptk' => 'required|string|max:255',
+            'nip_pptk' => 'nullable|string|max:255',
+            'nama_kepala_ukpd' => 'required|string|max:255',
+            'nip_kepala_ukpd' => 'nullable|string|max:255',
+            'nama_nakhoda' => 'required|string|max:255',
+            'nip_nakhoda' => 'nullable|string|max:255',
         ]);
 
         $parsedDateBA = Carbon::parse($this->tanggal_ba)->locale('id');
@@ -199,6 +245,12 @@ class BeritaAcaraLaporanPengisian extends Component
             'nomor_pks' => $this->nomor_pks,
             'tanggal_pks' => $this->tanggal_pks ?: null,
             'user_id' => auth()->id(),
+            'nama_pptk' => $this->nama_pptk,
+            'id_pptk' => $this->nip_pptk,
+            'nama_kepala_ukpd' => $this->nama_kepala_ukpd,
+            'id_kepala_ukpd' => $this->nip_kepala_ukpd,
+            'nama_nakhoda' => $this->nama_nakhoda,
+            'id_nakhoda' => $this->nip_nakhoda,
         ]);
 
         session()->flash('message', $this->laporan_id ? 'Berita Acara berhasil diperbarui!' : 'Berita Acara berhasil dibuat!');

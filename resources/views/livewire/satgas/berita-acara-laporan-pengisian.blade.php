@@ -190,9 +190,27 @@
                                     Tgl Isi (Master): {{ isset($item->laporanPengisian?->tanggal) ? \Carbon\Carbon::parse($item->laporanPengisian->tanggal)->format('d/m/Y') : '-' }}
                                 </div>
         
+                                <div class="bg-indigo-50/40 border border-indigo-100 rounded-lg p-2.5 mb-3">
+                                    <span class="text-[9px] text-indigo-600 font-bold uppercase tracking-wider block mb-1.5">Penandatangan BA</span>
+                                    <div class="space-y-1.5 text-[10px] text-slate-600">
+                                        <div class="flex items-start">
+                                            <span class="font-bold text-slate-800 w-16 shrink-0">Ka. UKPD:</span>
+                                            <span class="font-medium text-slate-600">{{ $item->nama_kepala_ukpd ?? 'Belum diisi' }}</span>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <span class="font-bold text-slate-800 w-16 shrink-0">PPTK:</span>
+                                            <span class="font-medium text-slate-600">{{ $item->nama_pptk ?? 'Belum diisi' }}</span>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <span class="font-bold text-slate-800 w-16 shrink-0">Nakhoda:</span>
+                                            <span class="font-medium text-slate-600">{{ $item->nama_nakhoda ?? 'Belum diisi' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 @php $petugasList = $item->laporanPengisian?->suratTugas?->petugas ?? []; @endphp
                                 <div>
-                                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">Awak Kapal (SPT)</span>
+                                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">Awak Kapal Lainnya (SPT)</span>
                                     <div class="flex flex-wrap gap-1">
                                         @forelse($petugasList as $p)
                                             <div class="flex items-center gap-1 text-[10px] font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
@@ -309,40 +327,33 @@
         </div>
 
         @if($isOpen)
-        <div class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-all">
-            <div @click.away="$wire.closeModal()" class="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+        <div class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-opacity">
+            <div @click.away="$wire.closeModal()" class="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
                 
-                <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+                <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50 shrink-0">
                     <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600 hidden sm:block">
+                        <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900">
-                            {{ $laporan_id ? 'Edit Berita Acara BBM' : 'Form Berita Acara BBM' }}
-                        </h3>
+                        <h3 class="text-lg font-bold text-gray-900">Form Berita Acara BBM</h3>
                     </div>
-                    <button wire:click="closeModal()" class="text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full p-2 transition-colors">
+                    <button wire:click="closeModal()" class="text-slate-400 hover:text-slate-900 rounded-xl p-2 transition-colors border border-slate-200 shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
 
-                <div class="overflow-y-auto flex-1 p-6 custom-scrollbar">
-                    <form wire:submit.prevent="store" id="form-ba" class="space-y-6">
+                <div class="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
+                    <form wire:submit.prevent="store" id="form-ba">
                         
-                        <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
-                            <label class="block text-sm font-semibold text-slate-800 mb-2">Tautkan Laporan Pengisian BBM (Data Master) <span class="text-rose-500">*</span></label>
-                            <select wire:model.live="laporan_pengisian_bbm_id" class="w-full px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl outline-none focus:ring-2 focus:ring-indigo-200 transition-all cursor-pointer shadow-sm" required>
-                                <option value="">-- Pilih Laporan Pengisian yang Selesai --</option>
+                        <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 mb-6">
+                            <label class="block text-sm font-semibold text-slate-800 mb-2">Tautkan ke Laporan Pengisian <span class="text-rose-500">*</span></label>
+                            <select wire:model.live="laporan_pengisian_bbm_id" class="px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl block w-full shadow-sm cursor-pointer" required>
+                                <option value="">-- Pilih Laporan --</option>
                                 @foreach($laporan_pengisian_list as $lp)
-                                    <option value="{{ $lp->id }}">
-                                        Kapal: {{ $lp->suratTugas?->LaporanSisaBbm?->sounding?->kapal?->nama_kapal ?? 'Tidak ada data kapal' }} | Tgl Isi: {{ \Carbon\Carbon::parse($lp->tanggal)->format('d/m/Y') }} | (Vol: {{ floatval($lp->jumlah_bbm_pengisian) }} L)
-                                    </option>
+                                    <option value="{{ $lp->id }}">Tgl: {{ $lp->tanggal }} | Kapal: {{ $lp->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }}</option>
                                 @endforeach
                             </select>
-                            <p class="text-[10.5px] text-slate-500 mt-2 flex items-center">
-                                <svg class="w-3.5 h-3.5 mr-1 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
-                                Memilih laporan akan otomatis menarik referensi Surat Permohonan dan Awak Kapal (SPT).
-                            </p>
+                            <p class="text-[10px] text-indigo-500 mt-2 font-medium">Memilih laporan otomatis memfilter pilihan pejabat & awak kapal sesuai UKPD armada yang bersangkutan.</p>
                         </div>
 
                         @if($laporan_pengisian_bbm_id)
@@ -356,14 +367,11 @@
                                 $kapalSelected = $lpSelected?->suratTugas?->LaporanSisaBbm?->sounding?->kapal;
                             @endphp
 
-                            <div class="flex flex-col gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-2">
-                                
+                            <div class="flex flex-col gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
                                 <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 flex items-center justify-between">
                                     <div class="flex items-center gap-4 overflow-hidden">
                                         <div class="w-12 h-12 rounded-full bg-white shadow-sm text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
-                                            </svg>
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>
                                         </div>
                                         <div class="flex flex-col truncate">
                                             <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest block mb-0.5">Armada Kapal</span>
@@ -371,12 +379,6 @@
                                                 {{ $kapalSelected?->nama_kapal ?? 'Data kapal tidak ditemukan' }}
                                             </p>
                                         </div>
-                                    </div>
-                                    <div class="hidden sm:block shrink-0 ml-4">
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-100 border border-emerald-200 text-[10px] font-bold text-emerald-700">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                            Ditarik Otomatis
-                                        </span>
                                     </div>
                                 </div>
 
@@ -399,55 +401,148 @@
                             </div>
                         @endif
 
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2">Informasi Manual Berita Acara</h4>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 border-b border-slate-100 pb-2">Informasi Berita Acara</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
                             <div class="col-span-1">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Berita Acara</label>
-                                <input type="text" wire:model="nomor_ba" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-text" placeholder="Contoh: BA/123/2026">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Berita Acara</label>
+                                <input type="text" wire:model="nomor_ba" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all" placeholder="Contoh: BA/123/2026">
                             </div>
-
                             <div class="col-span-1">
-                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tanggal Berita Acara <span class="text-rose-500">*</span></label>
-                                <input type="date" wire:model="tanggal_ba" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer" required>
-                                <p class="text-[10px] text-slate-400 mt-1">Tanggal dokumen surat terbit.</p>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal BA <span class="text-rose-500">*</span></label>
+                                <input type="date" wire:model="tanggal_ba" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all" required>
                             </div>
-
                             <div class="col-span-1">
-                                <label class="block text-[11px] font-bold text-indigo-500 uppercase tracking-wider mb-2">Tanggal Pelaksanaan <span class="text-rose-500">*</span></label>
-                                <input type="date" wire:model="tanggal_pelaksanaan" class="w-full px-4 py-3 bg-slate-50 border border-indigo-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer" required>
-                                <p class="text-[10px] text-slate-400 mt-1">Tanggal kejadian pengisian di lapangan.</p>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tgl Pelaksanaan <span class="text-rose-500">*</span></label>
+                                <input type="date" wire:model="tanggal_pelaksanaan" class="w-full px-4 py-2.5 bg-slate-50 border border-indigo-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all" required>
                             </div>
-
                         </div>
 
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2 pt-2">Data Kontrak / Kerja Sama</h4>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 border-b border-slate-100 pb-2">Data PKS / Kontrak</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                             <div>
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Nomor PKS / Kontrak</label>
-                                <input type="text" wire:model="nomor_pks" list="pks_suggestions" placeholder="Pilih yang sudah ada atau ketik baru..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-text">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor PKS</label>
+                                <input type="text" wire:model="nomor_pks" list="pks_suggestions" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all" placeholder="Ketik atau pilih Nomor PKS">
                                 <datalist id="pks_suggestions">
                                     @foreach($pks_suggestions as $pks) <option value="{{ $pks }}"> @endforeach
                                 </datalist>
-                                <p class="text-[10px] text-slate-400 mt-1">Sistem otomatis merekomendasikan Nomor PKS yang pernah digunakan.</p>
                             </div>
-                            
                             <div>
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Tanggal PKS / Kontrak</label>
-                                <input type="date" wire:model="tanggal_pks" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal PKS</label>
+                                <input type="date" wire:model="tanggal_pks" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all">
                             </div>
+                        </div>
+
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 border-b border-slate-100 pb-2">Penanggung Jawab Berita Acara</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            
+                            <div x-data="{
+                                selectedUser: '',
+                                fillData() {
+                                    if (this.selectedUser) {
+                                        let u = $wire.kepala_ukpd_users.find(u => u.id == this.selectedUser);
+                                        if (u) {
+                                            $wire.nama_kepala_ukpd = u.name;
+                                            $wire.nip_kepala_ukpd = u.nip || '';
+                                        }
+                                    }
+                                }
+                            }" class="space-y-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <div>
+                                    <label class="block text-sm font-bold text-indigo-700 mb-1.5">Pilih Ka. UKPD</label>
+                                    <select x-model="selectedUser" @change="fillData()" class="px-3 py-2 bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 rounded-xl block w-full cursor-pointer focus:ring-2 focus:ring-indigo-500">
+                                        <option value="">-- Cari di Master Ka. UKPD --</option>
+                                        <template x-for="u in $wire.kepala_ukpd_users" :key="u.id">
+                                            <option :value="u.id" x-text="u.name + (u.nip ? ' - ' + u.nip : '')"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <div class="space-y-3 pt-3 border-t border-slate-100">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Ka. UKPD <span class="text-rose-500">*</span></label>
+                                        <input type="text" wire:model="nama_kepala_ukpd" placeholder="Nama Lengkap..." class="px-4 py-2 bg-slate-50 border border-slate-200 text-sm rounded-lg block w-full" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">NIP Ka. UKPD</label>
+                                        <input type="text" wire:model="nip_kepala_ukpd" placeholder="NIP/NRK..." class="px-4 py-2 bg-slate-50 border border-slate-200 text-sm rounded-lg block w-full">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div x-data="{
+                                selectedUser: '',
+                                fillData() {
+                                    if (this.selectedUser) {
+                                        let u = $wire.pptk_users.find(u => u.id == this.selectedUser);
+                                        if (u) {
+                                            $wire.nama_pptk = u.name;
+                                            $wire.nip_pptk = u.nip || '';
+                                        }
+                                    }
+                                }
+                            }" class="space-y-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <div>
+                                    <label class="block text-sm font-bold text-indigo-700 mb-1.5">Pilih PPTK</label>
+                                    <select x-model="selectedUser" @change="fillData()" class="px-3 py-2 bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 rounded-xl block w-full cursor-pointer focus:ring-2 focus:ring-indigo-500">
+                                        <option value="">-- Cari di Master PPTK --</option>
+                                        <template x-for="u in $wire.pptk_users" :key="u.id">
+                                            <option :value="u.id" x-text="u.name + (u.nip ? ' - ' + u.nip : '')"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <div class="space-y-3 pt-3 border-t border-slate-100">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama PPTK <span class="text-rose-500">*</span></label>
+                                        <input type="text" wire:model="nama_pptk" placeholder="Nama Lengkap..." class="px-4 py-2 bg-slate-50 border border-slate-200 text-sm rounded-lg block w-full" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">NIP PPTK</label>
+                                        <input type="text" wire:model="nip_pptk" placeholder="NIP/NRK..." class="px-4 py-2 bg-slate-50 border border-slate-200 text-sm rounded-lg block w-full">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div x-data="{
+                                selectedUser: '',
+                                fillData() {
+                                    if (this.selectedUser) {
+                                        let u = $wire.nakhoda_users.find(u => u.id == this.selectedUser);
+                                        if (u) {
+                                            $wire.nama_nakhoda = u.name;
+                                            $wire.nip_nakhoda = u.nip || '';
+                                        }
+                                    }
+                                }
+                            }" class="space-y-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <div>
+                                    <label class="block text-sm font-bold text-indigo-700 mb-1.5">Pilih Nakhoda</label>
+                                    <select x-model="selectedUser" @change="fillData()" class="px-3 py-2 bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 rounded-xl block w-full cursor-pointer focus:ring-2 focus:ring-indigo-500">
+                                        <option value="">-- Cari di Master Nakhoda --</option>
+                                        <template x-for="u in $wire.nakhoda_users" :key="u.id">
+                                            <option :value="u.id" x-text="u.name + (u.nip ? ' - ' + u.nip : '')"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <div class="space-y-3 pt-3 border-t border-slate-100">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Nakhoda <span class="text-rose-500">*</span></label>
+                                        <input type="text" wire:model="nama_nakhoda" placeholder="Nama Lengkap..." class="px-4 py-2 bg-slate-50 border border-slate-200 text-sm rounded-lg block w-full" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">NIP/ID Nakhoda</label>
+                                        <input type="text" wire:model="nip_nakhoda" placeholder="NIP/ID..." class="px-4 py-2 bg-slate-50 border border-slate-200 text-sm rounded-lg block w-full">
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                     </form>
                 </div>
 
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3 rounded-b-3xl shrink-0">
-                    <button wire:click="closeModal()" type="button" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm font-semibold rounded-xl transition-colors shadow-sm">Batal</button>
-                    <button type="submit" form="form-ba" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-95 transition-all">Simpan Berita Acara</button>
+                <div class="flex items-center justify-end p-5 border-t border-slate-100 bg-slate-50/80 gap-3 shrink-0 rounded-b-2xl">
+                    <button wire:click="closeModal()" type="button" class="text-slate-700 bg-white border border-slate-300 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm">Batal</button>
+                    <button type="submit" form="form-ba" class="text-white bg-indigo-600 px-6 py-2.5 rounded-xl text-sm font-semibold shadow-md hover:bg-indigo-700 transition-all">Simpan Berita Acara</button>
                 </div>
-
             </div>
         </div>
         @endif

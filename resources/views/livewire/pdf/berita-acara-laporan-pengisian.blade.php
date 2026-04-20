@@ -34,10 +34,10 @@
         </div>
 
         <div style="margin-top: 10px; text-align: justify;">
-            <p>Pada hari ini <span style="font-weight: bold;">{{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('l') : '................' }}</span> 
-                tanggal <span style="font-weight: bold;">{{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('d') : '................' }}</span> 
-                bulan <span style="font-weight: bold;">{{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('F') : '................' }}</span> 
-                tahun <span style="font-weight: bold;">{{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('Y') : '................' }}</span> 
+            <p>Pada hari ini {{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('l') : '................' }}
+                tanggal {{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('d') : '................' }}
+                bulan {{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('F') : '................' }}
+                tahun {{ $laporan->tgl_pelaksanaan ? \Carbon\Carbon::parse($laporan->tgl_pelaksanaan)->locale('id')->translatedFormat('Y') : '................' }}
                 bertempat di {{ $laporan->suratPermohonan->suratTugas->lokasi ?? '-' }}</p>
             
             <p style="margin-bottom: 5px;">Berdasarkan:</p>
@@ -47,14 +47,14 @@
                     <td style="vertical-align: top; text-align: justify;">Peraturan Gubernur Daerah Khusus Ibukota Jakarta Nomor 75 Tahun 2021 tentang Pemberian Bahan Bakar Minyak Kendaraan Dinas;</td></tr>
                 <tr>
                     <td style="vertical-align: top;">b.</td>
-                    <td style="vertical-align: top; text-align: justify;">Perjanjian Kerja Sama (PKS) Penyediaan Bahan Bakar Minyak Kendaraan Dinas Operasional (KDO) Khusus <span style="font-weight: bold;">{{ $laporan?->kapal?->ukpd?->nama }}</span> 
-                        Dinas Perhubungan Provinsi DKI Jakarta dengan <span style="font-weight: bold;">{{ $laporan->suratPermohonan->penyedia->name ?? '-' }}</span> Nomor <span style="font-weight: bold;">{{ $laporan->nomor_pks ?? '.......................' }}</span> Tanggal <span style="font-weight: bold;">{{ $laporan->tanggal_pks ? \Carbon\Carbon::parse($laporan->tanggal_pks)->locale('id')->translatedFormat('d F Y') : '................' }}</span> dan
+                    <td style="vertical-align: top; text-align: justify;">Perjanjian Kerja Sama (PKS) Penyediaan Bahan Bakar Minyak Kendaraan Dinas Operasional (KDO) Khusus {{ $laporan?->kapal?->ukpd?->nama }} 
+                        Dinas Perhubungan Provinsi DKI Jakarta dengan {{ $laporan->suratPermohonan->penyedia->name ?? '-' }} Nomor {{ $laporan->nomor_pks ?? '.......................' }} Tanggal {{ $laporan->tanggal_pks ? \Carbon\Carbon::parse($laporan->tanggal_pks)->locale('id')->translatedFormat('d F Y') : '................' }} dan
                     </td>
                 </tr>
                 <tr>
                     <td style="vertical-align: top;">c.</td>
-                    <td style="vertical-align: top; text-align: justify;">Surat Permohonan Nomor <span style="font-weight: bold;">{{ $laporan->suratPermohonan->nomor_surat ?? '.......................' }}</span> perihal Permohonan Pengisian Bahan Bakar Minyak pada tanggal
-                        <span style="font-weight: bold;">{{ $laporan->suratPermohonan->tanggal_surat ? \Carbon\Carbon::parse($laporan->suratPermohonan->tanggal_surat)->locale('id')->translatedFormat('d F Y') : '................' }}</span>.
+                    <td style="vertical-align: top; text-align: justify;">Surat Permohonan Nomor {{ $laporan->suratPermohonan->nomor_surat ?? '.......................' }} perihal Permohonan Pengisian Bahan Bakar Minyak pada tanggal
+                        {{ $laporan->suratPermohonan->tanggal_surat ? \Carbon\Carbon::parse($laporan->suratPermohonan->tanggal_surat)->locale('id')->translatedFormat('d F Y') : '................' }}.
                     </td>
                 </tr>
             </table>
@@ -111,14 +111,14 @@
                 <tr>
                     <td style="width: 50%; text-align: center; vertical-align: top;">
                         Penyedia BBM<br><br><br><br><br>
-                        (.........................................)<br>
+                        .........................................<br>
                         {{ $laporan->suratPermohonan->penyedia->name ?? '-' }}
                     </td>
                     <td style="width: 50%; text-align: center; vertical-align: top;">
                         Pejabat Pelaksana Teknis Kegiatan<br>
                         {{ $laporan?->kapal?->ukpd?->nama ?? '-' }}<br><br><br><br>
-                        <span style="font-weight: bold; text-decoration: underline;">{{ $laporan?->kapal?->ukpd?->pptk->name ?? '-' }}</span><br>
-                        NIP. {{ $laporan?->kapal?->ukpd?->pptk->nip ?? '-' }}
+                        <span style="text-decoration: underline;">{{ $laporan?->nama_pptk ?: ' ' }}</span><br>
+                        NIP. {{ $laporan?->id_pptk ?: '...........................................' }}
                     </td>
                 </tr>
                 <tr>
@@ -126,8 +126,8 @@
                         Mengetahui,<br>
                         Kepala {{ $laporan?->kapal?->ukpd?->nama ?? '-' }}<br>
                         Dinas Perhubungan Provinsi DKI Jakarta<br><br><br><br>
-                        <span style="font-weight: bold; text-decoration: underline;">{{ $laporan?->kapal?->ukpd?->kepalaUkpd->name ?? '-' }}</span><br>
-                        NIP. {{ $laporan?->kapal?->ukpd?->kepalaUkpd->nip ?? '-' }}
+                        <span style="text-decoration: underline;">{{ $laporan?->nama_kepala_ukpd ?: ' ' }}</span><br>
+                        NIP. {{ $laporan?->id_kepala_ukpd ?: '...........................................' }}
                     </td>
                 </tr>
             </table>
@@ -238,19 +238,20 @@
             <tr>
                 <td style="width: 50%; text-align: center; vertical-align: top;">
                     Petugas SPBU<br><br><br><br><br>
-                    (.........................................)
+                    .........................................
                 </td>
                 <td style="width: 50%; text-align: center; vertical-align: top;">
                     Nakhoda<br><br><br><br><br>
-                    (.........................................)
+                    <span style="text-decoration: underline;">{{ $laporan?->nama_nakhoda ?: ' ' }}</span><br>
+                    ID. {{ $laporan?->id_nakhoda ?: '...........................................' }}
                 </td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center; padding-top: 30px; vertical-align: top;">
                     Kepala {{ $laporan?->kapal?->ukpd?->nama ?? '-' }}<br>
                     Dinas Perhubungan Provinsi DKI Jakarta<br><br><br><br>
-                    <span style="font-weight: bold; text-decoration: underline;">{{ $laporan?->kapal?->ukpd?->kepalaUkpd->name ?? '-' }}</span><br>
-                    NIP. {{ $laporan?->kapal?->ukpd?->kepalaUkpd->nip ?? '-' }}
+                    <span style="text-decoration: underline;">{{ $laporan?->nama_kepala_ukpd ?? ' ' }}</span><br>
+                    NIP. {{ $laporan?->id_kepala_ukpd ?? '..............................................' }}
                 </td>
             </tr>
         </table>
