@@ -45,7 +45,7 @@ class KelolaUkpd extends Component
             ->orderBy('id', 'desc')
             ->paginate(10, ['*'], 'ukpdPage');
 
-        $rolesList = Role::whereIn('name', ['admin_ukpd', 'kepala_ukpd', 'Admin UKPD', 'Kepala UKPD'])->get();
+        $rolesList = Role::whereIn('slug', ['admin_ukpd', 'kepala_ukpd', 'pptk'])->get();
         $roleIds = $rolesList->pluck('id')->toArray();
 
         $queryUser = User::with(['ukpd', 'role'])->whereIn('role_id', $roleIds);

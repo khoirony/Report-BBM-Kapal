@@ -166,6 +166,7 @@ class KelolaUser extends Component
             'penyedia',
             'admin_ukpd',
             'kepala_ukpd',
+            'pptk'
         ];
         
         $excludedRoleIds = Role::whereIn('slug', $excludedRoleNames)->pluck('id')->toArray();
