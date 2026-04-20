@@ -8,8 +8,9 @@ use Livewire\WithFileUploads;
 use App\Models\SuratPermohonanPengisian;
 use App\Models\ProsesPenyediaBbm;
 use App\Models\User;
-use App\Models\Kapal; // Pastikan model Kapal di-import
+use App\Models\Kapal;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage; // Pastikan ini di-import untuk fitur Hapus File Lama
 
 class PesananMasukBBM extends Component
 {
@@ -26,6 +27,7 @@ class PesananMasukBBM extends Component
     // Properti Modal Proses
     public $isModalOpen = false;
     public $permohonan_id, $nomor_surat, $jumlah_liter, $lokasi_tujuan;
+    public $proses_id; // Ditambahkan untuk penanda Mode Edit
     
     // Inputan Penyedia
     public $tempat_pengambilan, $nomor_izin_penyedia, $harga_satuan;
@@ -46,20 +48,15 @@ class PesananMasukBBM extends Component
 
     public function render()
     {
-        // Panggil relasi 'penyedia' juga
         $query = SuratPermohonanPengisian::with(['suratTugas.LaporanSisaBbm.sounding.kapal', 'prosesPenyedia', 'penyedia']);
 
-        // 1. Filter hak akses:
-        // Jika yang login adalah role penyedia, HANYA tampilkan pesanan untuk perusahaannya
         if (auth()->user()?->role?->slug === 'penyedia') {
             $query->where('penyedia_id', auth()->id());
         } 
-        // Jika superadmin yang login, maka dia bisa memfilter berdasarkan dropdown penyedia
         elseif (!empty($this->filterPenyedia)) {
             $query->where('penyedia_id', $this->filterPenyedia);
         }
 
-        // 2. Filter Pencarian Text
         if (!empty($this->search)) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
@@ -69,14 +66,12 @@ class PesananMasukBBM extends Component
             });
         }
 
-        // 3. Filter Kapal
         if (!empty($this->filterKapal)) {
             $query->whereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($q) {
                 $q->where('id', $this->filterKapal);
             });
         }
 
-        // 4. Filter Range Tanggal
         if (!empty($this->filterTanggalAwal)) {
             $query->whereDate('tanggal_surat', '>=', $this->filterTanggalAwal);
         }
@@ -84,14 +79,12 @@ class PesananMasukBBM extends Component
             $query->whereDate('tanggal_surat', '<=', $this->filterTanggalAkhir);
         }
 
-        // 5. Sorting
         if ($this->sortBy === 'oldest') {
             $query->oldest('tanggal_surat');
         } else {
             $query->latest('tanggal_surat');
         }
 
-        // Ambil data untuk dropdown filter (Hanya kirim jika superadmin agar tidak membebani query)
         $penyedias = [];
         if (auth()->user()?->role?->slug === 'superadmin') {
             $penyedias = User::whereHas('role', function($q) {
@@ -99,7 +92,6 @@ class PesananMasukBBM extends Component
             })->get();
         }
 
-        // Ambil data kapal untuk dropdown
         $kapals = Kapal::all(); 
 
         return view('livewire.penyedia.pesanan-masuk-bbm', [
@@ -109,11 +101,10 @@ class PesananMasukBBM extends Component
         ])->layout('layouts.app');
     }
 
-    // ... (method openProsesModal, closeModal, storeProses biarkan sama persis seperti aslinya)
     public function openProsesModal($id)
     {
         $this->resetValidation();
-        $this->reset(['tempat_pengambilan', 'nomor_izin_penyedia', 'harga_satuan', 'file_evidence']);
+        $this->reset(['proses_id', 'tempat_pengambilan', 'nomor_izin_penyedia', 'harga_satuan', 'file_evidence']); // Reset proses_id
 
         $permohonan = SuratPermohonanPengisian::findOrFail($id);
         
@@ -125,6 +116,33 @@ class PesananMasukBBM extends Component
         $this->isModalOpen = true;
     }
 
+    // FUNGSI BARU: Buka Modal Edit
+    public function openEditModal($permohonan_id)
+    {
+        $this->resetValidation();
+        $this->reset(['file_evidence']); 
+
+        $permohonan = SuratPermohonanPengisian::with('prosesPenyedia')->findOrFail($permohonan_id);
+        $proses = $permohonan->prosesPenyedia;
+
+        if (!$proses) {
+            session()->flash('error', 'Data tidak ditemukan.');
+            return;
+        }
+
+        $this->proses_id = $proses->id; // Set ID proses untuk mode edit
+        $this->permohonan_id = $permohonan->id;
+        $this->nomor_surat = $permohonan->nomor_surat;
+        $this->jumlah_liter = $permohonan->jumlah_bbm ?? 0;
+        $this->lokasi_tujuan = $permohonan->tempat_pengambilan_bbm ?? 'Pelabuhan / SPBU';
+
+        $this->tempat_pengambilan = $proses->tempat_pengambilan;
+        $this->nomor_izin_penyedia = $proses->nomor_izin_penyedia;
+        $this->harga_satuan = $proses->harga_satuan;
+
+        $this->isModalOpen = true;
+    }
+
     public function closeModal()
     {
         $this->isModalOpen = false;
@@ -132,33 +150,60 @@ class PesananMasukBBM extends Component
 
     public function storeProses()
     {
-        $this->validate([
+        $rules = [
             'tempat_pengambilan'  => 'required|string|max:255',
             'nomor_izin_penyedia' => 'required|string|max:255',
             'harga_satuan'        => 'required|numeric|min:1',
-            'file_evidence'       => 'required|file|mimes:pdf,jpg,jpeg,png|max:3072',
-        ]);
+        ];
+
+        // Validasi file: Wajib jika baru, Opsional jika Edit
+        if ($this->proses_id) {
+            $rules['file_evidence'] = 'nullable|file|mimes:pdf,jpg,jpeg,png|max:3072';
+        } else {
+            $rules['file_evidence'] = 'required|file|mimes:pdf,jpg,jpeg,png|max:3072';
+        }
+
+        $this->validate($rules);
 
         $permohonan = SuratPermohonanPengisian::findOrFail($this->permohonan_id);
 
         DB::transaction(function () use ($permohonan) {
-            $path = $this->file_evidence->store('evidence_penyedia', 'public');
             $totalHarga = floatval($this->jumlah_liter) * floatval($this->harga_satuan);
-
-            ProsesPenyediaBbm::create([
-                'surat_permohonan_id' => $permohonan->id,
-                'user_id'             => auth()->id(),
+            
+            $data = [
                 'tempat_pengambilan'  => $this->tempat_pengambilan,
                 'nomor_izin_penyedia' => $this->nomor_izin_penyedia,
                 'harga_satuan'        => $this->harga_satuan,
                 'total_harga'         => $totalHarga,
-                'file_evidence'       => $path,
-            ]);
+            ];
 
-            $permohonan->update(['progress' => 'on progress']);
+            // Mode Edit
+            if ($this->proses_id) {
+                $proses = ProsesPenyediaBbm::findOrFail($this->proses_id);
+                
+                // Jika user upload file baru, simpan & hapus file lama
+                if ($this->file_evidence) {
+                    $data['file_evidence'] = $this->file_evidence->store('evidence_penyedia', 'public');
+                    if ($proses->file_evidence && Storage::disk('public')->exists($proses->file_evidence)) {
+                        Storage::disk('public')->delete($proses->file_evidence);
+                    }
+                }
+
+                $proses->update($data);
+                session()->flash('message', 'Pesanan Delivery Order berhasil diperbarui.');
+            } 
+            // Mode Tambah Baru
+            else {
+                $data['surat_permohonan_id'] = $permohonan->id;
+                $data['user_id'] = auth()->id();
+                $data['file_evidence'] = $this->file_evidence->store('evidence_penyedia', 'public');
+
+                ProsesPenyediaBbm::create($data);
+                $permohonan->update(['progress' => 'on progress']);
+                session()->flash('message', 'Pesanan berhasil diproses. Status kini menjadi On Progress.');
+            }
         });
 
-        session()->flash('message', 'Pesanan berhasil diproses. Status kini menjadi On Progress.');
         $this->closeModal();
     }
 }

@@ -64,7 +64,7 @@
                 @if (auth()->user()?->role?->slug == 'superadmin')
                     <div class="relative w-full">
                         <select wire:model.live="filterPenyedia" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-amber-500 block w-full appearance-none hover:bg-slate-50 cursor-pointer">
-                            <option value="">Semua Perusahaan / Penyedia</option>
+                            <option value="">Semua Perusahaan</option>
                             @if(isset($penyedias))
                                 @foreach($penyedias as $penyedia)
                                     <option value="{{ $penyedia->id }}">{{ $penyedia->name }}</option>
@@ -215,13 +215,21 @@
                                         </button>
                                     @else
                                         <div class="flex flex-col gap-2 w-full lg:w-auto items-end">
-                                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded border border-emerald-100 w-full lg:w-auto text-center"><svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Telah Diproses</span>
+                                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded border border-emerald-100 w-full lg:w-auto text-center">
+                                                <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Telah Diproses
+                                            </span>
                                             
-                                            @if($item->prosesPenyedia && $item->prosesPenyedia->file_evidence)
-                                            <a href="{{ Storage::url($item->prosesPenyedia->file_evidence) }}" target="_blank" class="w-full lg:w-auto text-center inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-indigo-600 rounded-lg shadow-sm transition-colors">
-                                                Lihat Bukti (DO)
-                                            </a>
-                                            @endif
+                                            <div class="flex gap-2 w-full lg:w-auto justify-end">
+                                                <button wire:click="openEditModal({{ $item->id }})" title="Edit Data DO" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded-lg shadow-sm transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                </button>
+
+                                                @if($item->prosesPenyedia && $item->prosesPenyedia->file_evidence)
+                                                    <a href="{{ Storage::url($item->prosesPenyedia->file_evidence) }}" target="_blank" class="w-full lg:w-auto text-center inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-indigo-600 rounded-lg shadow-sm transition-colors">
+                                                        Lihat Bukti (DO)
+                                                    </a>
+                                                @endif
+                                            </div>
                                         </div>
                                     @endif
                                 </td>
@@ -254,7 +262,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-bold text-slate-900">Proses Pesanan Delivery Order</h3>
+                            <h3 class="text-lg font-bold text-slate-900">{{ $proses_id ? 'Edit Proses Delivery Order' : 'Proses Pesanan Delivery Order' }}</h3>
                             <p class="text-xs text-slate-500 font-medium">Surat Ref: {{ $nomor_surat }}</p>
                         </div>
                     </div>
@@ -303,15 +311,22 @@
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Upload Bukti Proses (Surat Jalan/DO) <span class="text-rose-500">*</span></label>
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">Upload Bukti Proses (Surat Jalan/DO) {!! !$proses_id ? '<span class="text-rose-500">*</span>' : '' !!}</label>
                                 <div class="border-2 border-dashed border-slate-300 rounded-xl p-5 bg-white hover:bg-slate-50 transition-colors text-center sm:text-left">
-                                    <input type="file" wire:model="file_evidence" accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200 cursor-pointer" required>
+                                    <input type="file" wire:model="file_evidence" accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200 cursor-pointer" {{ !$proses_id ? 'required' : '' }}>
                                     
                                     <div wire:loading wire:target="file_evidence" class="text-xs text-amber-600 mt-3 font-semibold flex items-center justify-center sm:justify-start">
                                         <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                         Mengunggah dokumen...
                                     </div>
+                                    
                                     <p class="text-[10px] text-slate-400 mt-2 font-medium">Format: PDF, JPG, PNG. Maks: 3MB.</p>
+                                    @if($proses_id)
+                                        <p class="text-xs text-amber-600 font-semibold mt-1 flex items-center justify-center sm:justify-start">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            Biarkan kosong jika tidak ingin mengubah dokumen.
+                                        </p>
+                                    @endif
                                 </div>
                                 @error('file_evidence') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
@@ -323,7 +338,7 @@
                 <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3 rounded-b-3xl shrink-0">
                     <button wire:click="closeModal()" type="button" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm font-semibold rounded-xl transition-colors shadow-sm">Batal</button>
                     <button type="submit" form="form-proses" wire:loading.attr="disabled" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-bold shadow-sm hover:shadow active:scale-95 transition-all">
-                        Simpan & Proses Pesanan
+                        {{ $proses_id ? 'Simpan Perubahan' : 'Simpan & Proses Pesanan' }}
                     </button>
                 </div>
 

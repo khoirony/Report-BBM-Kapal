@@ -487,7 +487,7 @@
                                         @error('nama_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">NIP/NRK Nakhoda</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">ID Nakhoda</label>
                                         <input type="text" wire:model="id_nakhoda" placeholder="Contoh: 19800101..." class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl block w-full">
                                         @error('id_nakhoda') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                     </div>
