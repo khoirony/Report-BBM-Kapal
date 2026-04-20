@@ -391,13 +391,14 @@
         @if($isUserModalOpen)
         <div class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-sm p-4 sm:p-0 transition-all">
             <div @click.away="$wire.closeUserModal()" class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+                
                 <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
                     <div class="flex items-center space-x-3">
                         <div class="p-2 bg-emerald-100 rounded-lg text-emerald-600 hidden sm:block">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
                         </div>
                         <h3 class="text-lg font-bold text-slate-900">
-                            {{ $user_id ? 'Edit Data Pengguna' : 'Tambah Pengguna Baru' }}
+                            {{ !$user_id ? 'Tambah User Baru' : 'Edit Data User' }}
                         </h3>
                     </div>
                     <button wire:click="closeUserModal()" class="text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full p-2 transition-colors">
@@ -407,12 +408,18 @@
 
                 <div class="overflow-y-auto flex-1 p-6 custom-scrollbar">
                     <form wire:submit.prevent="storeUser" id="form-user" class="space-y-5">
+                        
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            
                             <div class="col-span-1 sm:col-span-2">
                                 <label class="block text-sm font-semibold text-slate-800 mb-2">Nama Lengkap <span class="text-rose-500">*</span></label>
-                                <input type="text" wire:model="user_name" placeholder="Nama pengguna..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
+                                <input type="text" wire:model="user_name" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
                                 @error('user_name') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">Email Akun <span class="text-rose-500">*</span></label>
+                                <input type="email" wire:model="user_email" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
+                                @error('user_email') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
@@ -423,25 +430,37 @@
 
                             <div>
                                 <label class="block text-sm font-semibold text-slate-800 mb-2">Username <span class="text-rose-500">*</span></label>
-                                <input type="text" wire:model="user_username" placeholder="Contoh: agus_setiawan" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
+                                <input type="text" wire:model="user_username" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
                                 @error('user_username') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
-                            
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Email Akses <span class="text-rose-500">*</span></label>
-                                <input type="email" wire:model="user_email" placeholder="email@domain.com" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
-                                @error('user_email') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                            </div>
 
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Password {!! $user_id ? '<span class="text-slate-400 font-normal text-xs">(Kosongkan jika tidak diubah)</span>' : '<span class="text-rose-500">*</span>' !!}</label>
-                                <input type="password" wire:model="user_password" placeholder="Minimal 6 karakter" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all">
+                            <div x-data="{ showPassword: false }">
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">Password {!! !$user_id ? '<span class="text-rose-500">*</span>' : '' !!}</label>
+                                
+                                <div class="relative">
+                                    <input :type="showPassword ? 'text' : 'password'" wire:model="user_password" placeholder="{{ $user_id ? 'Abaikan jika tidak diubah' : 'Minimal 6 Karakter' }}" class="w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" {{ !$user_id ? 'required' : '' }}>
+                                    
+                                    <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-emerald-600 focus:outline-none transition-colors" title="Tampilkan/Sembunyikan Password">
+                                        <svg x-show="!showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        <svg x-show="showPassword" style="display: none;" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                                 @error('user_password') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
+                        </div>
 
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2 pt-2 mt-4">Hak Akses, Penempatan & Status</h4>
+                        
+                        <div class="grid grid-cols-1 gap-5 bg-slate-50 p-4 rounded-xl border border-slate-100">
                             <div>
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Role Akses <span class="text-rose-500">*</span></label>
-                                <select wire:model="user_role_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Role Sistem <span class="text-rose-500">*</span></label>
+                                
+                                <select wire:model="user_role_id" class="w-full px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-emerald-200 outline-none transition-all cursor-pointer shadow-sm" required>
                                     <option value="">-- Pilih Role --</option>
                                     @foreach($rolesList as $role)
                                         <option value="{{ $role->id }}">{{ ucwords(str_replace('_', ' ', $role->name)) }}</option>
@@ -451,25 +470,44 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Unit Kerja (UKPD) <span class="text-rose-500">*</span></label>
-                                <select wire:model="user_ukpd_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tautkan ke UKPD <span class="text-rose-500">*</span></label>
+                                <select wire:model="user_ukpd_id" class="w-full px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-emerald-200 outline-none transition-all cursor-pointer shadow-sm" required>
                                     <option value="">-- Pilih UKPD --</option>
                                     @foreach($listUkpd as $ukpd_item)
                                         <option value="{{ $ukpd_item->id }}">{{ $ukpd_item->singkatan ?? $ukpd_item->nama }}</option>
                                     @endforeach
                                 </select>
+                                <p class="text-[10.5px] text-slate-500 mt-2 flex items-center">
+                                    <svg class="w-3.5 h-3.5 mr-1 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
+                                    Mengikat user agar hanya dapat mengelola data sesuai wilayah UKPD yang dipilih.
+                                </p>
                                 @error('user_ukpd_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Status Verifikasi Email</label>
+                                <select wire:model="user_is_verified" class="w-full px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl focus:ring-2 focus:ring-emerald-200 outline-none transition-all cursor-pointer shadow-sm">
+                                    <option value="1">Sudah Diverifikasi</option>
+                                    <option value="0">Belum Diverifikasi</option>
+                                </select>
+                                <p class="text-[10.5px] text-slate-500 mt-2 flex items-center">
+                                    <svg class="w-3.5 h-3.5 mr-1 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> 
+                                    Tentukan apakah user sudah dapat mengakses sistem secara langsung.
+                                </p>
+                                @error('user_is_verified') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
                         </div>
+
                     </form>
                 </div>
 
                 <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3 rounded-b-3xl shrink-0">
                     <button wire:click="closeUserModal()" type="button" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm font-semibold rounded-xl transition-colors shadow-sm">Batal</button>
                     <button type="submit" form="form-user" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-95 transition-all">
-                        {{ $user_id ? 'Perbarui Data' : 'Simpan Data' }}
+                        {{ !$user_id ? 'Simpan Data User' : 'Perbarui Data User' }}
                     </button>
                 </div>
+
             </div>
         </div>
         @endif

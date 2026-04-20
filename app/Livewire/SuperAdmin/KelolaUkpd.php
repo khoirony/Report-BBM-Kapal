@@ -19,8 +19,8 @@ class KelolaUkpd extends Component
     public $isOpen = false;
 
     // ================= Properti User =================
-    // UPDATE: Ditambahkan user_username dan user_nip
-    public $user_id, $user_name, $user_username, $user_nip, $user_email, $user_password, $user_role_id, $user_ukpd_id;
+    // UPDATE: Ditambahkan properti user_is_verified
+    public $user_id, $user_name, $user_username, $user_nip, $user_email, $user_password, $user_role_id, $user_ukpd_id, $user_is_verified = 0;
     public $isUserModalOpen = false;
     
     // Properti Filter & Sort User
@@ -54,8 +54,8 @@ class KelolaUkpd extends Component
             $queryUser->where(function ($query) {
                 $query->where('name', 'like', '%' . $this->searchUser . '%')
                       ->orWhere('email', 'like', '%' . $this->searchUser . '%')
-                      ->orWhere('username', 'like', '%' . $this->searchUser . '%') // Pencarian Username
-                      ->orWhere('nip', 'like', '%' . $this->searchUser . '%');     // Pencarian NIP
+                      ->orWhere('username', 'like', '%' . $this->searchUser . '%')
+                      ->orWhere('nip', 'like', '%' . $this->searchUser . '%');
             });
         }
 
@@ -162,18 +162,18 @@ class KelolaUkpd extends Component
     {
         $this->user_id = '';
         $this->user_name = '';
-        $this->user_username = ''; // Reset username
-        $this->user_nip = '';      // Reset nip
+        $this->user_username = '';
+        $this->user_nip = '';
         $this->user_email = '';
         $this->user_password = '';
         $this->user_role_id = '';
         $this->user_ukpd_id = '';
+        $this->user_is_verified = 0;
         $this->resetValidation();
     }
 
     public function storeUser()
     {
-        // UPDATE: Validasi NIP (Nullable) & Username (Wajib)
         $rules = [
             'user_name' => 'required|string|max:255',
             'user_username' => 'required|string|max:255|unique:users,username,' . $this->user_id,
@@ -181,6 +181,7 @@ class KelolaUkpd extends Component
             'user_email' => 'required|email|max:255|unique:users,email,' . $this->user_id,
             'user_role_id' => 'required|exists:roles,id',
             'user_ukpd_id' => 'required|exists:ukpds,id',
+            'user_is_verified' => 'required|boolean',
         ];
 
         if (!$this->user_id || $this->user_password) {
@@ -191,12 +192,23 @@ class KelolaUkpd extends Component
 
         $data = [
             'name' => $this->user_name,
-            'username' => $this->user_username, // Simpan username
-            'nip' => $this->user_nip,           // Simpan NIP
+            'username' => $this->user_username,
+            'nip' => $this->user_nip,
             'email' => $this->user_email,
             'role_id' => $this->user_role_id,
             'ukpd_id' => $this->user_ukpd_id,
         ];
+
+        if ($this->user_is_verified) {
+            if ($this->user_id) {
+                $existingUser = User::find($this->user_id);
+                $data['email_verified_at'] = $existingUser->email_verified_at ?? now();
+            } else {
+                $data['email_verified_at'] = now();
+            }
+        } else {
+            $data['email_verified_at'] = null;
+        }
 
         if ($this->user_password) {
             $data['password'] = Hash::make($this->user_password);
@@ -214,11 +226,13 @@ class KelolaUkpd extends Component
         
         $this->user_id = $id;
         $this->user_name = $user->name;
-        $this->user_username = $user->username; // Inisialisasi username
-        $this->user_nip = $user->nip;           // Inisialisasi NIP
+        $this->user_username = $user->username;
+        $this->user_nip = $user->nip;
         $this->user_email = $user->email;
         $this->user_role_id = $user->role_id;
         $this->user_ukpd_id = $user->ukpd_id;
+        
+        $this->user_is_verified = $user->email_verified_at ? 1 : 0; 
 
         $this->isUserModalOpen = true;
     }
