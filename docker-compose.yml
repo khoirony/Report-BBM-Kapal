@@ -17,9 +17,9 @@ services:
     volumes:
       - .:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      # Folder untuk menyimpan sertifikat SSL
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
+      # Membaca sertifikat SSL langsung dari direktori OS Server Contabo (Read-Only)
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
     depends_on:
       - app
     restart: always
@@ -36,12 +36,12 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
-  # Container Certbot (untuk generate SSL)
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
+  # Container Certbot Dinonaktifkan (Karena SSL sudah di-generate langsung di OS Server)
+  # certbot:
+  #   image: certbot/certbot
+  #   volumes:
+  #     - /etc/letsencrypt:/etc/letsencrypt
+  #     - /var/www/certbot:/var/www/certbot
 
 volumes:
   db_data:
