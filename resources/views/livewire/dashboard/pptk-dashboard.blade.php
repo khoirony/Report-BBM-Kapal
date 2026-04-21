@@ -1,24 +1,31 @@
 <div class="p-6 bg-slate-50 min-h-screen" x-data="{ tab: 'dashboard' }">
     
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-4">
+    
+        <div class="w-full lg:w-auto overflow-hidden">
             <h1 class="text-2xl font-bold text-slate-800">Dashboard PPTK</h1>
-            <div class="flex gap-4 mt-2 border-b border-slate-200">
-                <button @click="tab = 'dashboard'" :class="tab === 'dashboard' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition">Dashboard Utama</button>
-                <button @click="tab = 'laporan'" :class="tab === 'laporan' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition">Laporan Transaksi</button>
+            
+            <div class="flex gap-4 mt-4 border-b border-slate-200 overflow-x-auto" style="scrollbar-width: none;">
+                <button @click="tab = 'dashboard'" :class="tab === 'dashboard' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition whitespace-nowrap">Dashboard Utama</button>
+                <button @click="tab = 'laporan'" :class="tab === 'laporan' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition whitespace-nowrap">Laporan Transaksi</button>
             </div>
         </div>
         
-        <div class="flex items-center bg-white p-2 rounded-xl shadow-sm border border-slate-200">
-            <div class="flex items-center gap-2 px-2">
+        <div class="flex flex-col sm:flex-row sm:items-center bg-white p-3 sm:p-2 rounded-xl shadow-sm border border-slate-200 gap-3 sm:gap-0 w-full lg:w-auto mt-2 lg:mt-0">
+            
+            <div class="flex items-center justify-between sm:justify-start gap-2 px-2 w-full sm:w-auto">
                 <span class="text-xs font-semibold text-slate-400 uppercase">Dari</span>
-                <input type="date" wire:model.live="startDate" class="text-sm border-none focus:ring-0 text-slate-600 cursor-pointer">
+                <input type="date" wire:model.live="startDate" class="text-sm border-none focus:ring-0 text-slate-600 cursor-pointer bg-transparent w-auto text-right sm:text-left">
             </div>
-            <div class="w-px h-5 bg-slate-200 mx-2"></div>
-            <div class="flex items-center gap-2 px-2">
+            
+            <div class="hidden sm:block w-px h-5 bg-slate-200 mx-2"></div>
+            <div class="block sm:hidden w-full h-px bg-slate-100"></div>
+            
+            <div class="flex items-center justify-between sm:justify-start gap-2 px-2 w-full sm:w-auto">
                 <span class="text-xs font-semibold text-slate-400 uppercase">Sampai</span>
-                <input type="date" wire:model.live="endDate" class="text-sm border-none focus:ring-0 text-slate-600 cursor-pointer">
+                <input type="date" wire:model.live="endDate" class="text-sm border-none focus:ring-0 text-slate-600 cursor-pointer bg-transparent w-auto text-right sm:text-left">
             </div>
+            
         </div>
     </div>
 
