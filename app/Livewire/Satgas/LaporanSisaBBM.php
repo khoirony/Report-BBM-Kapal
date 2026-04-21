@@ -43,7 +43,7 @@ class LaporanSisaBBM extends Component
     public function updatedUploadFiles($value, $key)
     {
         $this->validate([
-            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:10120',
         ]);
 
         $laporan = SisaBBM::findOrFail($key);
@@ -182,13 +182,13 @@ class LaporanSisaBBM extends Component
     public function store()
     {
         $this->validate([
-            'nomor' => 'nullable|string',
+            'nomor' => 'nullable|string|unique:laporan_sisa_bbms,nomor,' . $this->laporan_id,
             'kapal_id' => 'required',
             'sounding_id' => 'required',
             'tanggal_surat' => 'required|date',
-            'nama_nakhoda' => 'required|string',
+            'nama_nakhoda' => 'nullable|string',
             'id_nakhoda' => 'nullable|string',
-            'nama_pengawas' => 'required|string',
+            'nama_pengawas' => 'nullable|string',
             'id_pengawas' => 'nullable|string',
         ]);
 

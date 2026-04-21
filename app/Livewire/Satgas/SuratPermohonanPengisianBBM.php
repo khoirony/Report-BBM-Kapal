@@ -101,7 +101,7 @@ class SuratPermohonanPengisianBBM extends Component
     public function updatedUploadFiles($value, $key)
     {
         $this->validate([
-            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120', 
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:10120', 
         ]);
 
         $permohonan = SuratPermohonanPengisian::findOrFail($key);
@@ -255,15 +255,15 @@ class SuratPermohonanPengisianBBM extends Component
     {
         $this->validate([
             'surat_tugas_id' => 'required',
-            'nomor_surat' => 'nullable',
+            'nomor_surat' => 'nullable|unique:surat_permohonan_pengisians,nomor_surat,' . $this->permohonan_id,
             'tanggal_surat' => 'required|date',
             'penyedia_id' => 'nullable|exists:users,id',
             'tempat_pengambilan_bbm' => 'nullable|string|max:255',
             'metode_pengiriman' => 'nullable|in:Ambil ditempat,Pengiriman Jalur Darat,Pengiriman Jalur Laut',
             'jumlah_bbm' => 'nullable|numeric|min:0',
-            'nama_nakhoda' => 'required|string|max:255',
+            'nama_nakhoda' => 'nullable|string|max:255',
             'id_nakhoda' => 'nullable|string|max:255',
-            'nama_pptk' => 'required|string|max:255',
+            'nama_pptk' => 'nullable|string|max:255',
             'id_pptk' => 'nullable|string|max:255',
         ]);
 

@@ -87,7 +87,7 @@ class BeritaAcaraLaporanPengisian extends Component
     public function updatedUploadFiles($value, $key)
     {
         $this->validate([
-            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:5120',
+            "upload_files.{$key}" => 'required|mimes:pdf,jpg,jpeg,png|max:10120',
         ]);
 
         $ba = BaPengisianBbm::findOrFail($key);
@@ -216,18 +216,19 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->loadUserSuggestions(null);
     }
 
-    public function store() {
+    public function store() 
+    {
         $this->validate([
             'laporan_pengisian_bbm_id' => 'required',
             'kapal_id' => 'required',
-            'nomor_ba' => 'nullable|string|max:255',
+            'nomor_ba' => 'nullable|string|max:255|unique:ba_pengisian_bbms,nomor_ba,' . $this->laporan_id,
             'tanggal_ba' => 'required|date',
             'tanggal_pelaksanaan' => 'required|date',
-            'nama_pptk' => 'required|string|max:255',
+            'nama_pptk' => 'nullable|string|max:255',
             'nip_pptk' => 'nullable|string|max:255',
-            'nama_kepala_ukpd' => 'required|string|max:255',
+            'nama_kepala_ukpd' => 'nullable|string|max:255',
             'nip_kepala_ukpd' => 'nullable|string|max:255',
-            'nama_nakhoda' => 'required|string|max:255',
+            'nama_nakhoda' => 'nullable|string|max:255',
             'nip_nakhoda' => 'nullable|string|max:255',
         ]);
 
