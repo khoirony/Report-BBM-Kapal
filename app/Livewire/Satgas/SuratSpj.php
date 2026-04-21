@@ -110,7 +110,7 @@ class SuratSpj extends Component
             'proses_penyedia_bbm_id' => 'nullable|exists:proses_penyedia_bbms,id',
             'tanggal_spj'            => 'required|date',
             'total_biaya'            => 'required|numeric|min:0',
-            'file_spj'               => $this->spj_id ? 'nullable|mimes:pdf,jpg,jpeg,png|max:5120' : 'required|mimes:pdf,jpg,jpeg,png|max:5120',
+            'file_spj'               => $this->spj_id ? 'nullable|mimes:pdf,jpg,jpeg,png|max:10120' : 'required|mimes:pdf,jpg,jpeg,png|max:10120',
         ]);
 
         $data = [

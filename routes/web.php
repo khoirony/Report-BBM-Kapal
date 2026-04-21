@@ -40,7 +40,7 @@ Route::get('/', function () {
 
     return match (auth()->user()?->role?->slug) {
         'superadmin'  => redirect()->route('dashboard.superadmin'),
-        'admin_ukpd'  => redirect()->route('dashboard.admin_ukpd'), 
+        'admin_ukpd'  => redirect()->route('dashboard.admin-ukpd'), 
         'sounding'    => redirect()->route('dashboard.sounding'),
         'satgas'      => redirect()->route('dashboard.satgas'),
         'pengawas'    => redirect()->route('dashboard.pengawas'),
