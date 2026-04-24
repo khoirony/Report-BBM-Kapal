@@ -303,7 +303,7 @@
                                         <span class="text-[10px] text-slate-500 ml-2 font-medium">Foto saat ini</span>
                                     </div>
                                 @endif
-                                <input type="file" wire:model="new_foto_proses" accept="image/*" capture="environment" class="block w-full text-sm text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                                <input type="file" wire:model="new_foto_proses" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
                                 @if($edit_id) <p class="text-[10px] text-slate-400 mt-1.5">Abaikan/biarkan kosong jika tidak ingin mengubah foto lama.</p> @endif
                                 @error('new_foto_proses') <span class="text-rose-500 text-[10px] block mt-1">{{ $message }}</span> @enderror
                             </div>
@@ -316,7 +316,7 @@
                                         <span class="text-[10px] text-slate-500 ml-2 font-medium">Foto saat ini</span>
                                     </div>
                                 @endif
-                                <input type="file" wire:model="new_foto_flow_meter" accept="image/*" capture="environment" class="block w-full text-sm text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                                <input type="file" wire:model="new_foto_flow_meter" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
                                 @if($edit_id) <p class="text-[10px] text-slate-400 mt-1.5">Abaikan/biarkan kosong jika tidak ingin mengubah foto lama.</p> @endif
                                 @error('new_foto_flow_meter') <span class="text-rose-500 text-[10px] block mt-1">{{ $message }}</span> @enderror
                             </div>
@@ -329,17 +329,10 @@
                                         <span class="text-[10px] text-slate-500 ml-2 font-medium">Foto saat ini</span>
                                     </div>
                                 @endif
-                                <input type="file" wire:model="new_foto_struk" accept="image/*" capture="environment" class="block w-full text-sm text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                                <input type="file" wire:model="new_foto_struk" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
                                 @if($edit_id) <p class="text-[10px] text-slate-400 mt-1.5">Abaikan/biarkan kosong jika tidak ingin mengubah foto lama.</p> @endif
                                 @error('new_foto_struk') <span class="text-rose-500 text-[10px] block mt-1">{{ $message }}</span> @enderror
                             </div>
-
-                            @if(!$edit_id)
-                                <p class="text-[11px] text-slate-500 mt-2 flex items-start">
-                                    <svg class="w-4 h-4 mr-1.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 
-                                    Akses web ini lewat HP dan gunakan opsi kamera (capture) untuk langsung memfoto bukti di lapangan.
-                                </p>
-                            @endif
                         </div>
 
                     </form>
