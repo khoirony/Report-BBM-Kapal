@@ -42,8 +42,8 @@ class SoundingBBM extends Component
 
     public function updated($propertyName)
     {
-        if (in_array($propertyName, ['bbm_awal', 'pengisian', 'pemakaian'])) {
-            $this->bbm_akhir = (float)$this->bbm_awal + (float)$this->pengisian - (float)$this->pemakaian;
+        if (in_array($propertyName, ['bbm_awal', 'pengisian', 'bbm_akhir'])) {
+            $this->pemakaian = (float)$this->bbm_awal + (float)$this->pengisian - (float)$this->bbm_akhir;
         }
     }
 
@@ -158,7 +158,7 @@ class SoundingBBM extends Component
             'tanggal_sounding' => 'required|date',
             'bbm_awal' => 'required|numeric',
             'pengisian' => 'required|numeric',
-            'pemakaian' => 'required|numeric',
+            'bbm_akhir' => 'required|numeric', // Validasi ke bbm_akhir
             'jam_pemeriksaan' => 'required',
         ];
 
@@ -169,7 +169,7 @@ class SoundingBBM extends Component
         $this->validate($rules);
 
         $finalKeterangan = $this->keterangan_pilihan === 'other' ? $this->keterangan : $this->keterangan_pilihan;
-        $bbm_akhir_calc = (float)$this->bbm_awal + (float)$this->pengisian - (float)$this->pemakaian;
+        $pemakaian_calc = (float)$this->bbm_awal + (float)$this->pengisian - (float)$this->bbm_akhir;
 
         $data = [
             'kapal_id' => $this->kapal_id,
@@ -177,8 +177,8 @@ class SoundingBBM extends Component
             'tanggal_sounding' => $this->tanggal_sounding,
             'bbm_awal' => $this->bbm_awal,
             'pengisian' => $this->pengisian,
-            'pemakaian' => $this->pemakaian,
-            'bbm_akhir' => $bbm_akhir_calc,
+            'pemakaian' => $pemakaian_calc,
+            'bbm_akhir' => $this->bbm_akhir,
             'jam_pemeriksaan' => $this->jam_pemeriksaan,
         ];
 

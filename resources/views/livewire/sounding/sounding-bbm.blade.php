@@ -105,7 +105,6 @@
         </div>
 
         @php
-            // Grouping diubah menggunakan tanggal_sounding
             $groupedSoundings = $soundings->groupBy(function($item) {
                 return $item->kapal_id . '_' . $item->tanggal_sounding;
             })->map(function($group) {
@@ -325,19 +324,20 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-rose-700 mb-1.5">Pemakaian (Liter) <span class="text-rose-500">*</span></label>
+                                <label class="block text-sm font-semibold text-rose-700 mb-1.5">Pemakaian (Otomatis)</label>
                                 <div class="relative">
-                                    <input type="number" step="0.01" wire:model.live.debounce.300ms="pemakaian" placeholder="0" class="pl-4 pr-10 py-2.5 bg-rose-50 border border-rose-200 text-rose-900 text-sm rounded-xl focus:ring-2 focus:ring-rose-500 block w-full transition-colors" required>
-                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-rose-600 font-bold">- L</span>
+                                    <input type="number" step="0.01" wire:model="pemakaian" readonly class="pl-4 pr-10 py-2.5 bg-rose-100 border border-rose-200 text-rose-800 font-bold text-sm rounded-xl block w-full cursor-not-allowed">
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-rose-800 font-bold">- L</span>
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-blue-700 mb-1.5">BBM Akhir (Otomatis)</label>
+                                <label class="block text-sm font-semibold text-blue-700 mb-1.5">BBM Akhir (Liter) <span class="text-rose-500">*</span></label>
                                 <div class="relative">
-                                    <input type="number" step="0.01" wire:model="bbm_akhir" readonly class="pl-4 pr-10 py-2.5 bg-blue-100 border border-blue-200 text-blue-800 font-bold text-sm rounded-xl block w-full cursor-not-allowed">
-                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-blue-800 font-extrabold">= L</span>
+                                    <input type="number" step="0.01" wire:model.live.debounce.300ms="bbm_akhir" placeholder="0" class="pl-4 pr-10 py-2.5 bg-blue-50 border border-blue-200 text-blue-900 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 block w-full transition-colors" required>
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-blue-600 font-extrabold">= L</span>
                                 </div>
+                                @error('bbm_akhir') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                             </div>
 
                             <div class="col-span-1 sm:col-span-2 border-t border-slate-100 my-1"></div>
