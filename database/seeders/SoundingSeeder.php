@@ -11,8 +11,6 @@ class SoundingSeeder extends Seeder
 {
     public function run(): void
     {
-        // Mengelompokkan kapal berdasarkan ukpd_id, 
-        // lalu mengambil maksimal 2 data kapal untuk masing-masing UKPD.
         $kapals = Kapal::whereNotNull('ukpd_id')
             ->get()
             ->groupBy('ukpd_id')
@@ -25,7 +23,6 @@ class SoundingSeeder extends Seeder
             return;
         }
 
-        // Variasi data dasar pengisian dan pemakaian
         $skenarioBBM = [
             [
                 ['isi' => 1000, 'pakai' => 200],
@@ -44,7 +41,6 @@ class SoundingSeeder extends Seeder
             ]
         ];
 
-        // Setup hari pencatatan (3 Hari yang lalu dan Hari Ini)
         $hariPencatatan = [
             Carbon::now()->subDays(3), 
             Carbon::now(),             
@@ -55,7 +51,7 @@ class SoundingSeeder extends Seeder
             $modalBbmAwal = [500, 200, 1000][$index % 3]; 
 
             foreach ($hariPencatatan as $tanggal) {
-                // 1. Titik Awal (Pom Bensin)
+                // 1. Titik Awal
                 $awal1 = $modalBbmAwal;
                 $isi1 = $skenario[0]['isi'];
                 $pakai1 = $skenario[0]['pakai'];
@@ -64,13 +60,12 @@ class SoundingSeeder extends Seeder
                 Sounding::create([
                     'kapal_id' => $kapal->id,
                     'keterangan' => 'Pom Bensin (Titik Awal)', 
-                    'tanggal_sounding' => $tanggal->format('Y-m-d'), // Format ke string tanggal
+                    'tanggal_sounding' => $tanggal->format('Y-m-d'),
                     'bbm_awal' => $awal1,
                     'pengisian' => $isi1,
                     'pemakaian' => $pakai1,
                     'bbm_akhir' => $akhir1, 
-                    'jam_berangkat' => Carbon::createFromTime(8, 0, 0),
-                    'jam_kembali' => Carbon::createFromTime(11, 30, 0),
+                    'jam_pemeriksaan' => Carbon::createFromTime(8, 0, 0), // Diubah ke jam_pemeriksaan
                     'user_id' => $kapal->user_id ?? 2,
                     'created_at' => $tanggal,
                     'updated_at' => $tanggal,
@@ -90,8 +85,7 @@ class SoundingSeeder extends Seeder
                     'pengisian' => $isi2,
                     'pemakaian' => $pakai2,
                     'bbm_akhir' => $akhir2,
-                    'jam_berangkat' => Carbon::createFromTime(12, 30, 0),
-                    'jam_kembali' => Carbon::createFromTime(15, 0, 0),
+                    'jam_pemeriksaan' => Carbon::createFromTime(12, 30, 0), // Diubah ke jam_pemeriksaan
                     'user_id' => $kapal->user_id ?? 2,
                     'created_at' => $tanggal,
                     'updated_at' => $tanggal,
@@ -111,18 +105,16 @@ class SoundingSeeder extends Seeder
                     'pengisian' => $isi3,
                     'pemakaian' => $pakai3,
                     'bbm_akhir' => $akhir3,
-                    'jam_berangkat' => Carbon::createFromTime(15, 30, 0),
-                    'jam_kembali' => Carbon::createFromTime(18, 0, 0),
+                    'jam_pemeriksaan' => Carbon::createFromTime(15, 30, 0), // Diubah ke jam_pemeriksaan
                     'user_id' => $kapal->user_id ?? 2,
                     'created_at' => $tanggal,
                     'updated_at' => $tanggal,
                 ]);
 
-                // Update modal BBM Awal untuk hari esoknya menggunakan BBM Akhir dari Titik B hari ini
                 $modalBbmAwal = $akhir3;
             }
         }
         
-        $this->command->info('Data Sounding berhasil dibuat dengan kolom baru!');
+        $this->command->info('Data Sounding berhasil dibuat dengan format jam pemeriksaan!');
     }
 }

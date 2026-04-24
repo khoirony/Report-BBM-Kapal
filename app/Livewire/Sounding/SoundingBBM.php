@@ -13,8 +13,7 @@ class SoundingBBM extends Component
 {
     use WithPagination;
 
-    // Tambahkan properti $keterangan_pilihan
-    public $sounding_id, $kapal_id, $keterangan_pilihan, $keterangan, $tanggal_sounding, $bbm_awal, $pengisian, $pemakaian, $bbm_akhir, $jam_berangkat, $jam_kembali;
+    public $sounding_id, $kapal_id, $keterangan_pilihan, $keterangan, $tanggal_sounding, $bbm_awal, $pengisian, $pemakaian, $bbm_akhir, $jam_pemeriksaan;
     public $isModalOpen = false;
 
     // Properti Search, Filter, & Sort
@@ -99,8 +98,8 @@ class SoundingBBM extends Component
         }
 
         match($this->sortBy) {
-            'oldest' => $query->orderBy('tanggal_sounding', 'asc')->orderBy('id', 'asc'),
-            default => $query->orderBy('tanggal_sounding', 'desc')->orderBy('id', 'desc'), 
+            'oldest' => $query->orderBy('tanggal_sounding', 'asc')->orderBy('jam_pemeriksaan', 'asc')->orderBy('id', 'asc'),
+            default => $query->orderBy('tanggal_sounding', 'desc')->orderBy('jam_pemeriksaan', 'asc')->orderBy('id', 'desc'), 
         };
 
         $soundings = $query->paginate(10);
@@ -141,20 +140,18 @@ class SoundingBBM extends Component
     {
         $this->sounding_id = '';
         $this->kapal_id = '';
-        $this->keterangan_pilihan = ''; // Tambahan reset
+        $this->keterangan_pilihan = ''; 
         $this->keterangan = '';
         $this->tanggal_sounding = '';
         $this->bbm_awal = 0;
         $this->pengisian = 0;
         $this->pemakaian = 0;
         $this->bbm_akhir = 0;
-        $this->jam_berangkat = '';
-        $this->jam_kembali = '';
+        $this->jam_pemeriksaan = '';
     }
 
     public function store()
     {
-        // Validasi dasar
         $rules = [
             'kapal_id' => 'required',
             'keterangan_pilihan' => 'required|string',
@@ -162,18 +159,15 @@ class SoundingBBM extends Component
             'bbm_awal' => 'required|numeric',
             'pengisian' => 'required|numeric',
             'pemakaian' => 'required|numeric',
-            'jam_berangkat' => 'required',
-            'jam_kembali' => 'required',
+            'jam_pemeriksaan' => 'required',
         ];
 
-        // Tambahkan validasi manual jika "other" dipilih
         if ($this->keterangan_pilihan === 'other') {
             $rules['keterangan'] = 'required|string|max:255';
         }
 
         $this->validate($rules);
 
-        // Tentukan hasil final untuk disimpan ke database
         $finalKeterangan = $this->keterangan_pilihan === 'other' ? $this->keterangan : $this->keterangan_pilihan;
         $bbm_akhir_calc = (float)$this->bbm_awal + (float)$this->pengisian - (float)$this->pemakaian;
 
@@ -185,8 +179,7 @@ class SoundingBBM extends Component
             'pengisian' => $this->pengisian,
             'pemakaian' => $this->pemakaian,
             'bbm_akhir' => $bbm_akhir_calc,
-            'jam_berangkat' => $this->jam_berangkat,
-            'jam_kembali' => $this->jam_kembali,
+            'jam_pemeriksaan' => $this->jam_pemeriksaan,
         ];
 
         if (!$this->sounding_id) {
@@ -220,10 +213,8 @@ class SoundingBBM extends Component
         $this->pengisian = $sounding->pengisian;
         $this->pemakaian = $sounding->pemakaian;
         $this->bbm_akhir = $sounding->bbm_akhir;
-        $this->jam_berangkat = $sounding->jam_berangkat;
-        $this->jam_kembali = $sounding->jam_kembali;
+        $this->jam_pemeriksaan = $sounding->jam_pemeriksaan;
 
-        // Cek apakah keterangan dari database ada di daftar standar
         if (in_array($sounding->keterangan, $this->opsi_keterangan)) {
             $this->keterangan_pilihan = $sounding->keterangan;
             $this->keterangan = '';

@@ -108,6 +108,8 @@
             // Grouping diubah menggunakan tanggal_sounding
             $groupedSoundings = $soundings->groupBy(function($item) {
                 return $item->kapal_id . '_' . $item->tanggal_sounding;
+            })->map(function($group) {
+                return $group->sortBy('jam_pemeriksaan');
             });
         @endphp
 
@@ -123,7 +125,7 @@
                         <tr>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/3">Keterangan Sounding</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/3">Rincian Volume BBM (Liter)</th>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6">Waktu Operasi & PIC</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/6">Jam Pemeriksaan & PIC</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider text-right w-1/6">Aksi</th>
                         </tr>
                     </thead>
@@ -132,7 +134,6 @@
                         @forelse($groupedSoundings as $groupKey => $records)
                             @php
                                 $firstRecord = $records->first();
-                                // Menggunakan kolom tanggal_sounding
                                 $tanggal = \Carbon\Carbon::parse($firstRecord->tanggal_sounding)->translatedFormat('l, d F Y');
                             @endphp
                             
@@ -215,11 +216,11 @@
                                         <div class="absolute left-[23px] md:hidden top-0 bottom-0 w-[2px] bg-indigo-200 z-0"></div>
                                     @endif
 
-                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-1 tracking-wider relative z-10">Waktu Operasi & PIC</span>
+                                    <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-1 tracking-wider relative z-10">Jam Pemeriksaan & PIC</span>
                                     <div class="flex flex-col space-y-2 w-max relative z-10">
                                         <div class="flex items-center text-xs font-semibold text-gray-700 bg-blue-50/50 px-2.5 py-1.5 rounded-lg border border-blue-100">
                                             <svg class="w-3.5 h-3.5 text-blue-500 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            {{ \Carbon\Carbon::parse($row->jam_berangkat)->format('H:i') }} - {{ \Carbon\Carbon::parse($row->jam_kembali)->format('H:i') }} WIB
+                                            {{ \Carbon\Carbon::parse($row->jam_pemeriksaan)->format('H:i') }} WIB
                                         </div>
                                         @if(auth()->user() && auth()->user()?->role?->slug === 'superadmin')
                                             <div class="flex items-center text-[11px] font-medium text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md border border-indigo-100" title="Ditambahkan oleh">
@@ -341,7 +342,7 @@
 
                             <div class="col-span-1 sm:col-span-2 border-t border-slate-100 my-1"></div>
 
-                            <div class="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <div class="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Sounding <span class="text-rose-500">*</span></label>
                                     <input type="date" wire:model="tanggal_sounding" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
@@ -349,15 +350,9 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jam Berangkat (WIB) <span class="text-rose-500">*</span></label>
-                                    <input type="time" wire:model="jam_berangkat" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
-                                    @error('jam_berangkat') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jam Kembali (WIB) <span class="text-rose-500">*</span></label>
-                                    <input type="time" wire:model="jam_kembali" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
-                                    @error('jam_kembali') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jam Pemeriksaan (WIB) <span class="text-rose-500">*</span></label>
+                                    <input type="time" wire:model="jam_pemeriksaan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                    @error('jam_pemeriksaan') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
                                 </div>
                             </div>
 
