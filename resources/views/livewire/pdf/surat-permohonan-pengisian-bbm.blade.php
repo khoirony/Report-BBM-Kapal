@@ -130,8 +130,8 @@
         
         <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
             <tr>
-                <td style="width: 35%; padding: 1px 0;">Tempat Pengambilan</td>
-                <td style="padding: 1px 0;">: {{ $surat->tempat_pengambilan_bbm ?? 'Stasiun Pengisian Bahan Bakar Umum' }}</td>
+                <td style="width: 35%; padding: 1px 0;">Perusahaan Penyedia BBM</td>
+                <td style="padding: 1px 0;">: {{ $surat->penyedia->name ?? '' }}</td>
             </tr>
             <tr>
                 <td style="padding: 1px 0;">Jenis Penyedia BBM</td>
