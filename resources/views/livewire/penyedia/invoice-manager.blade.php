@@ -71,7 +71,6 @@
             <div :class="{'hidden md:grid': !showFilters, 'grid': showFilters}" class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-100 transition-all duration-200">
                 @if (auth()->user()?->role?->slug == 'superadmin')
                 <div class="relative w-full">
-                    {{-- DIUBAH MENJADI FILTER PENYEDIA --}}
                     <select wire:model.live="filterPenyedia" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-lg focus:ring-2 focus:ring-indigo-500 block w-full cursor-pointer">
                         <option value="">Semua Penyedia BBM</option>
                         @foreach($penyedias as $penyedia) 
@@ -161,10 +160,11 @@
                                 </div>
                             </td>
         
+                            {{-- Modifikasi: Hitung otomatis Total Tagihan dari relasi suratPermohonan -> prosesPenyedia --}}
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase lg:hidden mb-2 block mt-2">Total Harga</span>
                                 <div class="font-extrabold text-emerald-600 text-lg">
-                                    Rp {{ number_format($inv->total_tagihan, 0, ',', '.') }}
+                                    Rp {{ number_format($inv->suratPermohonan->sum(function($ts) { return $ts->prosesPenyedia->total_harga ?? 0; }), 0, ',', '.') }}
                                 </div>
                             </td>
         
@@ -188,7 +188,7 @@
                                             Disetujui
                                         </div>
                                     @else
-                                        <div class="inline-flex justify-center items-center gap-1.5 px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-xs font-bold text-rose-700 w-full shadow-sm text-center">
+                                        <div class="inline-flex justify-center items-center gap-1.5 px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-xs font-bold text-rose-700 w-full shadow-sm text-center" title="Alasan: {{ $inv->catatan_penolakan }}">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                             Ditolak
                                         </div>
@@ -266,8 +266,10 @@
                                 <label class="block text-sm font-semibold text-slate-800 mb-2">Total Harga Tagihan (Rp) <span class="text-rose-500">*</span></label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 flex items-center pl-4 font-bold text-slate-500">Rp</span>
-                                    <input type="number" wire:model="total_tagihan" placeholder="0" class="w-full pl-10 pr-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
+                                    {{-- Modifikasi UX: Diberikan class readonly-like untuk menandakan bahwa ini terisi otomatis saat checklist dipilih, meskipun masih bisa diedit jika perlu --}}
+                                    <input type="number" wire:model="total_tagihan" placeholder="Pilih checklist transaksi di bawah agar total otomatis terisi" class="w-full pl-10 pr-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-200 outline-none transition-all" required>
                                 </div>
+                                <p class="text-[10px] text-slate-500 mt-1.5">*Nilai ini akan terisi dan terhitung otomatis ketika Anda mencentang transaksi di bawah.</p>
                             </div>
                         </div>
 
@@ -295,7 +297,7 @@
                                 <div class="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                                     @foreach($transaksi_tersedia as $ts)
                                         <label class="flex items-start p-3 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-300">
-                                            <input type="checkbox" wire:model="selected_transaksi" value="{{ $ts->id }}" class="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                                            <input type="checkbox" wire:model.live="selected_transaksi" value="{{ $ts->id }}" class="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300">
                                             <div class="ml-3 flex-1">
                                                 <div class="flex justify-between items-start">
                                                     <p class="text-sm font-bold text-slate-900">{{ $ts->nomor_surat ?? 'Surat Tanpa Nomor' }}</p>
@@ -303,7 +305,8 @@
                                                 </div>
                                                 <p class="text-xs text-slate-600 mt-1 font-medium">
                                                     Kapal: <span class="font-bold text-indigo-700">{{ $ts->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }}</span> | 
-                                                    Total BBM: <span class="font-bold text-emerald-600">{{ floatval($ts->jumlah_bbm) }} L</span>
+                                                    Total BBM: <span class="font-bold text-emerald-600">{{ floatval($ts->jumlah_bbm) }} L</span> | 
+                                                    <span class="font-bold text-slate-800">Rp {{ number_format($ts->prosesPenyedia->total_harga ?? 0, 0, ',', '.') }}</span>
                                                 </p>
                                             </div>
                                         </label>

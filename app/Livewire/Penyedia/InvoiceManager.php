@@ -8,7 +8,7 @@ use Livewire\WithPagination;
 use App\Models\RekonsiliasiInvoice;
 use App\Models\SuratPermohonanPengisian;
 use App\Models\Ukpd;
-use App\Models\User; // <-- Tambahkan ini
+use App\Models\User;
 
 class InvoiceManager extends Component
 {
@@ -23,13 +23,13 @@ class InvoiceManager extends Component
     // Properti Filter & Pencarian
     public $search = '';
     public $sortBy = 'latest';
-    public $filterPenyedia = ''; // <-- Ganti dari filterUkpd ke filterPenyedia
+    public $filterPenyedia = ''; 
     public $filterTanggalAwal = '';
     public $filterTanggalAkhir = '';
 
     // Reset halaman saat filter berubah
     public function updatingSearch() { $this->resetPage(); }
-    public function updatingFilterPenyedia() { $this->resetPage(); } // <-- Sesuaikan nama fungsi
+    public function updatingFilterPenyedia() { $this->resetPage(); }
     public function updatingFilterTanggalAwal() { $this->resetPage(); }
     public function updatingFilterTanggalAkhir() { $this->resetPage(); }
     public function updatingSortBy() { $this->resetPage(); }
@@ -46,10 +46,19 @@ class InvoiceManager extends Component
     public function updatedPeriodeAwal() { $this->loadTransaksiTersedia(); }
     public function updatedPeriodeAkhir() { $this->loadTransaksiTersedia(); }
 
+    public function updatedSelectedTransaksi()
+    {
+        $this->total_tagihan = collect($this->transaksi_tersedia)
+            ->whereIn('id', $this->selected_transaksi)
+            ->sum(function($ts) {
+                return $ts->prosesPenyedia->total_harga ?? 0;
+            });
+    }
+
     public function loadTransaksiTersedia()
     {
         if ($this->ukpd_id && $this->periode_awal && $this->periode_akhir) {
-            $this->transaksi_tersedia = SuratPermohonanPengisian::with('suratTugas')
+            $this->transaksi_tersedia = SuratPermohonanPengisian::with(['suratTugas.LaporanSisaBbm.sounding.kapal', 'prosesPenyedia'])
                 ->where('penyedia_id', auth()->id())
                 ->where('ukpd_id', $this->ukpd_id)
                 ->whereNull('rekonsiliasi_invoice_id') // Belum ditagihkan
@@ -59,11 +68,14 @@ class InvoiceManager extends Component
         } else {
             $this->transaksi_tersedia = [];
         }
+        
+        $this->selected_transaksi = [];
+        $this->total_tagihan = null;
     }
 
     public function render()
     {
-        $query = RekonsiliasiInvoice::with(['ukpd', 'suratPermohonan', 'penyedia']);
+        $query = RekonsiliasiInvoice::with(['ukpd', 'suratPermohonan.prosesPenyedia', 'penyedia']);
 
         // Jika bukan superadmin, filter data hanya milik penyedia yang sedang login
         if (auth()->user()?->role?->slug !== 'superadmin') {

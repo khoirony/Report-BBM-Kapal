@@ -125,7 +125,9 @@
         
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase lg:hidden mb-2 block mt-2">Total Tagihan</span>
-                                <div class="font-extrabold text-emerald-600 text-lg">Rp {{ number_format($inv->total_tagihan, 0, ',', '.') }}</div>
+                                <div class="font-extrabold text-emerald-600 text-lg">
+                                    Rp {{ number_format($inv->suratPermohonan->sum(function($ts) { return $ts->prosesPenyedia->total_harga ?? 0; }), 0, ',', '.') }}
+                                </div>
                             </td>
         
                             <td class="block lg:table-cell px-2 py-4 lg:px-6 lg:py-5 lg:text-right align-middle">
@@ -209,7 +211,9 @@
                                 </div>
                                 <div class="pt-2 border-t border-slate-100">
                                     <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Total Tagihan Diajukan</span>
-                                    <span class="font-extrabold text-emerald-600 text-2xl">Rp {{ number_format($this->selectedInvoice->total_tagihan, 0, ',', '.') }}</span>
+                                    <span class="font-extrabold text-emerald-600 text-2xl">
+                                        Rp {{ number_format($this->selectedInvoice->suratPermohonan->sum(function($ts) { return $ts->prosesPenyedia->total_harga ?? 0; }), 0, ',', '.') }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -245,7 +249,7 @@
                                             <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded border border-emerald-100">{{ floatval($ts->jumlah_bbm) }} Liter</span>
                                         </div>
                                         
-                                        <div class="grid grid-cols-2 gap-2 text-xs bg-white p-2 rounded-lg border border-slate-100 mt-2">
+                                        <div class="grid grid-cols-3 gap-2 text-xs bg-white p-2 rounded-lg border border-slate-100 mt-2">
                                             <div>
                                                 <span class="text-[9px] text-slate-400 block uppercase">Armada Kapal</span>
                                                 <span class="font-semibold text-slate-700">{{ $ts->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }}</span>
@@ -253,6 +257,10 @@
                                             <div>
                                                 <span class="text-[9px] text-slate-400 block uppercase">Jenis BBM</span>
                                                 <span class="font-semibold text-slate-700">{{ $ts->jenis_bbm }}</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-[9px] text-slate-400 block uppercase">Total Harga</span>
+                                                <span class="font-semibold text-emerald-600">Rp {{ number_format($ts?->prosesPenyedia?->total_harga ?? 0, 0, ',', '.') }}</span>
                                             </div>
                                         </div>
                                     </div>

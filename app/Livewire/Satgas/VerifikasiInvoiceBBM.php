@@ -4,7 +4,7 @@ namespace App\Livewire\Satgas;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Computed; // Pastikan ini di-import
+use Livewire\Attributes\Computed;
 use App\Models\RekonsiliasiInvoice;
 use App\Models\User;
 
@@ -21,7 +21,6 @@ class VerifikasiInvoiceBBM extends Component
     public $isDetailModalOpen = false;
     public $isRejectModalOpen = false;
     
-    // PERBAIKAN: Hanya simpan ID untuk mencegah hilangnya relasi saat proses Hydration Livewire
     public $selectedInvoiceId = null; 
     public $catatan_penolakan = '';
 
@@ -37,7 +36,6 @@ class VerifikasiInvoiceBBM extends Component
         $this->resetPage();
     }
 
-    // PERBAIKAN: Gunakan Computed Property untuk memanggil data lengkap (termasuk relasinya)
     #[Computed]
     public function selectedInvoice()
     {
@@ -48,13 +46,19 @@ class VerifikasiInvoiceBBM extends Component
         return RekonsiliasiInvoice::with([
             'ukpd', 
             'penyedia', 
-            'suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal'
+            'suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal',
+            'suratPermohonan.prosesPenyedia'
         ])->find($this->selectedInvoiceId);
     }
 
     public function render()
     {
-        $query = RekonsiliasiInvoice::with(['ukpd', 'penyedia', 'suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal']);
+        $query = RekonsiliasiInvoice::with([
+            'ukpd', 
+            'penyedia', 
+            'suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal',
+            'suratPermohonan.prosesPenyedia'
+        ]);
 
         $userRole = auth()->user()?->role?->slug;
 
@@ -102,7 +106,7 @@ class VerifikasiInvoiceBBM extends Component
 
     public function openDetail($id)
     {
-        $this->selectedInvoiceId = $id; // Cukup simpan ID-nya saja
+        $this->selectedInvoiceId = $id; 
         $this->isDetailModalOpen = true;
     }
 
@@ -114,7 +118,7 @@ class VerifikasiInvoiceBBM extends Component
 
     public function approveSatgas()
     {
-        $invoice = $this->selectedInvoice; // Panggil dari Computed
+        $invoice = $this->selectedInvoice; 
 
         if ($invoice && $invoice->status === 'pending') {
             $invoice->update(['status' => 'satgas_approved', 'catatan_penolakan' => null]);
