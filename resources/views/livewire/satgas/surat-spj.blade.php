@@ -17,9 +17,12 @@
             </div>
             
             @if(in_array(auth()->user()?->role?->slug, ['satgas', 'admin_ukpd', 'superadmin']))
-            <button wire:click="openModal()" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 w-full sm:w-auto focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
-                <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
-                Tambah SPJ Baru
+            <button wire:click="openModal()" wire:loading.attr="disabled" wire:target="openModal" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 w-full sm:w-auto focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 disabled:opacity-75 disabled:cursor-not-allowed">
+                <svg wire:loading.remove wire:target="openModal" class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
+                <svg wire:loading wire:target="openModal" class="animate-spin w-5 h-5 mr-2 -ml-1 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                
+                <span wire:loading.remove wire:target="openModal">Tambah SPJ Baru</span>
+                <span wire:loading wire:target="openModal">Memuat...</span>
             </button>
             @endif
         </div>
@@ -204,38 +207,50 @@
                                     @php $role = auth()->user()?->role?->slug; @endphp
                                     @if(in_array($role, ['satgas', 'admin_ukpd', 'superadmin']))
                                         <div class="flex gap-2">
-                                            <button wire:click="edit({{ $spj->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100 text-xs">
-                                                <svg class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                                <span class="lg:hidden ml-1">Edit</span>
+                                            <button wire:click="edit({{ $spj->id }})" wire:loading.attr="disabled" wire:target="edit({{ $spj->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100 text-xs disabled:opacity-70 disabled:cursor-not-allowed">
+                                                <svg wire:loading.remove wire:target="edit({{ $spj->id }})" class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                <svg wire:loading wire:target="edit({{ $spj->id }})" class="animate-spin w-3.5 h-3.5 mr-1 lg:mr-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                <span class="lg:hidden ml-1" wire:loading.remove wire:target="edit({{ $spj->id }})">Edit</span>
+                                                <span class="lg:hidden ml-1" wire:loading wire:target="edit({{ $spj->id }})">...</span>
                                             </button>
                                             
-                                            <button wire:click="delete({{ $spj->id }})" onclick="confirm('Yakin ingin menghapus laporan ini beserta filenya?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100 text-xs">
-                                                <svg class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                <span class="lg:hidden ml-1">Hapus</span>
+                                            <button wire:click="delete({{ $spj->id }})" wire:loading.attr="disabled" wire:target="delete({{ $spj->id }})" onclick="confirm('Yakin ingin menghapus laporan ini beserta filenya?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100 text-xs disabled:opacity-70 disabled:cursor-not-allowed">
+                                                <svg wire:loading.remove wire:target="delete({{ $spj->id }})" class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                <svg wire:loading wire:target="delete({{ $spj->id }})" class="animate-spin w-3.5 h-3.5 mr-1 lg:mr-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                <span class="lg:hidden ml-1" wire:loading.remove wire:target="delete({{ $spj->id }})">Hapus</span>
+                                                <span class="lg:hidden ml-1" wire:loading wire:target="delete({{ $spj->id }})">...</span>
                                             </button>
                                         </div>
                                     @endif
                                     
                                     @if(in_array($role, ['pptk', 'superadmin']))
                                         @if(is_null($spj->disetujui_pptk_at))
-                                            <button wire:click="approve({{ $spj->id }})" wire:confirm="Setujui sebagai PPTK?" class="w-full justify-center inline-flex items-center text-emerald-700 font-bold bg-emerald-50 hover:bg-emerald-600 hover:text-white px-3 py-2 rounded-lg border border-emerald-200 transition-all text-[11px]">
-                                                APPROVE PPTK
+                                            <button wire:click="approve({{ $spj->id }})" wire:loading.attr="disabled" wire:target="approve({{ $spj->id }})" wire:confirm="Setujui sebagai PPTK?" class="w-full justify-center inline-flex items-center text-emerald-700 font-bold bg-emerald-50 hover:bg-emerald-600 hover:text-white px-3 py-2 rounded-lg border border-emerald-200 transition-all text-[11px] disabled:opacity-70 disabled:cursor-not-allowed">
+                                                <svg wire:loading wire:target="approve({{ $spj->id }})" class="animate-spin mr-1 h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                <span wire:loading.remove wire:target="approve({{ $spj->id }})">APPROVE PPTK</span>
+                                                <span wire:loading wire:target="approve({{ $spj->id }})">PROSES...</span>
                                             </button>
                                         @elseif(!is_null($spj->disetujui_pptk_at) && is_null($spj->disetujui_kepala_ukpd_at))
-                                            <button wire:click="cancelApprove({{ $spj->id }})" wire:confirm="Batalkan persetujuan PPTK?" class="w-full justify-center inline-flex items-center text-rose-700 font-bold bg-rose-50 hover:bg-rose-600 hover:text-white px-3 py-2 rounded-lg border border-rose-200 transition-all text-[11px]">
-                                                BATAL ACC PPTK
+                                            <button wire:click="cancelApprove({{ $spj->id }})" wire:loading.attr="disabled" wire:target="cancelApprove({{ $spj->id }})" wire:confirm="Batalkan persetujuan PPTK?" class="w-full justify-center inline-flex items-center text-rose-700 font-bold bg-rose-50 hover:bg-rose-600 hover:text-white px-3 py-2 rounded-lg border border-rose-200 transition-all text-[11px] disabled:opacity-70 disabled:cursor-not-allowed">
+                                                <svg wire:loading wire:target="cancelApprove({{ $spj->id }})" class="animate-spin mr-1 h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                <span wire:loading.remove wire:target="cancelApprove({{ $spj->id }})">BATAL ACC PPTK</span>
+                                                <span wire:loading wire:target="cancelApprove({{ $spj->id }})">PROSES...</span>
                                             </button>
                                         @endif
                                     @endif
-                            
+
                                     @if(in_array($role, ['kepala_ukpd', 'superadmin']))
                                         @if(is_null($spj->disetujui_kepala_ukpd_at))
-                                            <button wire:click="approve({{ $spj->id }})" wire:confirm="Setujui sebagai Kepala UKPD?" class="w-full justify-center inline-flex items-center text-blue-700 font-bold bg-blue-50 hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg border border-blue-200 transition-all text-[11px]">
-                                                APPROVE KA. UKPD
+                                            <button wire:click="approve({{ $spj->id }})" wire:loading.attr="disabled" wire:target="approve({{ $spj->id }})" wire:confirm="Setujui sebagai Kepala UKPD?" class="w-full justify-center inline-flex items-center text-blue-700 font-bold bg-blue-50 hover:bg-blue-600 hover:text-white px-3 py-2 rounded-lg border border-blue-200 transition-all text-[11px] disabled:opacity-70 disabled:cursor-not-allowed">
+                                                <svg wire:loading wire:target="approve({{ $spj->id }})" class="animate-spin mr-1 h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                <span wire:loading.remove wire:target="approve({{ $spj->id }})">APPROVE KA. UKPD</span>
+                                                <span wire:loading wire:target="approve({{ $spj->id }})">PROSES...</span>
                                             </button>
                                         @elseif(!is_null($spj->disetujui_kepala_ukpd_at))
-                                            <button wire:click="cancelApprove({{ $spj->id }})" wire:confirm="Batalkan persetujuan Kepala UKPD?" class="w-full justify-center inline-flex items-center text-rose-700 font-bold bg-rose-50 hover:bg-rose-600 hover:text-white px-3 py-2 rounded-lg border border-rose-200 transition-all text-[11px]">
-                                                BATAL ACC KA. UKPD
+                                            <button wire:click="cancelApprove({{ $spj->id }})" wire:loading.attr="disabled" wire:target="cancelApprove({{ $spj->id }})" wire:confirm="Batalkan persetujuan Kepala UKPD?" class="w-full justify-center inline-flex items-center text-rose-700 font-bold bg-rose-50 hover:bg-rose-600 hover:text-white px-3 py-2 rounded-lg border border-rose-200 transition-all text-[11px] disabled:opacity-70 disabled:cursor-not-allowed">
+                                                <svg wire:loading wire:target="cancelApprove({{ $spj->id }})" class="animate-spin mr-1 h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                <span wire:loading.remove wire:target="cancelApprove({{ $spj->id }})">BATAL ACC KA. UKPD</span>
+                                                <span wire:loading wire:target="cancelApprove({{ $spj->id }})">PROSES...</span>
                                             </button>
                                         @endif
                                     @endif
@@ -373,8 +388,13 @@
                     <button type="submit" form="form-spj" 
                         wire:loading.attr="disabled" 
                         wire:target="file_spj, store"
-                        class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center">
                         
+                        <svg wire:loading wire:target="store" class="animate-spin mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+
                         <span wire:loading.remove wire:target="store">
                             {{ $spj_id ? 'Simpan Perubahan' : 'Simpan SPJ' }}
                         </span>

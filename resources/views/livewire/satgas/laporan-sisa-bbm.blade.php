@@ -14,15 +14,18 @@
                 </div>
             </div>
             
-            <button wire:click="create()" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 w-full sm:w-auto focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button wire:click="create()" wire:loading.attr="disabled" wire:target="create" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 w-full sm:w-auto focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 disabled:opacity-75 disabled:cursor-not-allowed">
+                <svg wire:loading.remove wire:target="create" class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
                     <line x1="16" y1="13" x2="8" y2="13"></line>
                     <line x1="16" y1="17" x2="8" y2="17"></line>
                     <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
-                Buat Laporan
+                <svg wire:loading wire:target="create" class="animate-spin w-5 h-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            
+                <span wire:loading.remove wire:target="create">Buat Laporan</span>
+                <span wire:loading wire:target="create">Memuat...</span>
             </button>
         </div>
 
@@ -270,14 +273,20 @@
                                     </a>
                             
                                     <div class="flex gap-2">
-                                        <button wire:click="edit({{ $laporan->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100 text-xs">
-                                            <svg class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                            <span class="lg:hidden ml-1">Edit</span>
+                                        <button wire:click="edit({{ $laporan->id }})" wire:loading.attr="disabled" wire:target="edit({{ $laporan->id }})" class="flex-1 justify-center inline-flex items-center text-indigo-600 hover:text-white font-semibold bg-indigo-50 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-all duration-200 border border-indigo-100 text-xs disabled:opacity-70 disabled:cursor-not-allowed">
+                                            <svg wire:loading.remove wire:target="edit({{ $laporan->id }})" class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <svg wire:loading wire:target="edit({{ $laporan->id }})" class="animate-spin w-3.5 h-3.5 mr-1 lg:mr-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                            
+                                            <span class="lg:hidden ml-1" wire:loading.remove wire:target="edit({{ $laporan->id }})">Edit</span>
+                                            <span class="lg:hidden ml-1" wire:loading wire:target="edit({{ $laporan->id }})">Loading...</span>
                                         </button>
                                         
-                                        <button wire:click="delete({{ $laporan->id }})" onclick="confirm('Yakin ingin menghapus laporan ini beserta filenya?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100 text-xs">
-                                            <svg class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            <span class="lg:hidden ml-1">Hapus</span>
+                                        <button wire:click="delete({{ $laporan->id }})" wire:loading.attr="disabled" wire:target="delete({{ $laporan->id }})" onclick="confirm('Yakin ingin menghapus laporan ini beserta filenya?') || event.stopImmediatePropagation()" class="flex-1 justify-center inline-flex items-center text-rose-600 hover:text-white font-semibold bg-rose-50 hover:bg-rose-600 px-3 py-2 rounded-lg transition-all duration-200 border border-rose-100 text-xs disabled:opacity-70 disabled:cursor-not-allowed">
+                                            <svg wire:loading.remove wire:target="delete({{ $laporan->id }})" class="w-3.5 h-3.5 mr-1 lg:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <svg wire:loading wire:target="delete({{ $laporan->id }})" class="animate-spin w-3.5 h-3.5 mr-1 lg:mr-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    
+                                            <span class="lg:hidden ml-1" wire:loading.remove wire:target="delete({{ $laporan->id }})">Hapus</span>
+                                            <span class="lg:hidden ml-1" wire:loading wire:target="delete({{ $laporan->id }})">Loading...</span>
                                         </button>
                                     </div>
                                 </div>
@@ -474,8 +483,14 @@
                     <button wire:click="closeModal()" type="button" class="w-full sm:w-auto inline-flex justify-center items-center text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 font-semibold rounded-xl text-sm px-5 py-2.5 transition-colors shadow-sm order-2 sm:order-1">
                         Batal
                     </button>
-                    <button type="submit" form="form-laporan" class="w-full sm:w-auto inline-flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-700 font-semibold rounded-xl text-sm px-5 py-2.5 transition-all shadow-sm order-1 sm:order-2">
-                        Simpan Laporan
+                    <button type="submit" form="form-laporan" wire:loading.attr="disabled" wire:target="store" class="w-full sm:w-auto inline-flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-700 font-semibold rounded-xl text-sm px-5 py-2.5 transition-all shadow-sm order-1 sm:order-2 disabled:opacity-75 disabled:cursor-not-allowed">
+                        <svg wire:loading wire:target="store" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    
+                        <span wire:loading.remove wire:target="store">Simpan Laporan</span>
+                        <span wire:loading wire:target="store">Menyimpan...</span>
                     </button>
                 </div>
 
