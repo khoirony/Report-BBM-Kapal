@@ -13,7 +13,7 @@ class SoundingBBM extends Component
 {
     use WithPagination;
 
-    public $sounding_id, $kapal_id, $keterangan_pilihan, $keterangan, $tanggal_sounding, $bbm_awal, $pengisian, $pemakaian, $bbm_akhir, $jam_pemeriksaan;
+    public $sounding_id, $kapal_id, $keterangan_pilihan, $keterangan, $tanggal_sounding, $bbm_awal, $pengisian, $pemakaian, $bbm_akhir, $jam_pemeriksaan, $petugas_sounding;
     public $isModalOpen = false;
 
     // Properti Search, Filter, & Sort
@@ -25,7 +25,6 @@ class SoundingBBM extends Component
     public $filterTanggalAwal = '';
     public $filterTanggalAkhir = '';
 
-    // Array opsi standar
     private $opsi_keterangan = [
         'sebelum isi BBM',
         'setelah isi BBM',
@@ -69,6 +68,7 @@ class SoundingBBM extends Component
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('keterangan', 'like', '%' . $this->search . '%')
+                  ->orWhere('petugas_sounding', 'like', '%' . $this->search . '%')
                   ->orWhereHas('kapal', function($k) {
                       $k->where('nama_kapal', 'like', '%' . $this->search . '%')
                         ->orWhereHas('ukpd', function($u) {
@@ -148,6 +148,7 @@ class SoundingBBM extends Component
         $this->pemakaian = 0;
         $this->bbm_akhir = 0;
         $this->jam_pemeriksaan = '';
+        $this->petugas_sounding = '';
     }
 
     public function store()
@@ -158,8 +159,9 @@ class SoundingBBM extends Component
             'tanggal_sounding' => 'required|date',
             'bbm_awal' => 'required|numeric',
             'pengisian' => 'required|numeric',
-            'bbm_akhir' => 'required|numeric', // Validasi ke bbm_akhir
+            'bbm_akhir' => 'required|numeric', 
             'jam_pemeriksaan' => 'required',
+            'petugas_sounding' => 'required|string|max:255',
         ];
 
         if ($this->keterangan_pilihan === 'other') {
@@ -177,9 +179,10 @@ class SoundingBBM extends Component
             'tanggal_sounding' => $this->tanggal_sounding,
             'bbm_awal' => $this->bbm_awal,
             'pengisian' => $this->pengisian,
-            'pemakaian' => $pemakaian_calc,
-            'bbm_akhir' => $this->bbm_akhir,
+            'pemakaian' => $pemakaian_calc, 
+            'bbm_akhir' => $this->bbm_akhir, 
             'jam_pemeriksaan' => $this->jam_pemeriksaan,
+            'petugas_sounding' => $this->petugas_sounding,
         ];
 
         if (!$this->sounding_id) {
@@ -214,6 +217,7 @@ class SoundingBBM extends Component
         $this->pemakaian = $sounding->pemakaian;
         $this->bbm_akhir = $sounding->bbm_akhir;
         $this->jam_pemeriksaan = $sounding->jam_pemeriksaan;
+        $this->petugas_sounding = $sounding->petugas_sounding;
 
         if (in_array($sounding->keterangan, $this->opsi_keterangan)) {
             $this->keterangan_pilihan = $sounding->keterangan;
