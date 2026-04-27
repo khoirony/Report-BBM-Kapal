@@ -287,9 +287,28 @@
 
 
     <div style="page-break-before: always;"></div>
-    <div style="margin-top: 20px;">
-        <p style="font-weight: bold;">Dokumentasi Proses:</p>
-        
+    <table style="width: 100%; border-collapse: collapse; font-size: 12pt;">
+        <tr>
+            <td style="width: 15%; vertical-align: top;">Lampiran</td>
+            <td style="width: 1%; vertical-align: top;">: </td>
+            <td style="vertical-align: top;">Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->kapal->nama_kapal }}</td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;">Nomor</td>
+            <td style="vertical-align: top;">: </td>
+            <td style="vertical-align: top;">{{ $laporan->nomor_ba ?? " " }}</td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;">Tanggal</td>
+            <td style="vertical-align: top;">: </td>
+            <td style="vertical-align: top;">{{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : '................' }}</td>
+        </tr>
+    </table>
+
+    <p style="text-align: center;">DOKUMENTASI KEGIATAN PENGISIAN BBM KAPAL</p>
+
+    <div style="margin-top: 5px;">
+        <p style="line-height: 1.0">1. Foto Proses Pengisian</p>
         @php
             $path = storage_path('app/public/' . $laporan?->suratPermohonan?->pencatatanHasil?->foto_proses ?? '');
             $base64 = '';
@@ -300,17 +319,19 @@
             }
         @endphp
 
-        @if($base64)
-            <img src="{{ $base64 }}" 
-                 alt="Foto Proses" 
-                 style="max-width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ccc; padding: 5px;">
-        @else
-            <p style="font-style: italic; color: gray;">Tidak ada foto proses yang dilampirkan atau file tidak ditemukan.</p>
-        @endif
+        <div style="text-align: center;">
+            @if($base64)
+                <img src="{{ $base64 }}" 
+                    alt="Foto Proses" 
+                    style="max-width: 100%; max-height: 220px; object-fit: contain; border: 1px solid #ccc; padding: 5px;">
+            @else
+                <p style="font-style: italic; color: gray;">Tidak ada foto proses yang dilampirkan atau file tidak ditemukan.</p>
+            @endif
+        </div>
     </div>
 
-    <div style="margin-top: 20px;">
-        <p style="font-weight: bold;">Dokumentasi Meter:</p>
+    <div style="margin-top: 5px;">
+        <p style="line-height: 1.0">2. Foto Flow Meter / Dispenser</p>
         
         @php
             $path = storage_path('app/public/' . $laporan?->suratPermohonan?->pencatatanHasil?->foto_flow_meter ?? '');
@@ -322,17 +343,19 @@
             }
         @endphp
 
-        @if($base64)
-            <img src="{{ $base64 }}" 
-                 alt="Foto Proses" 
-                 style="max-width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ccc; padding: 5px;">
-        @else
-            <p style="font-style: italic; color: gray;">Tidak ada foto proses yang dilampirkan atau file tidak ditemukan.</p>
-        @endif
+        <div style="text-align: center;">
+            @if($base64)
+                <img src="{{ $base64 }}" 
+                    alt="Foto Proses" 
+                    style="max-width: 100%; max-height: 220px; object-fit: contain; border: 1px solid #ccc; padding: 5px;">
+            @else
+                <p style="font-style: italic; color: gray;">Tidak ada foto proses yang dilampirkan atau file tidak ditemukan.</p>
+            @endif
+        </div>
     </div>
 
-    <div style="margin-top: 20px;">
-        <p style="font-weight: bold;">Dokumentasi Struk/Nota:</p>
+    <div style="margin-top: 5px;">
+        <p style="line-height: 1.0">3. Foto Struk / Surat Jalan / Delivery Order</p>
         
         @php
             $path = storage_path('app/public/' . $laporan?->suratPermohonan?->pencatatanHasil?->foto_struk ?? '');
@@ -344,13 +367,15 @@
             }
         @endphp
 
-        @if($base64)
-            <img src="{{ $base64 }}" 
-                 alt="Foto Proses" 
-                 style="max-width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ccc; padding: 5px;">
-        @else
-            <p style="font-style: italic; color: gray;">Tidak ada foto proses yang dilampirkan atau file tidak ditemukan.</p>
-        @endif
+        <div style="text-align: center;">
+            @if($base64)
+                <img src="{{ $base64 }}" 
+                    alt="Foto Proses" 
+                    style="max-width: 100%; max-height: 220px; object-fit: contain; border: 1px solid #ccc; padding: 5px;">
+            @else
+                <p style="font-style: italic; color: gray;">Tidak ada foto proses yang dilampirkan atau file tidak ditemukan.</p>
+            @endif
+        </div>
     </div>
 
 </body>
