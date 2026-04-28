@@ -154,14 +154,8 @@ class PesananMasukBBM extends Component
             'tempat_pengambilan'  => 'required|string|max:255',
             'nomor_izin_penyedia' => 'required|string|max:255',
             'harga_satuan'        => 'required|numeric|min:1',
+            'file_evidence'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:3072',
         ];
-
-        // Validasi file: Wajib jika baru, Opsional jika Edit
-        if ($this->proses_id) {
-            $rules['file_evidence'] = 'nullable|file|mimes:pdf,jpg,jpeg,png|max:3072';
-        } else {
-            $rules['file_evidence'] = 'required|file|mimes:pdf,jpg,jpeg,png|max:3072';
-        }
 
         $this->validate($rules);
 
@@ -196,7 +190,10 @@ class PesananMasukBBM extends Component
             else {
                 $data['surat_permohonan_id'] = $permohonan->id;
                 $data['user_id'] = auth()->id();
-                $data['file_evidence'] = $this->file_evidence->store('evidence_penyedia', 'public');
+                
+                if ($this->file_evidence) {
+                    $data['file_evidence'] = $this->file_evidence->store('evidence_penyedia', 'public');
+                }
 
                 ProsesPenyediaBbm::create($data);
                 $permohonan->update(['progress' => 'on progress']);

@@ -100,9 +100,11 @@
                 </div>
                 
                 <div class="flex items-end w-full">
-                    <button wire:click="resetFilters" class="w-full h-full min-h-[34px] flex justify-center items-center px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold rounded-lg transition-colors border border-rose-100">
-                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        Reset Filter
+                    <button wire:click="resetFilters" wire:loading.attr="disabled" class="w-full h-full min-h-[34px] flex justify-center items-center px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-bold rounded-lg transition-colors border border-rose-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg wire:loading.remove wire:target="resetFilters" class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        <svg wire:loading wire:target="resetFilters" class="animate-spin w-3.5 h-3.5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span wire:loading.remove wire:target="resetFilters">Reset Filter</span>
+                        <span wire:loading wire:target="resetFilters">Mereset...</span>
                     </button>
                 </div>
             </div>
@@ -209,9 +211,11 @@
 
                                 <td class="flex justify-end md:table-cell px-2 py-3 md:px-6 md:py-5 align-middle text-right border-t border-slate-100 md:border-none mt-3 md:mt-0">
                                     @if($item->progress === 'not started')
-                                        <button wire:click="openProsesModal({{ $item->id }})" class="inline-flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm focus:ring-2 focus:ring-amber-300 w-full lg:w-auto">
-                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                                            Proses Pesanan
+                                        <button wire:click="openProsesModal({{ $item->id }})" wire:loading.attr="disabled" wire:target="openProsesModal({{ $item->id }})" class="inline-flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm focus:ring-2 focus:ring-amber-300 w-full lg:w-auto disabled:opacity-75 disabled:cursor-not-allowed">
+                                            <svg wire:loading.remove wire:target="openProsesModal({{ $item->id }})" class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                                            <svg wire:loading wire:target="openProsesModal({{ $item->id }})" class="animate-spin w-4 h-4 mr-1.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                            <span wire:loading.remove wire:target="openProsesModal({{ $item->id }})">Proses Pesanan</span>
+                                            <span wire:loading wire:target="openProsesModal({{ $item->id }})">Memuat...</span>
                                         </button>
                                     @else
                                         <div class="flex flex-col gap-2 w-full lg:w-auto items-end">
@@ -220,8 +224,9 @@
                                             </span>
                                             
                                             <div class="flex gap-2 w-full lg:w-auto justify-end">
-                                                <button wire:click="openEditModal({{ $item->id }})" title="Edit Data DO" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded-lg shadow-sm transition-colors">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                <button wire:click="openEditModal({{ $item->id }})" wire:loading.attr="disabled" wire:target="openEditModal({{ $item->id }})" title="Edit Data DO" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                                    <svg wire:loading.remove wire:target="openEditModal({{ $item->id }})" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                    <svg wire:loading wire:target="openEditModal({{ $item->id }})" class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                                 </button>
 
                                                 @if($item->prosesPenyedia && $item->prosesPenyedia->file_evidence)
@@ -266,7 +271,7 @@
                             <p class="text-xs text-slate-500 font-medium">Surat Ref: {{ $nomor_surat }}</p>
                         </div>
                     </div>
-                    <button wire:click="closeModal()" class="text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full p-2 transition-colors">
+                    <button wire:click="closeModal()" wire:loading.attr="disabled" class="text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full p-2 transition-colors disabled:opacity-50">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
@@ -311,9 +316,9 @@
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Upload Bukti Proses (Surat Jalan/DO) {!! !$proses_id ? '<span class="text-rose-500">*</span>' : '' !!}</label>
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">Upload Bukti Proses (Surat Jalan/DO)</label>
                                 <div class="border-2 border-dashed border-slate-300 rounded-xl p-5 bg-white hover:bg-slate-50 transition-colors text-center sm:text-left">
-                                    <input type="file" wire:model="file_evidence" accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200 cursor-pointer" {{ !$proses_id ? 'required' : '' }}>
+                                    <input type="file" wire:model="file_evidence" accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200 cursor-pointer">
                                     
                                     <div wire:loading wire:target="file_evidence" class="text-xs text-amber-600 mt-3 font-semibold flex items-center justify-center sm:justify-start">
                                         <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -336,9 +341,12 @@
                 </div>
 
                 <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3 rounded-b-3xl shrink-0">
-                    <button wire:click="closeModal()" type="button" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm font-semibold rounded-xl transition-colors shadow-sm">Batal</button>
-                    <button type="submit" form="form-proses" wire:loading.attr="disabled" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-bold shadow-sm hover:shadow active:scale-95 transition-all">
-                        {{ $proses_id ? 'Simpan Perubahan' : 'Simpan & Proses Pesanan' }}
+                    <button wire:click="closeModal()" type="button" wire:loading.attr="disabled" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm font-semibold rounded-xl transition-colors shadow-sm disabled:opacity-50">Batal</button>
+                    
+                    <button type="submit" form="form-proses" wire:loading.attr="disabled" wire:target="storeProses, file_evidence" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-bold shadow-sm hover:shadow active:scale-95 transition-all inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg wire:loading wire:target="storeProses" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span wire:loading.remove wire:target="storeProses">{{ $proses_id ? 'Simpan Perubahan' : 'Simpan & Proses Pesanan' }}</span>
+                        <span wire:loading wire:target="storeProses">Menyimpan...</span>
                     </button>
                 </div>
 
