@@ -143,7 +143,7 @@
             </tr>
             <tr>
                 <td style="padding: 1px 0;">Nomor SPBU/Agen/Penyedia</td>
-                <td style="padding: 1px 0;">: {{ $surat->prosesPenyedia->nomor_izin_penyedia ?? ' ' }}</td>
+                <td style="padding: 1px 0;">: {{ $surat->nomor_spbu ?? ' ' }}</td>
             </tr>
             <tr>
                 <td style="padding: 1px 0;">Lokasi Pengisian</td>

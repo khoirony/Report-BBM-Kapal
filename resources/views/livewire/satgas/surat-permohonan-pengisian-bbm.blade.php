@@ -43,7 +43,7 @@
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari surat, penyedia, atau kapal..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari surat, penyedia, SPBU, atau kapal..." class="pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors shadow-sm">
                 </div>
 
                 <div class="flex flex-row gap-3 w-full md:w-auto">
@@ -203,9 +203,12 @@
                                 <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Rincian Penyedia BBM</span>
                                     
-                                    <div class="mb-1.5">
+                                    <div class="mb-2">
                                         <span class="text-xs font-bold text-slate-800 block line-clamp-1">{{ $item->penyedia->name ?? 'Penyedia Belum Diset' }}</span>
-                                        <span class="text-[10px] text-slate-500 font-medium">{{ $item->tempat_pengambilan_bbm ?? '-' }}</span>
+                                        <span class="text-[10px] text-slate-500 font-medium block">{{ $item->tempat_pengambilan_bbm ?? '-' }}</span>
+                                        @if($item->nomor_spbu)
+                                            <span class="text-[10px] text-indigo-600 font-semibold mt-0.5 block">No. SPBU: {{ $item->nomor_spbu }}</span>
+                                        @endif
                                     </div>
                                     
                                     <div class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-100 mt-1">
@@ -418,13 +421,19 @@
                             </div>
 
                             <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor SPBU</label>
+                                <input type="text" wire:model="nomor_spbu" placeholder="Contoh: 31.102.02" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
+                                @error('nomor_spbu') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                            </div>
+
+                            <div>
                                 <div class="flex justify-between items-center mb-1.5">
                                     <label class="block text-sm font-semibold text-slate-700">Tempat Pengambilan BBM</label>
                                     <button type="button" wire:click="setLokasiSama" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-indigo-700 font-bold px-2 py-0.5 rounded border border-slate-200 transition-colors" {{ !$surat_tugas_id ? 'disabled class=opacity-50 cursor-not-allowed' : '' }}>
                                         Sama dg Surat Tugas
                                     </button>
                                 </div>
-                                <input type="text" wire:model="tempat_pengambilan_bbm" placeholder="Contoh: SPBU 31.102.02 Muara Angke" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
+                                <input type="text" wire:model="tempat_pengambilan_bbm" placeholder="Contoh: Muara Angke" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
                             </div>
 
                             <div>

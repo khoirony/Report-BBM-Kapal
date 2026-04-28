@@ -118,14 +118,18 @@ class SuperAdminDashboard extends Component
         $data = DB::table('ukpds')
             ->leftJoin('rekonsiliasi_invoices', function($join) {
                 $join->on('ukpds.id', '=', 'rekonsiliasi_invoices.ukpd_id')
-                     ->whereBetween('rekonsiliasi_invoices.tanggal_invoice', [$this->startDate, $this->endDate]);
+                     ->whereBetween('rekonsiliasi_invoices.tanggal_invoice', [$this->startDate, $this->endDate])
+                     ->where('rekonsiliasi_invoices.status', '!=', 'rejected');
             })
+            ->leftJoin('surat_permohonan_pengisians', 'rekonsiliasi_invoices.id', '=', 'surat_permohonan_pengisians.rekonsiliasi_invoice_id')
+            ->leftJoin('proses_penyedia_bbms', 'surat_permohonan_pengisians.id', '=', 'proses_penyedia_bbms.surat_permohonan_id')
             ->leftJoin('pagu_anggarans', function($join) use ($tahunFilter) {
                 $join->on('ukpds.id', '=', 'pagu_anggarans.ukpd_id')
                      ->where('pagu_anggarans.tahun', '=', $tahunFilter);
             })
-            ->selectRaw('ukpds.singkatan, SUM(rekonsiliasi_invoices.total_tagihan) as realisasi, MAX(pagu_anggarans.nominal) as pagu')
-            ->groupBy('ukpds.id', 'ukpds.singkatan')->get();
+            ->selectRaw('ukpds.singkatan, SUM(proses_penyedia_bbms.total_harga) as realisasi, MAX(pagu_anggarans.nominal) as pagu')
+            ->groupBy('ukpds.id', 'ukpds.singkatan')
+            ->get();
 
         return [
             'labels' => $data->pluck('singkatan'),
@@ -138,13 +142,19 @@ class SuperAdminDashboard extends Component
 
     private function generateAnggaranKapalData()
     {
-        $data = DB::table('pencatatan_hasils')
-            ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
-            ->leftJoin('proses_penyedia_bbms', 'pencatatan_hasils.id', '=', 'proses_penyedia_bbms.id') 
-            ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
+        $data = DB::table('rekonsiliasi_invoices')
+            ->whereBetween('rekonsiliasi_invoices.tanggal_invoice', [$this->startDate, $this->endDate])
+            ->where('rekonsiliasi_invoices.status', '!=', 'rejected')
+            ->join('surat_permohonan_pengisians', 'rekonsiliasi_invoices.id', '=', 'surat_permohonan_pengisians.rekonsiliasi_invoice_id')
+            ->join('proses_penyedia_bbms', 'surat_permohonan_pengisians.id', '=', 'proses_penyedia_bbms.surat_permohonan_id')
+            ->join('surat_tugas_pengisians', 'surat_permohonan_pengisians.surat_tugas_id', '=', 'surat_tugas_pengisians.id')
+            ->join('laporan_sisa_bbms', 'surat_tugas_pengisians.laporan_sisa_bbm_id', '=', 'laporan_sisa_bbms.id')
+            ->join('soundings', 'laporan_sisa_bbms.sounding_id', '=', 'soundings.id')
+            ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id')
             ->selectRaw('kapals.nama_kapal, SUM(proses_penyedia_bbms.total_harga) as total_biaya')
             ->groupBy('kapals.id', 'kapals.nama_kapal')
-            ->orderByDesc('total_biaya')->get();
+            ->orderByDesc('total_biaya')
+            ->get();
 
         return [
             'labels' => $data->pluck('nama_kapal')->toArray(),
@@ -156,7 +166,7 @@ class SuperAdminDashboard extends Component
     {
         $dbData = DB::table('soundings')
             ->whereBetween('tanggal_sounding', [$this->startDate, $this->endDate])
-            ->selectRaw('DATE(tanggal_sounding) as tanggal, SUM(pemakaian) as total_pemakaian')
+            ->selectRaw('DATE(tanggal_sounding) as tanggal, CAST(SUM(pemakaian) AS DECIMAL(10,2)) as total_pemakaian')
             ->groupBy('tanggal')
             ->pluck('total_pemakaian', 'tanggal')->toArray();
 
@@ -180,7 +190,7 @@ class SuperAdminDashboard extends Component
             ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id')
             ->join('ukpds', 'kapals.ukpd_id', '=', 'ukpds.id')
             ->whereBetween('soundings.tanggal_sounding', [$this->startDate, $this->endDate])
-            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, SUM(soundings.pemakaian) as total_liter')
+            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, CAST(SUM(soundings.pemakaian) AS DECIMAL(10,2)) as total_liter')
             ->groupBy('ukpd', 'kapals.nama_kapal')->get();
 
         $ukpds = $data->pluck('ukpd')->unique()->values()->toArray();
@@ -205,7 +215,7 @@ class SuperAdminDashboard extends Component
             ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
             ->join('ukpds', 'kapals.ukpd_id', '=', 'ukpds.id')
             ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
-            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, SUM(pencatatan_hasils.jumlah_pengisian) as total_liter')
+            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, CAST(SUM(pencatatan_hasils.jumlah_pengisian) AS DECIMAL(10,2)) as total_liter')
             ->groupBy('ukpd', 'kapals.nama_kapal')->get();
 
         $ukpds = $data->pluck('ukpd')->unique()->values()->toArray();
@@ -228,7 +238,7 @@ class SuperAdminDashboard extends Component
     {
         $data = DB::table('surat_permohonan_pengisians')
             ->whereBetween('tanggal_surat', [$this->startDate, $this->endDate])
-            ->selectRaw('jenis_bbm, SUM(jumlah_bbm) as total')
+            ->selectRaw('jenis_bbm, CAST(SUM(jumlah_bbm) AS DECIMAL(10,2)) as total')
             ->groupBy('jenis_bbm')->get();
 
         if ($data->isEmpty()) return ['labels' => ['Belum Ada Data'], 'data' => [0]];
@@ -257,7 +267,12 @@ class SuperAdminDashboard extends Component
 
         $stats = [
             'pagu' => DB::table('pagu_anggarans')->where('tahun', $tahunFilter)->sum('nominal') ?: 0,
-            'realisasi' => DB::table('rekonsiliasi_invoices')->whereBetween('tanggal_invoice', [$this->startDate, $this->endDate])->sum('total_tagihan'),
+            'realisasi' => DB::table('rekonsiliasi_invoices')
+                ->whereBetween('tanggal_invoice', [$this->startDate, $this->endDate])
+                ->where('status', '!=', 'rejected') // Abaikan yg ditolak
+                ->join('surat_permohonan_pengisians', 'rekonsiliasi_invoices.id', '=', 'surat_permohonan_pengisians.rekonsiliasi_invoice_id')
+                ->join('proses_penyedia_bbms', 'surat_permohonan_pengisians.id', '=', 'proses_penyedia_bbms.surat_permohonan_id')
+                ->sum('proses_penyedia_bbms.total_harga') ?: 0,
             'armada' => DB::table('kapals')->count(),
             'liter' => DB::table('pencatatan_hasils')->whereBetween('tanggal_pengisian', [$this->startDate, $this->endDate])->sum('jumlah_pengisian'),
         ];

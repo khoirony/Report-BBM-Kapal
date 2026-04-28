@@ -20,7 +20,7 @@ class SuratPermohonanPengisianBBM extends Component
     public $surat_tugas_list, $kapals;
     public $permohonan_id, $surat_tugas_id, $nomor_surat, $tanggal_surat, $klasifikasi, $lampiran;
     
-    public $penyedia_id, $jenis_penyedia_bbm, $tempat_pengambilan_bbm, $metode_pengiriman, $jenis_bbm, $jumlah_bbm;
+    public $penyedia_id, $jenis_penyedia_bbm, $tempat_pengambilan_bbm, $nomor_spbu, $metode_pengiriman, $jenis_bbm, $jumlah_bbm;
     
     // Properti Khusus "Lainnya"
     public $jenis_penyedia_bbm_lainnya = '';
@@ -136,6 +136,7 @@ class SuratPermohonanPengisianBBM extends Component
         if (!empty($this->search)) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
+                  ->orWhere('nomor_spbu', 'like', '%' . $this->search . '%') // Pencarian berdasarkan nomor SPBU
                   ->orWhereHas('penyedia', function($qPenyedia) {
                       $qPenyedia->where('name', 'like', '%' . $this->search . '%');
                   })
@@ -220,6 +221,7 @@ class SuratPermohonanPengisianBBM extends Component
         
         $this->penyedia_id = $permohonan->penyedia_id;
         $this->tempat_pengambilan_bbm = $permohonan->tempat_pengambilan_bbm;
+        $this->nomor_spbu = $permohonan->nomor_spbu; // <-- Tambahkan
         $this->metode_pengiriman = $permohonan->metode_pengiriman;
         $this->jumlah_bbm = $permohonan->jumlah_bbm;
 
@@ -259,6 +261,7 @@ class SuratPermohonanPengisianBBM extends Component
             'tanggal_surat' => 'required|date',
             'penyedia_id' => 'nullable|exists:users,id',
             'tempat_pengambilan_bbm' => 'nullable|string|max:255',
+            'nomor_spbu' => 'nullable|string|max:255', // <-- Tambahkan validasi
             'metode_pengiriman' => 'nullable|in:Ambil ditempat,Pengiriman Jalur Darat,Pengiriman Jalur Laut',
             'jumlah_bbm' => 'nullable|numeric|min:0',
             'nama_nakhoda' => 'nullable|string|max:255',
@@ -282,6 +285,7 @@ class SuratPermohonanPengisianBBM extends Component
             'penyedia_id' => $this->penyedia_id,
             'jenis_penyedia_bbm' => $finalJenisPenyedia,
             'tempat_pengambilan_bbm' => $this->tempat_pengambilan_bbm,
+            'nomor_spbu' => $this->nomor_spbu, // <-- Tambahkan
             'metode_pengiriman' => $this->metode_pengiriman,
             'jenis_bbm' => $finalJenisBbm,
             'jumlah_bbm' => $this->jumlah_bbm ? str_replace(',', '.', $this->jumlah_bbm) : null,
@@ -311,7 +315,7 @@ class SuratPermohonanPengisianBBM extends Component
         $this->reset([
             'permohonan_id', 'surat_tugas_id', 'nomor_surat', 'tanggal_surat', 'klasifikasi', 
             'penyedia_id', 'jenis_penyedia_bbm', 'jenis_penyedia_bbm_lainnya', 
-            'tempat_pengambilan_bbm', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm',
+            'tempat_pengambilan_bbm', 'nomor_spbu', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm',
             'nama_nakhoda', 'id_nakhoda', 'nama_pptk', 'id_pptk'
         ]);
         $this->lampiran = '1 (satu) berkas';
