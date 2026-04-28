@@ -127,8 +127,13 @@
                                     </div>
                                 </div>
                                 
-                                <div class="text-[10px] text-slate-500 font-medium mt-2">
-                                    Dibuat oleh: <span class="text-slate-700">{{ $spj->creator->name ?? '-' }}</span>
+                                <div class="text-[10px] text-slate-500 font-medium mt-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                    <div class="mb-1">
+                                        Nakhoda: <span class="text-slate-800 font-bold uppercase">{{ $spj->nama_nakhoda ?? 'BELUM DIINPUT' }}</span>
+                                    </div>
+                                    <div>
+                                        Dibuat oleh: <span class="text-slate-700">{{ $spj->creator->name ?? '-' }}</span>
+                                    </div>
                                 </div>
                             </td>
 
@@ -342,14 +347,14 @@
                                 </select>
                                 @error('kapal_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
-                    
-                            <div class="col-span-1">
-                                <label class="block text-sm font-semibold text-slate-800 mb-2">Tanggal SPJ <span class="text-rose-500">*</span></label>
-                                <input type="date" wire:model="tanggal_spj" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all cursor-pointer" required>
-                                @error('tanggal_spj') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-800 mb-2">Nama Nakhoda <span class="text-rose-500">*</span></label>
+                                <input type="text" wire:model="nama_nakhoda" placeholder="Masukkan nama nakhoda kapal..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 text-sm rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all" required>
+                                @error('nama_nakhoda') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
                     
-                            <div class="col-span-1">
+                            <div class="col-span-1 md:col-span-2">
                                 <div class="flex justify-between items-center mb-1.5">
                                     <label class="block text-sm font-semibold text-slate-800">Total Biaya <span class="text-rose-500">*</span></label>
                                     <button type="button" wire:click="tarikBiayaPenyedia" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-indigo-700 font-bold px-2 py-0.5 rounded border border-slate-200 transition-colors {{ !$proses_penyedia_bbm_id ? 'opacity-50 cursor-not-allowed' : '' }}" {{ !$proses_penyedia_bbm_id ? 'disabled' : '' }}>

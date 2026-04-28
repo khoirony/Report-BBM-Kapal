@@ -18,6 +18,7 @@ class SuratSpj extends Component
     public $spj_id; 
     public $nomor_spj;
     public $kapal_id;
+    public $nama_nakhoda;
     public $proses_penyedia_bbm_id;
     public $tanggal_spj;
     public $total_biaya; 
@@ -50,6 +51,7 @@ class SuratSpj extends Component
         $this->spj_id = null;
         $this->nomor_spj = '';
         $this->kapal_id = '';
+        $this->nama_nakhoda = '';
         $this->proses_penyedia_bbm_id = '';
         $this->tanggal_spj = '';
         $this->total_biaya = '';
@@ -95,6 +97,7 @@ class SuratSpj extends Component
         $this->spj_id = $id;
         $this->nomor_spj = $spj->nomor_spj;
         $this->kapal_id = $spj->kapal_id;
+        $this->nama_nakhoda = $spj->nama_nakhoda;
         $this->proses_penyedia_bbm_id = $spj->proses_penyedia_bbm_id;
         $this->tanggal_spj = $spj->tanggal_spj;
         $this->total_biaya = $spj->total_biaya;
@@ -105,8 +108,9 @@ class SuratSpj extends Component
     public function store()
     {
         $this->validate([
-            'nomor_spj'              => 'nullable|unique:spjs,nomor_spj' . $this->spj_id,
+            'nomor_spj'              => 'nullable|unique:spjs,nomor_spj,' . $this->spj_id,
             'kapal_id'               => 'required|exists:kapals,id',
+            'nama_nakhoda'           => 'required|string|max:255',
             'proses_penyedia_bbm_id' => 'nullable|exists:proses_penyedia_bbms,id',
             'tanggal_spj'            => 'required|date',
             'total_biaya'            => 'required|numeric|min:0',
@@ -116,6 +120,7 @@ class SuratSpj extends Component
         $data = [
             'nomor_spj'              => $this->nomor_spj,
             'kapal_id'               => $this->kapal_id,
+            'nama_nakhoda'           => $this->nama_nakhoda,
             'proses_penyedia_bbm_id' => $this->proses_penyedia_bbm_id ?: null,
             'tanggal_spj'            => $this->tanggal_spj,
             'total_biaya'            => $this->total_biaya,

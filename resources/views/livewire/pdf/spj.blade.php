@@ -43,7 +43,7 @@
         <tr>
             <td style="padding-bottom: 15px; vertical-align: bottom;">Nakhoda</td>
             <td style="padding-bottom: 15px; vertical-align: bottom;">:</td>
-            <td style="padding-bottom: 15px; vertical-align: bottom;">{{ $spj->kapal->nakhoda->name }}</td>
+            <td style="padding-bottom: 15px; vertical-align: bottom;">{{ $spj->nama_nakhoda ?? '' }}</td>
         </tr>
     </table>
 
