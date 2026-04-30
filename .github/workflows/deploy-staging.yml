@@ -1,0 +1,50 @@
+name: Deploy to Contabo (Staging)
+
+on:
+  push:
+    branches: [ staging ] # Berjalan hanya saat push ke branch staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH Deploy Staging
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Mengarah ke folder khusus staging
+            cd /var/www/bbm-kapal-staging
+            git pull origin staging
+            
+            # Setup .env untuk Staging
+            echo "MYSQL_ROOT_PASSWORD=${{ secrets.STAGING_MYSQL_ROOT_PASSWORD }}" > .env
+            echo "MYSQL_DATABASE=${{ secrets.STAGING_MYSQL_DATABASE }}" >> .env
+            echo "APP_NAME='[STAGING] BBM Kapal'" >> .env
+            echo "APP_ENV=staging" >> .env
+            echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+            echo "APP_DEBUG=true" >> .env # Debug true memudahkan testing
+            echo "APP_URL=https://stagingbbmkapal.khoirony.fun:8443" >> .env
+            echo "DB_CONNECTION=mysql" >> .env
+            echo "DB_HOST=db_staging" >> .env # Mengarah ke container staging
+            echo "DB_PORT=3306" >> .env
+            echo "DB_DATABASE=${{ secrets.STAGING_MYSQL_DATABASE }}" >> .env
+            echo "DB_USERNAME=root" >> .env
+            echo "DB_PASSWORD=${{ secrets.STAGING_MYSQL_ROOT_PASSWORD }}" >> .env
+
+            # Setup Email
+            echo "MAIL_MAILER=smtp" >> .env
+            echo "MAIL_HOST=smtp-relay.brevo.com" >> .env
+            echo "MAIL_PORT=587" >> .env
+            echo "MAIL_USERNAME=a7795d001@smtp-brevo.com" >> .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+            echo "MAIL_ENCRYPTION=tls" >> .env
+            
+            echo "MAIL_FROM_ADDRESS=staging-noreply@bbmkapal-dishubjakarta.com" >> .env 
+            echo "MAIL_FROM_NAME=\"\${APP_NAME}\"" >> .env
+            
+            # Jalankan menggunakan file compose khusus staging
+            docker-compose -f docker-compose.staging.yml up -d --build
+            docker image prune -f
