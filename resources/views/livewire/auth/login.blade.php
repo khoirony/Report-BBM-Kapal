@@ -21,6 +21,7 @@
             <h2 class="text-2xl font-black text-blue-900 tracking-tight uppercase">
                 SI-BBM KAPAL (staging)
             </h2>
+            
             <p class="text-sm font-semibold text-blue-700 uppercase tracking-widest mt-1">
                 Dinas Perhubungan DKI Jakarta
             </p>
