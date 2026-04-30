@@ -1,0 +1,42 @@
+services:
+  # Container Laravel Staging
+  app_staging:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www/html
+      - ./local.ini:/usr/local/etc/php/conf.d/local.ini
+    restart: always
+
+  # Container Nginx Staging
+  web_staging:
+    image: nginx:latest
+    ports:
+      - "8080:80"    # Port HTTP Staging diubah ke 8080
+      - "8443:443"   # Port HTTPS Staging diubah ke 8443
+    volumes:
+      - .:/var/www/html
+      - ./nginx/staging.conf:/etc/nginx/conf.d/default.conf
+      # Membaca sertifikat SSL dari OS Server Contabo untuk domain staging
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    depends_on:
+      - app_staging
+    restart: always
+
+  # Container MySQL Staging
+  db_staging:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3307:3306" # Port DB Staging di host diubah ke 3307
+    volumes:
+      - db_data_staging:/var/lib/mysql
+
+volumes:
+  # Volume terpisah untuk database staging
+  db_data_staging:
