@@ -21,20 +21,20 @@
                     DINAS PERHUBUNGAN
                 </div>
                 <div style="font-size: 16pt; font-weight: bold; margin: 0; padding: 0; line-height: 1.2;">
-                    {{ strtoupper($surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '-') }}
+                    {{ strtoupper($surat?->LaporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '-') }}
                 </div>
                 <div style="font-size: 10pt; margin: 0; padding: 0; line-height: 1.2;">
-                    {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->alamat ?? '-' }}
+                    {{ $surat?->LaporanSisaBbm?->sounding?->kapal?->ukpd?->alamat ?? '-' }}
                 </div>
                 <div style="font-size: 10pt; margin: 0; padding: 0; line-height: 1.2;">
                     Website: <span style="color: blue; text-decoration: underline;">www.dishub.jakarta.go.id</span> &nbsp;&nbsp;&nbsp; 
-                    E-mail: {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->email ?? '-' }}
+                    E-mail: {{ $surat?->LaporanSisaBbm?->sounding?->kapal?->ukpd?->email ?? '-' }}
                 </div>
                 <div style="margin: 0; padding: 0; line-height: 1.2;">
                     <span style="letter-spacing: 3px; font-size: 10pt;">JAKARTA</span>
                 </div>
                 <div style="text-align: right; margin: 0; padding: 0; line-height: 1.2;">
-                    <span style="font-size: 10pt;">Kode Pos : {{ $laporan?->ukpd?->kode_pos ?? ($laporan?->sounding?->kapal?->ukpd?->kode_pos ?? '-') }}</span>
+                    <span style="font-size: 10pt;">Kode Pos : {{ $surat?->LaporanSisaBbm?->ukpd?->kode_pos ?? ($surat?->LaporanSisaBbm?->sounding?->kapal?->ukpd?->kode_pos ?? '-') }}</span>
                 </div>
             </td>
         </tr>
@@ -85,7 +85,7 @@
                     <tr>
                         <td style="width: 10%; border: none; padding: 2px 0; vertical-align: top;">Yth.</td>
                         <td style="width: 90%; border: none; padding: 2px 0; vertical-align: top;">
-                            Kepala {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '....................' }}<br>
+                            Kepala {{ $surat?->LaporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '....................' }}<br>
                             Dinas Perhubungan Provinsi DKI<br>
                             Jakarta<br>
                             di<br>
@@ -99,7 +99,7 @@
 
     <div style="margin-top: 20px; text-align: justify;">
         <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">
-            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami yang akan dilaksanakan pada {{ $surat->suratTugas->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->locale('id')->translatedFormat('l, d F Y') : '......................' }} pukul {{ $surat->suratTugas->waktu_pelaksanaan ?? '...........' }}. Adapun kapal yang dimaksud adalah <strong style="font-weight: bold;">{{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '........................' }}</strong>
+            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami yang akan dilaksanakan pada ...................... pukul ............ Adapun kapal yang dimaksud adalah <strong style="font-weight: bold;">{{ $surat?->LaporanSisaBbm?->sounding?->kapal?->nama_kapal ?? '........................' }}</strong>
         </p>
         <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">Berikut nama beserta jabatan yang bertanggung jawab atas nama kapal yang di maksud sebagai berikut :</p>
     </div>
@@ -115,11 +115,10 @@
         <tbody>
             @php $maxRows = 7; @endphp
             @for($i = 0; $i < $maxRows; $i++)
-                @php $petugas = $surat->suratTugas->petugas[$i] ?? null; @endphp
                 <tr>
                     <td style="text-align: center; border: 1px solid black; padding: 4px 8px; height: 22px;">{{ $i + 1 }}.</td>
-                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">{{ $petugas->nama_petugas ?? '' }}</td>
-                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">{{ $petugas->jabatan ?? '' }}</td>
+                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">...................................</td>
+                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">...................................</td>
                 </tr>
             @endfor
         </tbody>
@@ -147,7 +146,7 @@
             </tr>
             <tr>
                 <td style="padding: 1px 0;">Lokasi Pengisian</td>
-                <td style="padding: 1px 0;">: {{ $surat->suratTugas->lokasi ?? 'Pelabuhan Sunda Kelapa' }}</td>
+                <td style="padding: 1px 0;">: ................................</td>
             </tr>
             <tr>
                 <td style="padding: 1px 0;">Metode Pengiriman</td>
@@ -168,12 +167,12 @@
                     <br>
                     <br>
                     Nakhoda / ABK<br>
-                    {{ $surat->suratTugas->laporanSisaBbm->sounding->kapal->nama_kapal ?? '................' }}
+                    {{ $surat?->LaporanSisaBbm?->sounding?->kapal?->nama_kapal ?? '................' }}
                 </td>
                 <td style="width: 50%; vertical-align: top; text-align: center;">
                     Jakarta, {{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '........................' }}<br>
                     Pejabat Pelaksana Teknis Kegiatan<br>
-                    {{ $surat?->suratTugas?->laporanSisaBbm?->sounding?->kapal?->ukpd?->nama }}<br>
+                    {{ $surat?->LaporanSisaBbm?->sounding?->kapal?->ukpd?->nama ?? '........................' }}<br>
                     Dinas Perhubungan Provinsi DKI Jakarta
                 </td>
             </tr>

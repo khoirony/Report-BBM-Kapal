@@ -10,8 +10,8 @@ class LaporanPengisianBbmSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil data permohonan yang sudah 'done' untuk dijadikan dasar laporan
-        $permohonans = SuratPermohonanPengisian::where('progress', 'done')
+        $permohonans = SuratPermohonanPengisian::with('suratTugas')
+                            ->where('progress', 'done')
                             ->orWhere('progress', 'on progress')
                             ->get();
 
@@ -24,6 +24,10 @@ class LaporanPengisianBbmSeeder extends Seeder
 
         foreach ($permohonans as $index => $permohonan) {
             
+            if (!$permohonan->suratTugas) {
+                continue;
+            }
+
             // Simulasi kalkulasi BBM
             $bbmAwal = 500.00; // Asumsi angka dummy dari sounding awal
             $pengisian = $permohonan->jumlah_bbm ?? 1000.00;
@@ -35,7 +39,7 @@ class LaporanPengisianBbmSeeder extends Seeder
 
             $dataLaporan[] = [
                 'ukpd_id'              => $permohonan->ukpd_id,
-                'surat_tugas_id'       => $permohonan->surat_tugas_id,
+                'surat_tugas_id'       => $permohonan->suratTugas->id, 
                 'surat_permohonan_id'  => $permohonan->id,
                 'tanggal'              => \Carbon\Carbon::parse($permohonan->tanggal_surat)->addDays(1)->format('Y-m-d'),
                 'dasar_hukum'          => '1. Undang-Undang Nomor 17 Tahun 2008 tentang Pelayaran; '.PHP_EOL.'2. DPA Dinas Perhubungan Provinsi DKI Jakarta Tahun 2026;',

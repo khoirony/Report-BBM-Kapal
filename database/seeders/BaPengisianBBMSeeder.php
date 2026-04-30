@@ -14,12 +14,12 @@ class BaPengisianBBMSeeder extends Seeder
     {
         $admin = User::whereHas('role', fn($q) => $q->where('slug', 'superadmin'))->first();
 
-        $laporans = LaporanPengisianBbm::with('suratTugas.LaporanSisaBbm.sounding')->get();
+        $laporans = LaporanPengisianBbm::with('suratTugas.suratPermohonan.LaporanSisaBbm.sounding')->get();
 
         if ($admin && $laporans->isNotEmpty()) {
             foreach ($laporans as $index => $laporan) {
                 
-                $kapal_id = $laporan->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id;
+                $kapal_id = $laporan->suratTugas?->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal_id;
 
                 if ($kapal_id) {
                     $tanggal = Carbon::parse($laporan->tanggal ?? now())->locale('id');

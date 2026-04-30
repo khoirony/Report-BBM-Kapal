@@ -8,9 +8,9 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 use App\Models\SuratTugasPengisian;
 use App\Models\Kapal;
-use App\Models\LaporanSisaBbm;
+use App\Models\SuratPermohonanPengisian;
 use App\Models\Ukpd;
-use App\Models\User; // Tambahkan import User
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -18,14 +18,14 @@ class SuratTugasPengisianBBM extends Component
 {
     use WithPagination, WithFileUploads;
 
-    public $surat_id, $laporan_pengisian_id, $nomor_surat, $lokasi, $pakaian, $tanggal_pelaksanaan, $waktu_pelaksanaan, $tanggal_surat;
+    public $surat_id, $surat_permohonan_id, $nomor_surat, $lokasi, $pakaian, $tanggal_pelaksanaan, $waktu_pelaksanaan, $tanggal_surat;
     
     public $nama_kepala_ukpd, $id_kepala_ukpd;
 
     public $petugasList = [];
     public $isOpen = false;
     
-    public $laporanList = [];
+    public $permohonanList = [];
     public $upload_files = [];
 
     // Properti Search, Filter & Sort
@@ -69,32 +69,32 @@ class SuratTugasPengisianBBM extends Component
         $this->resetPage();
     }
 
-    public function loadLaporanList($currentLaporanId = null)
+    public function loadPermohonanList($currentPermohonanId = null)
     {
-        $usedLaporanIds = SuratTugasPengisian::whereNotNull('laporan_sisa_bbm_id')
-            ->pluck('laporan_sisa_bbm_id')
+        $usedPermohonanIds = SuratTugasPengisian::whereNotNull('surat_permohonan_id')
+            ->pluck('surat_permohonan_id')
             ->toArray();
 
-        if ($currentLaporanId) {
-            $usedLaporanIds = array_diff($usedLaporanIds, [$currentLaporanId]);
+        if ($currentPermohonanId) {
+            $usedPermohonanIds = array_diff($usedPermohonanIds, [$currentPermohonanId]);
         }
 
-        $queryLaporan = LaporanSisaBbm::with('sounding.kapal')->latest();
+        $queryPermohonan = SuratPermohonanPengisian::with('LaporanSisaBbm.sounding.kapal')->latest();
         
         if (auth()->user()?->role?->slug !== 'superadmin') {
-            $queryLaporan->where('ukpd_id', auth()->user()?->ukpd_id);
+            $queryPermohonan->where('ukpd_id', auth()->user()?->ukpd_id);
         }
 
-        if (!empty($usedLaporanIds)) {
-            $queryLaporan->whereNotIn('id', $usedLaporanIds);
+        if (!empty($usedPermohonanIds)) {
+            $queryPermohonan->whereNotIn('id', $usedPermohonanIds);
         }
 
-        $this->laporanList = $queryLaporan->get();
+        $this->permohonanList = $queryPermohonan->get();
     }
 
     public function render()
     {
-        $query = SuratTugasPengisian::with(['LaporanSisaBbm.sounding.kapal', 'user', 'petugas']);
+        $query = SuratTugasPengisian::with(['suratPermohonan.LaporanSisaBbm.sounding.kapal', 'user', 'petugas']);
 
         if (auth()->user()?->role?->slug !== 'superadmin') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
@@ -107,22 +107,18 @@ class SuratTugasPengisianBBM extends Component
                   ->orWhereHas('petugas', function($p) {
                       $p->where('nama_petugas', 'like', '%' . $this->search . '%'); 
                   })
-                  ->orWhereHas('LaporanSisaBbm', function($l) {
-                      $l->whereHas('sounding', function($s) {
-                          $s->where('keterangan', 'like', '%' . $this->search . '%')
-                            ->orWhereHas('kapal', function($k) {
-                                $k->where('nama_kapal', 'like', '%' . $this->search . '%');
-                            });
-                      });
+                  ->orWhereHas('suratPermohonan', function($sp) {
+                      $sp->where('nomor_surat', 'like', '%' . $this->search . '%')
+                         ->orWhereHas('LaporanSisaBbm.sounding.kapal', function($k) {
+                             $k->where('nama_kapal', 'like', '%' . $this->search . '%');
+                         });
                   });
             });
         }
 
         if ($this->filterKapal) {
-            $query->whereHas('LaporanSisaBbm', function($q) {
-                $q->whereHas('sounding', function($s) {
-                    $s->where('kapal_id', $this->filterKapal);
-                });
+            $query->whereHas('suratPermohonan.LaporanSisaBbm.sounding', function($s) {
+                $s->where('kapal_id', $this->filterKapal);
             });
         }
 
@@ -177,7 +173,7 @@ class SuratTugasPengisianBBM extends Component
             ['nama_petugas' => '', 'jabatan' => 'ABK']
         ];
         
-        $this->loadLaporanList();
+        $this->loadPermohonanList();
         $this->openModal();
     }
 
@@ -202,7 +198,7 @@ class SuratTugasPengisianBBM extends Component
     private function resetInputFields()
     {
         $this->surat_id = '';
-        $this->laporan_pengisian_id = '';
+        $this->surat_permohonan_id = '';
         $this->nomor_surat = '';
         $this->lokasi = '';
         $this->pakaian = '';
@@ -219,36 +215,37 @@ class SuratTugasPengisianBBM extends Component
     public function store()
     {
         $this->validate([
-            'laporan_pengisian_id' => 'required',
+            'surat_permohonan_id' => 'required',
             'nomor_surat' => 'nullable|unique:surat_tugas_pengisians,nomor_surat,' . $this->surat_id,
             'lokasi' => 'required',
             'pakaian' => 'required',
             'tanggal_pelaksanaan' => 'required|date', 
             'waktu_pelaksanaan' => 'required',
             'tanggal_surat' => 'required|date',
-            'nama_kepala_ukpd' => 'required|string', // Validasi baru
-            'id_kepala_ukpd' => 'nullable|string',   // Validasi baru
+            'nama_kepala_ukpd' => 'required|string', 
+            'id_kepala_ukpd' => 'nullable|string',   
             'petugasList.*.nama_petugas' => 'required',
             'petugasList.*.jabatan' => 'required',
         ],[
             'petugasList.*.nama_petugas.required' => 'Nama petugas wajib diisi.',
             'petugasList.*.jabatan.required' => 'Jabatan petugas wajib diisi.',
-            'nama_kepala_ukpd.required' => 'Nama Kepala UKPD wajib diisi.'
+            'nama_kepala_ukpd.required' => 'Nama Kepala UKPD wajib diisi.',
+            'surat_permohonan_id.required' => 'Surat Permohonan wajib dipilih.'
         ]);
 
-        $laporanTerkait = LaporanSisaBbm::find($this->laporan_pengisian_id);
+        $permohonanTerkait = SuratPermohonanPengisian::find($this->surat_permohonan_id);
 
         $data = [
-            'laporan_sisa_bbm_id' => $this->laporan_pengisian_id,
-            'ukpd_id' => $laporanTerkait ? $laporanTerkait->ukpd_id : null,
+            'surat_permohonan_id' => $this->surat_permohonan_id,
+            'ukpd_id' => $permohonanTerkait ? $permohonanTerkait->ukpd_id : null,
             'nomor_surat' => $this->nomor_surat,
             'lokasi' => $this->lokasi,
             'pakaian' => $this->pakaian,
             'tanggal_pelaksanaan' => $this->tanggal_pelaksanaan,
             'waktu_pelaksanaan' => $this->waktu_pelaksanaan,
             'tanggal_surat' => $this->tanggal_surat,
-            'nama_kepala_ukpd' => $this->nama_kepala_ukpd, // Masukkan data baru
-            'id_kepala_ukpd' => $this->id_kepala_ukpd,     // Masukkan data baru
+            'nama_kepala_ukpd' => $this->nama_kepala_ukpd, 
+            'id_kepala_ukpd' => $this->id_kepala_ukpd,     
         ];
 
         if (!$this->surat_id) {
@@ -295,7 +292,7 @@ class SuratTugasPengisianBBM extends Component
         $surat = $query->findOrFail($id);
         
         $this->surat_id = $id;
-        $this->laporan_pengisian_id = $surat->laporan_sisa_bbm_id ?? $surat->laporan_pengisian_id; 
+        $this->surat_permohonan_id = $surat->surat_permohonan_id; 
         $this->nomor_surat = $surat->nomor_surat;
         $this->lokasi = $surat->lokasi;
         $this->pakaian = $surat->pakaian;
@@ -322,7 +319,7 @@ class SuratTugasPengisianBBM extends Component
             $this->petugasList[] = ['nama_petugas' => '', 'jabatan' => ''];
         }
 
-        $this->loadLaporanList($this->laporan_pengisian_id);
+        $this->loadPermohonanList($this->surat_permohonan_id);
 
         $this->openModal();
     }

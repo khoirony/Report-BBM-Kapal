@@ -27,12 +27,12 @@ class SpjSeeder extends Seeder
         $fallbackKapal = Kapal::first();
 
         // Ambil 2 data Proses Penyedia BBM terbaru beserta rantai relasinya ke kapal
-        $prosesPenyedia1 = ProsesPenyediaBbm::with('suratPermohonan.suratTugas.LaporanSisaBbm.sounding')->first();
-        $prosesPenyedia2 = ProsesPenyediaBbm::with('suratPermohonan.suratTugas.LaporanSisaBbm.sounding')->skip(1)->first();
+        $prosesPenyedia1 = ProsesPenyediaBbm::with('suratPermohonan.LaporanSisaBbm.sounding')->first();
+        $prosesPenyedia2 = ProsesPenyediaBbm::with('suratPermohonan.LaporanSisaBbm.sounding')->skip(1)->first();
 
         // Ekstrak ID Kapal dari relasi Penyedia BBM (Gunakan fallback jika null)
-        $kapal_id_1 = $prosesPenyedia1?->suratPermohonan?->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id ?? $fallbackKapal?->id;
-        $kapal_id_2 = $prosesPenyedia2?->suratPermohonan?->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id ?? $fallbackKapal?->id;
+        $kapal_id_1 = $prosesPenyedia1?->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal_id ?? $fallbackKapal?->id;
+        $kapal_id_2 = $prosesPenyedia2?->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal_id ?? $fallbackKapal?->id;
 
         if ($satgas && ($kapal_id_1 || $kapal_id_2)) {
             $spjs = [

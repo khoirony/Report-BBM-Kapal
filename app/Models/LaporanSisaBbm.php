@@ -20,4 +20,9 @@ class LaporanSisaBbm extends Model
     {
         return $this->belongsTo(Ukpd::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

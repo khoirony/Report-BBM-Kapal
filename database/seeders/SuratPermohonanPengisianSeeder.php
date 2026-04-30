@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\SuratPermohonanPengisian;
-use App\Models\SuratTugasPengisian;
+use App\Models\LaporanSisaBbm;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -12,11 +12,10 @@ class SuratPermohonanPengisianSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Ambil semua data surat tugas
-        $suratTugasList = SuratTugasPengisian::all(); 
+        $laporanList = LaporanSisaBbm::all(); 
 
-        if ($suratTugasList->isEmpty()) {
-            $this->command->info('Tidak ada data Surat Tugas. Seeder dibatalkan.');
+        if ($laporanList->isEmpty()) {
+            $this->command->info('Tidak ada data Laporan Sisa BBM. Seeder dibatalkan.');
             return;
         }
 
@@ -115,18 +114,17 @@ class SuratPermohonanPengisianSeeder extends Seeder
             ]
         ];
 
-        // 4. Lakukan perulangan untuk menyimpan ke database
         foreach ($dataPermohonan as $item) {
-            $randomSuratTugas = $suratTugasList->random();
-            $randomPenyedia   = $penyediaList->random(); // Ambil 1 user penyedia acak
+            $randomLaporan = $laporanList->random();
+            $randomPenyedia = $penyediaList->random();
             
-            $item['surat_tugas_id'] = $randomSuratTugas->id;
-            $item['ukpd_id']        = $randomSuratTugas->ukpd_id;
-            $item['penyedia_id']    = $randomPenyedia->id; // Assign ID penyedia
+            $item['laporan_sisa_bbm_id'] = $randomLaporan->id;
+            $item['ukpd_id']             = $randomLaporan->ukpd_id;
+            $item['penyedia_id']         = $randomPenyedia->id; 
             
             SuratPermohonanPengisian::create($item);
         }
 
-        $this->command->info('Data Surat Permohonan Pengisian berhasil di-seed beserta Penyedia ID!');
+        $this->command->info('Data Surat Permohonan Pengisian berhasil di-seed!');
     }
 }

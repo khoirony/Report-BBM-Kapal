@@ -115,7 +115,7 @@
                     <thead class="hidden lg:table-header-group text-xs text-gray-500 uppercase bg-slate-50 border-b border-gray-100">
                         <tr>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Nomor & Tanggal</th>
-                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Armada & Laporan BBM</th>
+                            <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/4">Armada & Surat Permohonan</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">Giat & Lokasi</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider w-1/5">P. Jawab & Personel</th>
                             <th scope="col" class="px-6 py-5 font-bold tracking-wider text-right">Aksi</th>
@@ -127,7 +127,7 @@
                         <tr class="block lg:table-row bg-white rounded-2xl lg:rounded-none shadow-sm lg:shadow-none border border-gray-100 lg:border-none hover:bg-slate-50/50 p-4 lg:p-0 transition-colors">
                             
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
-                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Identitas Surat</span>
+                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Identitas Surat Tugas</span>
                                 
                                 <div class="font-bold text-slate-900 mb-1 tracking-tight">{{ $surat->nomor_surat }}</div>
                                 <div class="flex items-center text-xs text-slate-500 font-medium" title="Tanggal Surat Dikeluarkan">
@@ -137,27 +137,24 @@
                             </td>
             
                             <td class="block lg:table-cell px-2 py-3 lg:px-6 lg:py-5 border-b border-gray-50 lg:border-none align-top">
-                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Armada & Laporan BBM</span>
+                                <span class="text-xs font-bold text-indigo-500 uppercase lg:hidden mb-2 block">Armada & Surat Permohonan</span>
                                 
-                                @if($surat->laporanSisaBbm)
+                                @if($surat->suratPermohonan)
                                     <div class="font-semibold text-slate-900 mb-1 flex items-center gap-2">
-                                        {{ $surat->laporanSisaBbm->sounding->kapal->nama_kapal ?? 'Tanpa Nama' }}
+                                        {{ $surat->suratPermohonan->LaporanSisaBbm->sounding->kapal->nama_kapal ?? 'Tanpa Nama' }}
                                         <span class="px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold tracking-wide">
-                                            {{ $surat->laporanSisaBbm->sounding->kapal->ukpd->singkatan ?? 'UKPD' }}
+                                            {{ $surat->suratPermohonan->LaporanSisaBbm->sounding->kapal->ukpd->singkatan ?? 'UKPD' }}
                                         </span>
                                     </div>
                                     
                                     <div class="mt-3 bg-slate-50 border border-slate-100 rounded-lg p-2.5">
-                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ref. Laporan BBM</span>
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ref. Surat Permohonan</span>
                                         <div class="flex items-start">
                                             <svg class="w-3.5 h-3.5 mr-1.5 mt-0.5 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                             <div>
-                                                <span class="text-xs font-semibold text-slate-700 block">{{ $surat->laporanSisaBbm->nomor ?? 'Lap #'.$surat->laporanSisaBbm->id }}</span>
-                                                @if($surat->laporanSisaBbm->tanggal_surat)
-                                                    <span class="text-[10px] text-slate-500 mt-0.5 block">{{ \Carbon\Carbon::parse($surat->laporanSisaBbm->tanggal_surat)->translatedFormat('d M Y') }}</span>
-                                                @endif
-                                                @if($surat->laporanSisaBbm->keterangan)
-                                                    <span class="text-[10px] text-slate-500 mt-0.5 block line-clamp-2" title="{{ $surat->laporanSisaBbm->keterangan }}">{{ $surat->laporanSisaBbm->keterangan }}</span>
+                                                <span class="text-xs font-semibold text-slate-700 block">{{ $surat->suratPermohonan->nomor_surat ?? 'Permohonan #'.$surat->suratPermohonan->id }}</span>
+                                                @if($surat->suratPermohonan->tanggal_surat)
+                                                    <span class="text-[10px] text-slate-500 mt-0.5 block">{{ \Carbon\Carbon::parse($surat->suratPermohonan->tanggal_surat)->translatedFormat('d M Y') }}</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -165,7 +162,7 @@
                                 @else
                                     <span class="inline-flex items-center text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-md border border-rose-100">
                                         <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
-                                        Laporan Dihapus
+                                        Permohonan Dihapus
                                     </span>
                                 @endif
                             </td>
@@ -339,16 +336,16 @@
                             
                             <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 space-y-4">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tautkan Laporan Sisa BBM <span class="text-rose-500">*</span></label>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tautkan Surat Permohonan <span class="text-rose-500">*</span></label>
                                     
-                                    <select wire:model="laporan_pengisian_id" class="px-4 py-2.5 bg-white border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer" required>
-                                        <option value="">-- Pilih Laporan Sisa BBM --</option>
-                                        @foreach($laporanList as $lap)
-                                            <option value="{{ $lap->id }}">{{ $lap->nomor ?: 'No. Surat Belum Ada' }} | {{ \Carbon\Carbon::parse($lap->tanggal_surat)->locale('id')->translatedFormat('l, d/M/Y') }} (Kapal: {{ $lap->sounding->kapal->nama_kapal ?? '-' }})</option>
+                                    <select wire:model="surat_permohonan_id" class="px-4 py-2.5 bg-white border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer" required>
+                                        <option value="">-- Pilih Surat Permohonan --</option>
+                                        @foreach($permohonanList as $perm)
+                                            <option value="{{ $perm->id }}">{{ $perm->nomor_surat ?: 'No. Surat Belum Ada' }} | {{ \Carbon\Carbon::parse($perm->tanggal_surat)->locale('id')->translatedFormat('d/M/Y') }} (Kapal: {{ $perm->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }})</option>
                                         @endforeach
                                     </select>
 
-                                    <p class="text-[10px] text-gray-500 mt-1">Data Kapal & Tanggal akan otomatis terisi di PDF berdasarkan Laporan ini.</p>
+                                    <p class="text-[10px] text-gray-500 mt-1">Data Kapal & Identitas akan otomatis ditarik dari Surat Permohonan yang dipilih.</p>
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -121,16 +121,6 @@
             </a>
             @endif
 
-            @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd', 'kepala_ukpd']))
-            <a href="{{ route('satgas.surat-tugas') }}" 
-               class="{{ $baseClass }} {{ request()->routeIs('satgas.surat-tugas') ? $activeClass : $inactiveClass }}">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                </svg>
-                Surat Tugas Pengisian
-            </a>
-            @endif
-
             @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd', 'pptk', 'kepala_ukpd']))
             <a href="{{ route('satgas.surat-permohonan') }}" 
                class="{{ $baseClass }} {{ request()->routeIs('satgas.surat-permohonan') ? $activeClass : $inactiveClass }}">
@@ -138,6 +128,16 @@
                     <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                 </svg>
                 Surat Permohonan
+            </a>
+            @endif
+
+            @if(in_array($role, ['superadmin', 'satgas', 'admin_ukpd', 'kepala_ukpd']))
+            <a href="{{ route('satgas.surat-tugas') }}" 
+               class="{{ $baseClass }} {{ request()->routeIs('satgas.surat-tugas') ? $activeClass : $inactiveClass }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                Surat Tugas Pengisian
             </a>
             @endif
 

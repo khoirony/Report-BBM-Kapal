@@ -12,14 +12,14 @@ class SuratTugasPengisian extends Model
     protected $guarded = ['id'];
     protected $casts = ['tanggal_surat' => 'date'];
 
+    public function suratPermohonan()
+    {
+        return $this->belongsTo(SuratPermohonanPengisian::class, 'surat_permohonan_id');
+    }
+
     public function BaPengisianBbm()
     {
         return $this->belongsTo(BaPengisianBbm::class, 'laporan_pengisian_id');
-    }
-
-    public function LaporanSisaBbm()
-    {
-        return $this->belongsTo(LaporanSisaBbm::class, 'laporan_sisa_bbm_id');
     }
 
     public function user()

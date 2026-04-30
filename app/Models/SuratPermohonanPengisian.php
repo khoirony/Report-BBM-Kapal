@@ -11,9 +11,14 @@ class SuratPermohonanPengisian extends Model
 
     protected $guarded = ['id'];
 
+    public function LaporanSisaBbm()
+    {
+        return $this->belongsTo(LaporanSisaBbm::class, 'laporan_sisa_bbm_id');
+    }
+
     public function suratTugas()
     {
-        return $this->belongsTo(SuratTugasPengisian::class, 'surat_tugas_id');
+        return $this->hasOne(SuratTugasPengisian::class, 'surat_permohonan_id');
     }
 
     public function user()
