@@ -20,7 +20,9 @@ class SuratPermohonanPengisianBBM extends Component
     public $laporan_sisa_list, $kapals;
     public $permohonan_id, $laporan_sisa_bbm_id, $nomor_surat, $tanggal_surat, $klasifikasi, $lampiran;
     
-    public $penyedia_id, $jenis_penyedia_bbm, $tempat_pengambilan_bbm, $nomor_spbu, $metode_pengiriman, $jenis_bbm, $jumlah_bbm;
+    public $tanggal_pelaksanaan, $waktu_pelaksanaan;
+
+    public $penyedia_id, $jenis_penyedia_bbm, $tempat_pengambilan_bbm, $lokasi_pengisian, $nomor_spbu, $metode_pengiriman, $jenis_bbm, $jumlah_bbm;
     
     public $jenis_penyedia_bbm_lainnya = '';
     public $jenis_bbm_lainnya = '';
@@ -132,6 +134,7 @@ class SuratPermohonanPengisianBBM extends Component
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
                   ->orWhere('nomor_spbu', 'like', '%' . $this->search . '%')
+                  ->orWhere('lokasi_pengisian', 'like', '%' . $this->search . '%')
                   ->orWhereHas('penyedia', function($qPenyedia) {
                       $qPenyedia->where('name', 'like', '%' . $this->search . '%');
                   })
@@ -194,6 +197,9 @@ class SuratPermohonanPengisianBBM extends Component
         $this->resetFields();
         $this->loadLaporanSisaList();
         
+        $this->tanggal_pelaksanaan = date('Y-m-d'); 
+        $this->waktu_pelaksanaan = '08:00 - Selesai';
+
         $this->petugasList = [
             ['nama_petugas' => '', 'jabatan' => 'Nakhoda'],
             ['nama_petugas' => '', 'jabatan' => 'KKM'],
@@ -218,11 +224,16 @@ class SuratPermohonanPengisianBBM extends Component
         $this->laporan_sisa_bbm_id = $permohonan->laporan_sisa_bbm_id;
         $this->nomor_surat = $permohonan->nomor_surat;
         $this->tanggal_surat = \Carbon\Carbon::parse($permohonan->tanggal_surat)->format('Y-m-d');
+        
+        $this->tanggal_pelaksanaan = $permohonan->tanggal_pelaksanaan ? \Carbon\Carbon::parse($permohonan->tanggal_pelaksanaan)->format('Y-m-d') : '';
+        $this->waktu_pelaksanaan = $permohonan->waktu_pelaksanaan;
+
         $this->klasifikasi = $permohonan->klasifikasi;
         $this->lampiran = $permohonan->lampiran;
         
         $this->penyedia_id = $permohonan->penyedia_id;
         $this->tempat_pengambilan_bbm = $permohonan->tempat_pengambilan_bbm;
+        $this->lokasi_pengisian = $permohonan->lokasi_pengisian;
         $this->nomor_spbu = $permohonan->nomor_spbu;
         $this->metode_pengiriman = $permohonan->metode_pengiriman;
         $this->jumlah_bbm = $permohonan->jumlah_bbm;
@@ -250,7 +261,6 @@ class SuratPermohonanPengisianBBM extends Component
             $this->jenis_bbm_lainnya = $permohonan->jenis_bbm;
         }
 
-        // LOAD DATA PETUGAS
         $petugasRecords = DB::table('petugas_surat_tugas')->where('surat_permohonan_id', $id)->get();
         $this->petugasList = [];
         foreach ($petugasRecords as $p) {
@@ -271,8 +281,11 @@ class SuratPermohonanPengisianBBM extends Component
             'laporan_sisa_bbm_id' => 'required',
             'nomor_surat' => 'nullable|unique:surat_permohonan_pengisians,nomor_surat,' . $this->permohonan_id,
             'tanggal_surat' => 'required|date',
+            'tanggal_pelaksanaan' => 'required|date',
+            'waktu_pelaksanaan' => 'required|string|max:255',
             'penyedia_id' => 'nullable|exists:users,id',
             'tempat_pengambilan_bbm' => 'nullable|string|max:255',
+            'lokasi_pengisian' => 'required|string|max:255',
             'nomor_spbu' => 'nullable|string|max:255',
             'metode_pengiriman' => 'nullable|in:Ambil ditempat,Pengiriman Jalur Darat,Pengiriman Jalur Laut',
             'jumlah_bbm' => 'nullable|numeric|min:0',
@@ -284,7 +297,10 @@ class SuratPermohonanPengisianBBM extends Component
             'petugasList.*.jabatan' => 'required',
         ],[
             'petugasList.*.nama_petugas.required' => 'Nama petugas wajib diisi.',
-            'petugasList.*.jabatan.required' => 'Jabatan petugas wajib diisi.'
+            'petugasList.*.jabatan.required' => 'Jabatan petugas wajib diisi.',
+            'lokasi_pengisian.required' => 'Lokasi pengisian wajib diisi.',
+            'tanggal_pelaksanaan.required' => 'Tanggal pelaksanaan wajib diisi.',
+            'waktu_pelaksanaan.required' => 'Waktu pelaksanaan wajib diisi.',
         ]);
 
         $laporan = LaporanSisaBbm::find($this->laporan_sisa_bbm_id);
@@ -297,11 +313,14 @@ class SuratPermohonanPengisianBBM extends Component
             'ukpd_id' => $laporan ? $laporan->ukpd_id : null,
             'nomor_surat' => $this->nomor_surat,
             'tanggal_surat' => $this->tanggal_surat,
+            'tanggal_pelaksanaan' => $this->tanggal_pelaksanaan,
+            'waktu_pelaksanaan' => $this->waktu_pelaksanaan,
             'klasifikasi' => $this->klasifikasi,
             'lampiran' => $this->lampiran,
             'penyedia_id' => $this->penyedia_id,
             'jenis_penyedia_bbm' => $finalJenisPenyedia,
             'tempat_pengambilan_bbm' => $this->tempat_pengambilan_bbm,
+            'lokasi_pengisian' => $this->lokasi_pengisian, 
             'nomor_spbu' => $this->nomor_spbu, 
             'metode_pengiriman' => $this->metode_pengiriman,
             'jenis_bbm' => $finalJenisBbm,
@@ -320,7 +339,6 @@ class SuratPermohonanPengisianBBM extends Component
         try {
             $permohonan = SuratPermohonanPengisian::updateOrCreate(['id' => $this->permohonan_id], $data);
 
-            // Cek apakah permohonan ini sudah punya Surat Tugas. Jika ya, ambil ID nya.
             $st_id = $permohonan->suratTugas?->id;
 
             DB::table('petugas_surat_tugas')->where('surat_permohonan_id', $permohonan->id)->delete();
@@ -329,7 +347,7 @@ class SuratPermohonanPengisianBBM extends Component
             foreach ($this->petugasList as $petugas) {
                 $petugasData[] = [
                     'surat_permohonan_id' => $permohonan->id,
-                    'surat_tugas_pengisian_id' => $st_id, // Masukkan ke surat tugas juga otomatis
+                    'surat_tugas_pengisian_id' => $st_id, 
                     'nama_petugas' => $petugas['nama_petugas'],
                     'jabatan' => $petugas['jabatan'],
                     'created_at' => now(),
@@ -355,9 +373,9 @@ class SuratPermohonanPengisianBBM extends Component
     public function resetFields()
     {
         $this->reset([
-            'permohonan_id', 'laporan_sisa_bbm_id', 'nomor_surat', 'tanggal_surat', 'klasifikasi', 
+            'permohonan_id', 'laporan_sisa_bbm_id', 'nomor_surat', 'tanggal_surat', 'tanggal_pelaksanaan', 'waktu_pelaksanaan', 'klasifikasi', 
             'penyedia_id', 'jenis_penyedia_bbm', 'jenis_penyedia_bbm_lainnya', 
-            'tempat_pengambilan_bbm', 'nomor_spbu', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm',
+            'tempat_pengambilan_bbm', 'lokasi_pengisian', 'nomor_spbu', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm',
             'nama_nakhoda', 'id_nakhoda', 'nama_pptk', 'id_pptk', 'petugasList'
         ]);
         $this->lampiran = '1 (satu) berkas';

@@ -18,7 +18,7 @@ class SuratTugasPengisianBBM extends Component
 {
     use WithPagination, WithFileUploads;
 
-    public $surat_id, $surat_permohonan_id, $nomor_surat, $lokasi, $pakaian, $tanggal_pelaksanaan, $waktu_pelaksanaan, $tanggal_surat;
+    public $surat_id, $surat_permohonan_id, $nomor_surat, $pakaian, $tanggal_surat;
     
     public $nama_kepala_ukpd, $id_kepala_ukpd;
 
@@ -185,8 +185,6 @@ class SuratTugasPengisianBBM extends Component
     public function create()
     {
         $this->resetInputFields();
-        $this->tanggal_pelaksanaan = date('Y-m-d'); 
-        $this->waktu_pelaksanaan = '08:00 - Selesai';
         $this->tanggal_surat = date('Y-m-d');
         
         $this->petugasList = [
@@ -222,10 +220,7 @@ class SuratTugasPengisianBBM extends Component
         $this->surat_id = '';
         $this->surat_permohonan_id = '';
         $this->nomor_surat = '';
-        $this->lokasi = '';
         $this->pakaian = '';
-        $this->tanggal_pelaksanaan = ''; 
-        $this->waktu_pelaksanaan = '';
         $this->tanggal_surat = '';
         
         $this->nama_kepala_ukpd = '';
@@ -239,10 +234,7 @@ class SuratTugasPengisianBBM extends Component
         $this->validate([
             'surat_permohonan_id' => 'required',
             'nomor_surat' => 'nullable|unique:surat_tugas_pengisians,nomor_surat,' . $this->surat_id,
-            'lokasi' => 'required',
             'pakaian' => 'required',
-            'tanggal_pelaksanaan' => 'required|date', 
-            'waktu_pelaksanaan' => 'required',
             'tanggal_surat' => 'required|date',
             'nama_kepala_ukpd' => 'required|string', 
             'id_kepala_ukpd' => 'nullable|string',   
@@ -261,10 +253,10 @@ class SuratTugasPengisianBBM extends Component
             'surat_permohonan_id' => $this->surat_permohonan_id,
             'ukpd_id' => $permohonanTerkait ? $permohonanTerkait->ukpd_id : null,
             'nomor_surat' => $this->nomor_surat,
-            'lokasi' => $this->lokasi,
+            'lokasi' => $permohonanTerkait ? $permohonanTerkait->lokasi_pengisian : '-', 
             'pakaian' => $this->pakaian,
-            'tanggal_pelaksanaan' => $this->tanggal_pelaksanaan,
-            'waktu_pelaksanaan' => $this->waktu_pelaksanaan,
+            'tanggal_pelaksanaan' => $permohonanTerkait ? $permohonanTerkait->tanggal_pelaksanaan : now(),
+            'waktu_pelaksanaan' => $permohonanTerkait ? $permohonanTerkait->waktu_pelaksanaan : '08:00 - Selesai',
             'tanggal_surat' => $this->tanggal_surat,
             'nama_kepala_ukpd' => $this->nama_kepala_ukpd, 
             'id_kepala_ukpd' => $this->id_kepala_ukpd,     
@@ -317,10 +309,7 @@ class SuratTugasPengisianBBM extends Component
         $this->surat_id = $id;
         $this->surat_permohonan_id = $surat->surat_permohonan_id; 
         $this->nomor_surat = $surat->nomor_surat;
-        $this->lokasi = $surat->lokasi;
         $this->pakaian = $surat->pakaian;
-        $this->tanggal_pelaksanaan = $surat->tanggal_pelaksanaan ? \Carbon\Carbon::parse($surat->tanggal_pelaksanaan)->format('Y-m-d') : '';
-        $this->waktu_pelaksanaan = $surat->waktu_pelaksanaan;
         $this->tanggal_surat = \Carbon\Carbon::parse($surat->tanggal_surat)->format('Y-m-d');
         
         $this->nama_kepala_ukpd = $surat->nama_kepala_ukpd;

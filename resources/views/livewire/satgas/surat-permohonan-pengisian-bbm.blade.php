@@ -204,7 +204,8 @@
                                     
                                     <div class="mb-2">
                                         <span class="text-xs font-bold text-slate-800 block line-clamp-1">{{ $item->penyedia->name ?? 'Penyedia Belum Diset' }}</span>
-                                        <span class="text-[10px] text-slate-500 font-medium block">{{ $item->tempat_pengambilan_bbm ?? '-' }}</span>
+                                        <span class="text-[10px] text-slate-500 font-medium block">Tmpt Ambil: {{ $item->tempat_pengambilan_bbm ?? '-' }}</span>
+                                        <span class="text-[10px] text-slate-500 font-medium block">Lokasi Isi: {{ $item->lokasi_pengisian ?? '-' }}</span>
                                         @if($item->nomor_spbu)
                                             <span class="text-[10px] text-indigo-600 font-semibold mt-0.5 block">No. SPBU: {{ $item->nomor_spbu }}</span>
                                         @endif
@@ -462,6 +463,28 @@
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tempat Pengambilan BBM</label>
                                 <input type="text" wire:model="tempat_pengambilan_bbm" placeholder="Contoh: Muara Angke" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Lokasi Pengisian <span class="text-rose-500">*</span></label>
+                                <input type="text" wire:model="lokasi_pengisian" placeholder="Contoh: Dermaga Muara Angke" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                @error('lokasi_pengisian') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                            </div>
+
+                            <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Pelaksanaan <span class="text-rose-500">*</span></label>
+                                    <input type="date" wire:model="tanggal_pelaksanaan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 block w-full transition-colors" required>
+                                    @error('tanggal_pelaksanaan') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Waktu Pelaksanaan <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center">
+                                        <input type="text" wire:model="waktu_pelaksanaan" placeholder="Contoh: 08:00 - Selesai" class="px-4 py-2.5 bg-slate-50 border border-slate-200 border-r-0 text-slate-900 text-sm rounded-l-xl w-full focus:ring-2 focus:ring-indigo-500 transition-colors" required>
+                                        <span class="px-3 py-2.5 bg-slate-100 border border-slate-200 text-sm rounded-r-xl font-bold text-slate-600">WIB</span>
+                                    </div>
+                                    @error('waktu_pelaksanaan') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span>@enderror
+                                </div>
                             </div>
 
                             <div>

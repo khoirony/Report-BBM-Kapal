@@ -99,7 +99,9 @@
 
     <div style="margin-top: 20px; text-align: justify;">
         <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">
-            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami yang akan dilaksanakan pada ...................... pukul ............ Adapun kapal yang dimaksud adalah <strong style="font-weight: bold;">{{ $surat?->LaporanSisaBbm?->sounding?->kapal?->nama_kapal ?? '........................' }}</strong>
+            Bersama ini kami mengajukan permohonan surat pengisian Bahan Bakar Minyak guna memenuhi kebutuhan operasional kapal kami yang akan dilaksanakan 
+            pada {{ $surat->tanggal_pelaksanaan ?? '............' }} 
+            pukul {{ $surat->waktu_pelaksanaan ?? '............' }} Adapun kapal yang dimaksud adalah <strong style="font-weight: bold;">{{ $surat?->LaporanSisaBbm?->sounding?->kapal?->nama_kapal ?? '........................' }}</strong>
         </p>
         <p style="text-indent: 50px; margin-bottom: 10px; margin-top: 0;">Berikut nama beserta jabatan yang bertanggung jawab atas nama kapal yang di maksud sebagai berikut :</p>
     </div>
@@ -147,7 +149,7 @@
             </tr>
             <tr>
                 <td style="padding: 1px 0;">Lokasi Pengisian</td>
-                <td style="padding: 1px 0;">: ................................</td>
+                <td style="padding: 1px 0;">: {{ $surat->lokasi_pengisian ?? ' ' }} </td>
             </tr>
             <tr>
                 <td style="padding: 1px 0;">Metode Pengiriman</td>

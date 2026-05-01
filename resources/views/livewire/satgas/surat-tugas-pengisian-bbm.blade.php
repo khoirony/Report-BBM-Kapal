@@ -214,7 +214,7 @@
             
                                 <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider block mb-1">Petugas Bertugas</span>
                                 @if($surat->petugas->count() > 0)
-                                    <div x-data="{ open: false }" class="relative inline-block w-full lg:w-auto">
+                                    <div x-data="{ open: false }" class="relative inline-block w-full lg:w-auto" :class="{'z-50': open}">
                                         <button type="button" @click="open = !open" @click.outside="open = false" class="w-full lg:w-auto justify-between lg:justify-start inline-flex items-center gap-2 px-3 py-2 lg:py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-100">
                                             <div class="flex items-center gap-2">
                                                 <div class="flex -space-x-2">
@@ -228,7 +228,7 @@
                                             <svg class="w-3 h-3 text-slate-400 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                         </button>
             
-                                        <div x-show="open" x-transition.opacity.duration.200ms class="absolute z-50 left-0 lg:left-auto lg:right-0 mt-2 w-full lg:w-64 bg-white rounded-xl shadow-xl shadow-slate-200/50 border border-slate-200 p-2" style="display: none;">
+                                        <div x-show="open" x-transition.opacity.duration.200ms class="absolute left-0 lg:left-auto lg:right-0 mt-2 w-full lg:w-64 bg-white rounded-xl shadow-xl shadow-slate-300 border border-slate-200 p-2" style="display: none;">
                                             <div class="text-[10px] uppercase font-bold text-slate-400 px-2 pb-1.5 mb-1.5 border-b border-slate-100 tracking-wider">Daftar Personel</div>
                                             <div class="max-h-48 overflow-y-auto custom-scrollbar space-y-1">
                                                 @foreach($surat->petugas as $petugas)
@@ -362,23 +362,8 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Lokasi Pengisian <span class="text-rose-500">*</span></label>
-                                    <input type="text" wire:model="lokasi" placeholder="Contoh: SPBU Pertamina 31.102..." class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                                </div>
-                                <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Pakaian <span class="text-rose-500">*</span></label>
                                     <input type="text" wire:model="pakaian" placeholder="Contoh: PDL / PDH" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Pelaksanaan <span class="text-rose-500">*</span></label>
-                                    <input type="date" wire:model="tanggal_pelaksanaan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 text-sm rounded-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Waktu Pelaksanaan <span class="text-rose-500">*</span></label>
-                                    <div class="flex items-center">
-                                        <input type="text" wire:model="waktu_pelaksanaan" placeholder="Contoh: 08:00 - Selesai" class="px-4 py-2.5 bg-slate-50 border border-slate-200 border-r-0 text-sm rounded-l-xl w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                                        <span class="px-3 py-2.5 bg-gray-100 border border-gray-200 text-sm rounded-r-xl font-bold text-gray-600">WIB</span>
-                                    </div>
                                 </div>
                             </div>
 
