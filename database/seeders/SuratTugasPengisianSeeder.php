@@ -23,18 +23,11 @@ class SuratTugasPengisianSeeder extends Seeder
         $faker = Faker::create('id_ID');
         $nomorUrut = 1;
 
-        $listLokasi = [
-            'SPBU Pertamina 31.102.02 MT Haryono',
-            'SPBU Pertamina 34.105.04 Cempaka Putih',
-            'SPBU Shell Gatot Subroto',
-            'Pool Kendaraan Dinas Operasional'
-        ];
-
         $listPakaian = ['PDH', 'PDL', 'Baju Dinas Lapangan', 'Bebas Rapi'];
 
         foreach ($permohonans as $permohonan) {
-            $tanggalPelaksanaan = Carbon::parse($permohonan->tanggal_surat);
             
+            $tanggalPelaksanaan = Carbon::parse($permohonan->tanggal_pelaksanaan ?? $permohonan->tanggal_surat);
             $tanggalDikeluarkan = $tanggalPelaksanaan->copy()->subDay();
             
             if ($tanggalDikeluarkan->dayOfWeek === Carbon::SUNDAY) {
@@ -47,10 +40,10 @@ class SuratTugasPengisianSeeder extends Seeder
                 'surat_permohonan_id' => $permohonan->id,
                 'ukpd_id'             => $permohonan->ukpd_id,
                 'nomor_surat'         => $nomorSurat,
-                'lokasi'              => $faker->randomElement($listLokasi),
+                'lokasi'              => $permohonan->lokasi_pengisian ?? '-',
+                'tanggal_pelaksanaan' => $permohonan->tanggal_pelaksanaan,
+                'waktu_pelaksanaan'   => $permohonan->waktu_pelaksanaan,
                 'pakaian'             => $faker->randomElement($listPakaian), 
-                'tanggal_pelaksanaan' => $tanggalPelaksanaan->format('Y-m-d'),
-                'waktu_pelaksanaan'   => '08:00 - Selesai',
                 'tanggal_surat'       => $tanggalDikeluarkan->format('Y-m-d'),
                 'user_id'             => 3,
             ]);

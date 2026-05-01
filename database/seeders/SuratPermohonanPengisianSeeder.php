@@ -8,6 +8,7 @@ use App\Models\LaporanSisaBbm;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
+use Carbon\Carbon;
 
 class SuratPermohonanPengisianSeeder extends Seeder
 {
@@ -40,10 +41,13 @@ class SuratPermohonanPengisianSeeder extends Seeder
             [
                 'nomor_surat'              => '001/PH.12.00',
                 'tanggal_surat'            => '2026-04-01',
+                'tanggal_pelaksanaan'      => '2026-04-02',
+                'waktu_pelaksanaan'        => '08:00 - Selesai',
                 'klasifikasi'              => 'Biasa',
                 'lampiran'                 => '1 (satu) berkas',
                 'jenis_penyedia_bbm'       => 'Stasiun Pengisian Bahan Bakar Umum (SPBU)',
                 'tempat_pengambilan_bbm'   => 'SPBU 31.102.02 Muara Angke',
+                'lokasi_pengisian'         => 'Dermaga Kali Adem',
                 'metode_pengiriman'        => 'Ambil ditempat',
                 'jenis_bbm'                => 'Dexlite/sekelas',
                 'jumlah_bbm'               => 1500.00,
@@ -53,10 +57,13 @@ class SuratPermohonanPengisianSeeder extends Seeder
             [
                 'nomor_surat'              => '002/PH.12.00',
                 'tanggal_surat'            => '2026-04-02',
+                'tanggal_pelaksanaan'      => '2026-04-03',
+                'waktu_pelaksanaan'        => '09:00 - Selesai',
                 'klasifikasi'              => 'Penting',
                 'lampiran'                 => '1 (satu) berkas',
                 'jenis_penyedia_bbm'       => 'Agen BBM',
                 'tempat_pengambilan_bbm'   => 'Depot Pertamina Plumpang',
+                'lokasi_pengisian'         => 'Pelabuhan Sunda Kelapa',
                 'metode_pengiriman'        => 'Pengiriman Jalur Darat',
                 'jenis_bbm'                => 'Pertamina Dex/sekelas',
                 'jumlah_bbm'               => 2500.50,
@@ -66,10 +73,13 @@ class SuratPermohonanPengisianSeeder extends Seeder
             [
                 'nomor_surat'              => '003/PH.12.00',
                 'tanggal_surat'            => '2026-04-03',
+                'tanggal_pelaksanaan'      => '2026-04-04',
+                'waktu_pelaksanaan'        => '10:00 - Selesai',
                 'klasifikasi'              => 'Segera',
                 'lampiran'                 => '2 (dua) berkas',
                 'jenis_penyedia_bbm'       => 'Agen BBM',
                 'tempat_pengambilan_bbm'   => 'Pelabuhan Tanjung Priok',
+                'lokasi_pengisian'         => 'Dermaga Marina Ancol',
                 'metode_pengiriman'        => 'Pengiriman Jalur Laut',
                 'jenis_bbm'                => 'Biosolar',
                 'jumlah_bbm'               => 5000.00,
@@ -79,10 +89,13 @@ class SuratPermohonanPengisianSeeder extends Seeder
             [
                 'nomor_surat'              => '004/PH.12.00',
                 'tanggal_surat'            => '2026-04-04',
+                'tanggal_pelaksanaan'      => '2026-04-05',
+                'waktu_pelaksanaan'        => '08:00 - 12:00',
                 'klasifikasi'              => 'Biasa',
                 'lampiran'                 => '1 (satu) berkas',
                 'jenis_penyedia_bbm'       => 'Stasiun Pengisian Bahan Bakar Umum (SPBU)',
                 'tempat_pengambilan_bbm'   => 'SPBU 34.144.15 Pluit',
+                'lokasi_pengisian'         => 'Dermaga Kali Adem',
                 'metode_pengiriman'        => 'Ambil ditempat',
                 'jenis_bbm'                => 'Pertamax/sekelas',
                 'jumlah_bbm'               => 200.00,
@@ -92,10 +105,13 @@ class SuratPermohonanPengisianSeeder extends Seeder
             [
                 'nomor_surat'              => '005/PH.12.00',
                 'tanggal_surat'            => '2026-04-05',
+                'tanggal_pelaksanaan'      => '2026-04-06',
+                'waktu_pelaksanaan'        => '13:00 - Selesai',
                 'klasifikasi'              => 'Penting',
                 'lampiran'                 => '1 (satu) berkas',
                 'jenis_penyedia_bbm'       => 'Lainnya',
                 'tempat_pengambilan_bbm'   => 'Terminal BBM Jakarta Group',
+                'lokasi_pengisian'         => 'Dermaga Timur',
                 'metode_pengiriman'        => 'Pengiriman Jalur Darat',
                 'jenis_bbm'                => 'Dexlite/sekelas',
                 'jumlah_bbm'               => 1000.00,
@@ -105,10 +121,13 @@ class SuratPermohonanPengisianSeeder extends Seeder
             [
                 'nomor_surat'              => '006/PH.12.00',
                 'tanggal_surat'            => '2026-04-06',
+                'tanggal_pelaksanaan'      => '2026-04-07',
+                'waktu_pelaksanaan'        => '08:30 - Selesai',
                 'klasifikasi'              => 'Biasa',
                 'lampiran'                 => '1 (satu) berkas',
                 'jenis_penyedia_bbm'       => 'Agen BBM',
                 'tempat_pengambilan_bbm'   => 'Dermaga Marina Ancol',
+                'lokasi_pengisian'         => 'Dermaga Marina Ancol',
                 'metode_pengiriman'        => 'Pengiriman Jalur Laut',
                 'jenis_bbm'                => 'Pertamina Dex/sekelas',
                 'jumlah_bbm'               => 3000.00,
