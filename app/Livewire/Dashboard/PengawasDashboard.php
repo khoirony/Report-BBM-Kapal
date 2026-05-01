@@ -5,7 +5,7 @@ namespace App\Livewire\Dashboard;
 use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth; // Tambahkan facade Auth
+use Illuminate\Support\Facades\Auth;
 use App\Models\PaguAnggaran;
 
 class PengawasDashboard extends Component
@@ -51,17 +51,21 @@ class PengawasDashboard extends Component
         $userUkpdId = Auth::user()->ukpd_id;
 
         $data = DB::table('ukpds')
-            ->when($userUkpdId, fn($q) => $q->where('ukpds.id', $userUkpdId))
+            ->where('ukpds.id', $userUkpdId)
             ->leftJoin('rekonsiliasi_invoices', function($join) {
                 $join->on('ukpds.id', '=', 'rekonsiliasi_invoices.ukpd_id')
-                     ->whereBetween('rekonsiliasi_invoices.tanggal_invoice', [$this->startDate, $this->endDate]);
+                     ->whereBetween('rekonsiliasi_invoices.tanggal_invoice', [$this->startDate, $this->endDate])
+                     ->where('rekonsiliasi_invoices.status', '!=', 'rejected');
             })
+            ->leftJoin('surat_permohonan_pengisians', 'rekonsiliasi_invoices.id', '=', 'surat_permohonan_pengisians.rekonsiliasi_invoice_id')
+            ->leftJoin('proses_penyedia_bbms', 'surat_permohonan_pengisians.id', '=', 'proses_penyedia_bbms.surat_permohonan_id')
             ->leftJoin('pagu_anggarans', function($join) use ($tahunFilter) {
                 $join->on('ukpds.id', '=', 'pagu_anggarans.ukpd_id')
                      ->where('pagu_anggarans.tahun', '=', $tahunFilter);
             })
-            ->selectRaw('ukpds.singkatan, SUM(rekonsiliasi_invoices.total_tagihan) as realisasi, MAX(pagu_anggarans.nominal) as pagu')
-            ->groupBy('ukpds.id', 'ukpds.singkatan')->get();
+            ->selectRaw('ukpds.singkatan, SUM(proses_penyedia_bbms.total_harga) as realisasi, MAX(pagu_anggarans.nominal) as pagu')
+            ->groupBy('ukpds.id', 'ukpds.singkatan')
+            ->get();
 
         return [
             'labels' => $data->pluck('singkatan'),
@@ -76,14 +80,19 @@ class PengawasDashboard extends Component
     {
         $userUkpdId = Auth::user()->ukpd_id;
 
-        $data = DB::table('pencatatan_hasils')
-            ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
-            ->leftJoin('proses_penyedia_bbms', 'pencatatan_hasils.id', '=', 'proses_penyedia_bbms.id') 
-            ->when($userUkpdId, fn($q) => $q->where('kapals.ukpd_id', $userUkpdId))
-            ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
+        $data = DB::table('rekonsiliasi_invoices')
+            ->whereBetween('rekonsiliasi_invoices.tanggal_invoice', [$this->startDate, $this->endDate])
+            ->where('rekonsiliasi_invoices.status', '!=', 'rejected')
+            ->join('surat_permohonan_pengisians', 'rekonsiliasi_invoices.id', '=', 'surat_permohonan_pengisians.rekonsiliasi_invoice_id')
+            ->join('proses_penyedia_bbms', 'surat_permohonan_pengisians.id', '=', 'proses_penyedia_bbms.surat_permohonan_id')
+            ->join('laporan_sisa_bbms', 'surat_permohonan_pengisians.laporan_sisa_bbm_id', '=', 'laporan_sisa_bbms.id')
+            ->join('soundings', 'laporan_sisa_bbms.sounding_id', '=', 'soundings.id')
+            ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id')
+            ->where('kapals.ukpd_id', $userUkpdId)
             ->selectRaw('kapals.nama_kapal, SUM(proses_penyedia_bbms.total_harga) as total_biaya')
             ->groupBy('kapals.id', 'kapals.nama_kapal')
-            ->orderByDesc('total_biaya')->get();
+            ->orderByDesc('total_biaya')
+            ->get();
 
         return [
             'labels' => $data->pluck('nama_kapal')->toArray(),
@@ -96,10 +105,10 @@ class PengawasDashboard extends Component
         $userUkpdId = Auth::user()->ukpd_id;
 
         $dbData = DB::table('soundings')
-            ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id') // Tambah Join untuk filter UKPD
-            ->when($userUkpdId, fn($q) => $q->where('kapals.ukpd_id', $userUkpdId))
+            ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id')
+            ->where('kapals.ukpd_id', $userUkpdId)
             ->whereBetween('soundings.tanggal_sounding', [$this->startDate, $this->endDate])
-            ->selectRaw('DATE(soundings.tanggal_sounding) as tanggal, SUM(soundings.pemakaian) as total_pemakaian')
+            ->selectRaw('DATE(soundings.tanggal_sounding) as tanggal, CAST(SUM(soundings.pemakaian) AS DECIMAL(10,2)) as total_pemakaian')
             ->groupBy('tanggal')
             ->pluck('total_pemakaian', 'tanggal')->toArray();
 
@@ -124,10 +133,11 @@ class PengawasDashboard extends Component
         $data = DB::table('soundings')
             ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id')
             ->join('ukpds', 'kapals.ukpd_id', '=', 'ukpds.id')
-            ->when($userUkpdId, fn($q) => $q->where('ukpds.id', $userUkpdId))
+            ->where('ukpds.id', $userUkpdId)
             ->whereBetween('soundings.tanggal_sounding', [$this->startDate, $this->endDate])
-            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, SUM(soundings.pemakaian) as total_liter')
-            ->groupBy('ukpd', 'kapals.nama_kapal')->get();
+            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, CAST(SUM(soundings.pemakaian) AS DECIMAL(10,2)) as total_liter')
+            ->groupBy('ukpd', 'kapals.nama_kapal')
+            ->get();
 
         $ukpds = $data->pluck('ukpd')->unique()->values()->toArray();
         $kapals = $data->pluck('nama_kapal')->unique()->values()->toArray();
@@ -152,10 +162,11 @@ class PengawasDashboard extends Component
         $data = DB::table('pencatatan_hasils')
             ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
             ->join('ukpds', 'kapals.ukpd_id', '=', 'ukpds.id')
-            ->when($userUkpdId, fn($q) => $q->where('ukpds.id', $userUkpdId))
+            ->where('ukpds.id', $userUkpdId)
             ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
-            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, SUM(pencatatan_hasils.jumlah_pengisian) as total_liter')
-            ->groupBy('ukpd', 'kapals.nama_kapal')->get();
+            ->selectRaw('ukpds.singkatan as ukpd, kapals.nama_kapal, CAST(SUM(pencatatan_hasils.jumlah_pengisian) AS DECIMAL(10,2)) as total_liter')
+            ->groupBy('ukpd', 'kapals.nama_kapal')
+            ->get();
 
         $ukpds = $data->pluck('ukpd')->unique()->values()->toArray();
         $kapals = $data->pluck('nama_kapal')->unique()->values()->toArray();
@@ -178,12 +189,14 @@ class PengawasDashboard extends Component
         $userUkpdId = Auth::user()->ukpd_id;
 
         $data = DB::table('surat_permohonan_pengisians')
-            ->when($userUkpdId, function($q) use ($userUkpdId) {
-                $q->where('ukpd_id', $userUkpdId);
-            })
-            ->whereBetween('tanggal_surat', [$this->startDate, $this->endDate])
-            ->selectRaw('jenis_bbm, SUM(jumlah_bbm) as total')
-            ->groupBy('jenis_bbm')->get();
+            ->join('laporan_sisa_bbms', 'surat_permohonan_pengisians.laporan_sisa_bbm_id', '=', 'laporan_sisa_bbms.id')
+            ->join('soundings', 'laporan_sisa_bbms.sounding_id', '=', 'soundings.id')
+            ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id')
+            ->where('kapals.ukpd_id', $userUkpdId)
+            ->whereBetween('surat_permohonan_pengisians.tanggal_surat', [$this->startDate, $this->endDate])
+            ->selectRaw('surat_permohonan_pengisians.jenis_bbm, CAST(SUM(surat_permohonan_pengisians.jumlah_bbm) AS DECIMAL(10,2)) as total')
+            ->groupBy('surat_permohonan_pengisians.jenis_bbm')
+            ->get();
 
         if ($data->isEmpty()) return ['labels' => ['Belum Ada Data'], 'data' => [0]];
 
@@ -200,8 +213,8 @@ class PengawasDashboard extends Component
         return DB::table('pencatatan_hasils')
             ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
             ->join('ukpds', 'kapals.ukpd_id', '=', 'ukpds.id')
-            ->leftJoin('proses_penyedia_bbms', 'pencatatan_hasils.id', '=', 'proses_penyedia_bbms.id') 
-            ->when($userUkpdId, fn($q) => $q->where('ukpds.id', $userUkpdId))
+            ->leftJoin('proses_penyedia_bbms', 'pencatatan_hasils.surat_permohonan_id', '=', 'proses_penyedia_bbms.surat_permohonan_id') 
+            ->where('ukpds.id', $userUkpdId)
             ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
             ->select('ukpds.singkatan as ukpd', 'kapals.nama_kapal', 'pencatatan_hasils.tanggal_pengisian', 'pencatatan_hasils.jumlah_pengisian as liter', 'proses_penyedia_bbms.harga_satuan', 'proses_penyedia_bbms.total_harga')
             ->orderBy('ukpd')->orderBy('nama_kapal')->orderBy('tanggal_pengisian')
@@ -216,36 +229,37 @@ class PengawasDashboard extends Component
         $stats = [
             'pagu' => DB::table('pagu_anggarans')
                         ->where('tahun', $tahunFilter)
-                        ->when($userUkpdId, fn($q) => $q->where('ukpd_id', $userUkpdId))
+                        ->where('ukpd_id', $userUkpdId)
                         ->sum('nominal') ?: 0,
 
             'realisasi' => DB::table('rekonsiliasi_invoices')
-                        ->whereBetween('tanggal_invoice', [$this->startDate, $this->endDate])
-                        ->when($userUkpdId, fn($q) => $q->where('ukpd_id', $userUkpdId))
-                        ->sum('total_tagihan'),
+                        ->whereBetween('rekonsiliasi_invoices.tanggal_invoice', [$this->startDate, $this->endDate])
+                        ->where('rekonsiliasi_invoices.status', '!=', 'rejected')
+                        ->where('rekonsiliasi_invoices.ukpd_id', $userUkpdId)
+                        ->join('surat_permohonan_pengisians', 'rekonsiliasi_invoices.id', '=', 'surat_permohonan_pengisians.rekonsiliasi_invoice_id')
+                        ->join('proses_penyedia_bbms', 'surat_permohonan_pengisians.id', '=', 'proses_penyedia_bbms.surat_permohonan_id')
+                        ->sum('proses_penyedia_bbms.total_harga') ?: 0,
 
             'armada' => DB::table('kapals')
-                        ->when($userUkpdId, fn($q) => $q->where('ukpd_id', $userUkpdId))
+                        ->where('ukpd_id', $userUkpdId)
                         ->count(),
 
             'liter' => DB::table('pencatatan_hasils')
                         ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
                         ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
-                        ->when($userUkpdId, fn($q) => $q->where('kapals.ukpd_id', $userUkpdId))
+                        ->where('kapals.ukpd_id', $userUkpdId)
                         ->sum('pencatatan_hasils.jumlah_pengisian'),
         ];
 
-        // Fetch data untuk tabel CRUD Pagu
         $pagus = PaguAnggaran::join('ukpds', 'pagu_anggarans.ukpd_id', '=', 'ukpds.id')
             ->select('pagu_anggarans.*', 'ukpds.singkatan as nama_ukpd')
-            ->when($userUkpdId, fn($q) => $q->where('pagu_anggarans.ukpd_id', $userUkpdId))
+            ->where('pagu_anggarans.ukpd_id', $userUkpdId)
             ->orderBy('tahun', 'desc')
             ->orderBy('nama_ukpd', 'asc')
             ->get();
             
-        // Fetch UKPD untuk Dropdown modal
         $ukpds = DB::table('ukpds')
-            ->when($userUkpdId, fn($q) => $q->where('id', $userUkpdId))
+            ->where('id', $userUkpdId)
             ->get();
 
         return view('livewire.dashboard.pengawas-dashboard', [

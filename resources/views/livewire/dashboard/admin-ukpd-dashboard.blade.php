@@ -3,7 +3,7 @@
     <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-4">
     
         <div class="w-full lg:w-auto overflow-hidden">
-            <h1 class="text-2xl font-bold text-slate-800">Dashbaord Admin UKPD</h1>
+            <h1 class="text-2xl font-bold text-slate-800">Dashboard Admin UKPD</h1>
             
             <div class="flex gap-4 mt-4 border-b border-slate-200 overflow-x-auto" style="scrollbar-width: none;">
                 <button @click="tab = 'dashboard'" :class="tab === 'dashboard' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'" class="pb-2 text-sm font-medium transition whitespace-nowrap">Dashboard Utama</button>
