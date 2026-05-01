@@ -90,7 +90,7 @@ class PdfController extends Controller
 
     public function previewSuratPermohonan($id)
     {
-        $surat = SuratPermohonanPengisian::with(['LaporanSisaBbm.sounding.kapal.ukpd', 'penyedia'])->findOrFail($id);
+        $surat = SuratPermohonanPengisian::with(['LaporanSisaBbm.sounding.kapal.ukpd', 'penyedia', 'petugas'])->findOrFail($id);
 
         $pdf = Pdf::loadView('pdf.surat-permohonan-pengisian-bbm', ['surat' => $surat]);
         $pdf->setPaper('A4', 'portrait');

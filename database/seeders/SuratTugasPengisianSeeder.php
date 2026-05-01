@@ -55,26 +55,16 @@ class SuratTugasPengisianSeeder extends Seeder
                 'user_id'             => 3,
             ]);
 
-            $dataPetugas = [
-                [
+            DB::table('petugas_surat_tugas')
+                ->where('surat_permohonan_id', $permohonan->id)
+                ->update([
                     'surat_tugas_pengisian_id' => $suratTugas->id,
-                    'nama_petugas'             => $faker->name('male'),
-                    'jabatan'                  => 'Supir',
-                    'created_at'               => now(),
-                    'updated_at'               => now(),
-                ],
-                [
-                    'surat_tugas_pengisian_id' => $suratTugas->id,
-                    'nama_petugas'             => $faker->name(),
-                    'jabatan'                  => 'Pendamping',
-                    'created_at'               => now(),
-                    'updated_at'               => now(),
-                ]
-            ];
-
-            DB::table('petugas_surat_tugas')->insert($dataPetugas);
+                    'updated_at' => now(),
+                ]);
 
             $nomorUrut++;
         }
+        
+        $this->command->info('Data Surat Tugas Pengisian (dan sinkronisasi Petugas) berhasil di-seed!');
     }
 }

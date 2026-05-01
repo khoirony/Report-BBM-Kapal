@@ -43,6 +43,28 @@ class SuratTugasPengisianBBM extends Component
     public function updatingFilterTanggalDari() { $this->resetPage(); }
     public function updatingFilterTanggalSampai() { $this->resetPage(); }
 
+    public function updatedSuratPermohonanId($value)
+    {
+        if ($value) {
+            $petugasRecords = DB::table('petugas_surat_tugas')->where('surat_permohonan_id', $value)->get();
+            if ($petugasRecords->count() > 0) {
+                $this->petugasList = [];
+                foreach ($petugasRecords as $p) {
+                    $this->petugasList[] = [
+                        'nama_petugas' => $p->nama_petugas,
+                        'jabatan' => $p->jabatan
+                    ];
+                }
+            } else {
+                $this->petugasList = [
+                    ['nama_petugas' => '', 'jabatan' => 'Nakhoda'],
+                    ['nama_petugas' => '', 'jabatan' => 'KKM'],
+                    ['nama_petugas' => '', 'jabatan' => 'ABK']
+                ];
+            }
+        }
+    }
+
     public function updatedUploadFiles($value, $key)
     {
         $this->validate([
@@ -256,11 +278,12 @@ class SuratTugasPengisianBBM extends Component
         try {
             $surat = SuratTugasPengisian::updateOrCreate(['id' => $this->surat_id], $data);
 
-            DB::table('petugas_surat_tugas')->where('surat_tugas_pengisian_id', $surat->id)->delete();
+            DB::table('petugas_surat_tugas')->where('surat_permohonan_id', $this->surat_permohonan_id)->delete();
             
             $petugasData = [];
             foreach ($this->petugasList as $petugas) {
                 $petugasData[] = [
+                    'surat_permohonan_id' => $this->surat_permohonan_id,
                     'surat_tugas_pengisian_id' => $surat->id,
                     'nama_petugas' => $petugas['nama_petugas'],
                     'jabatan' => $petugas['jabatan'],
@@ -304,7 +327,7 @@ class SuratTugasPengisianBBM extends Component
         $this->id_kepala_ukpd = $surat->id_kepala_ukpd;
         
         $petugasRecords = DB::table('petugas_surat_tugas')
-                            ->where('surat_tugas_pengisian_id', $surat->id)
+                            ->where('surat_permohonan_id', $this->surat_permohonan_id)
                             ->get();
         
         $this->petugasList = [];

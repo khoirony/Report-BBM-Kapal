@@ -73,7 +73,7 @@
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
                         <td colspan="2" style="text-align: left; border: none; padding: 2px 0; padding-left: 50px; vertical-align: top;">
-                            Jakarta, <span style="font-weight: bold;">{{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '........................' }}</span>
+                            Jakarta, <span>{{ $surat->tanggal_surat ? \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') : '........................' }}</span>
                         </td>
                     </tr>
                     <tr>
@@ -115,10 +115,11 @@
         <tbody>
             @php $maxRows = 7; @endphp
             @for($i = 0; $i < $maxRows; $i++)
+                @php $petugas = $surat->petugas[$i] ?? null; @endphp
                 <tr>
                     <td style="text-align: center; border: 1px solid black; padding: 4px 8px; height: 22px;">{{ $i + 1 }}.</td>
-                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">...................................</td>
-                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">...................................</td>
+                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">{{ $petugas ? $petugas->nama_petugas : ' ' }}</td>
+                    <td style="border: 1px solid black; padding: 4px 8px; height: 22px;">{{ $petugas ? $petugas->jabatan : ' ' }}</td>
                 </tr>
             @endfor
         </tbody>

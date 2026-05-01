@@ -135,7 +135,7 @@
                             
                             <tr class="block md:table-row bg-white rounded-2xl md:rounded-none shadow-sm md:shadow-none hover:bg-slate-50/50 transition-colors duration-150 border border-gray-100 md:border-none">
                                 
-                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
+                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Nomor & Tanggal</span>
                                     <h3 class="font-bold text-gray-900 text-base mb-1">{{ $item->nomor_surat ?? '-' }}</h3>
                                     
@@ -169,7 +169,7 @@
                                     </div>
                                 </td>
 
-                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
+                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Kapal & Laporan Sisa</span>
                                     <div class="flex items-center mt-1">
                                         <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600 mr-3 hidden md:block flex-shrink-0">
@@ -199,7 +199,7 @@
                                     </div>
                                 </td>
                                 
-                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
+                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Rincian Penyedia BBM</span>
                                     
                                     <div class="mb-2">
@@ -217,7 +217,7 @@
                                     </div>
                                 </td>
 
-                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none relative z-10 align-top">
+                                <td class="flex flex-col md:table-cell px-4 py-4 md:px-6 md:py-5 border-b border-gray-50 md:border-none align-top">
                                     <span class="text-[10px] font-bold text-indigo-400 uppercase md:hidden mb-2 tracking-wider">Penanggung Jawab</span>
                                     
                                     <div class="mb-2">
@@ -228,13 +228,47 @@
                                         @endif
                                     </div>
 
-                                    <div>
+                                    <div class="mb-3">
                                         <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider block mb-0.5">PPTK</span>
                                         <div class="font-bold text-slate-800 text-xs truncate">{{ $item->nama_pptk ?? 'Belum diisi' }}</div>
                                         @if($item->id_pptk)
                                             <div class="text-[10px] text-emerald-600 font-semibold mt-0.5">NIP: {{ $item->id_pptk }}</div>
                                         @endif
                                     </div>
+
+                                    <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider block mb-1">Petugas Bertugas</span>
+                                    @if($item->petugas->count() > 0)
+                                        <div x-data="{ open: false }" class="relative inline-block w-full lg:w-auto" :class="{'z-50': open}">
+                                            <button type="button" @click="open = !open" @click.outside="open = false" class="w-full lg:w-auto justify-between lg:justify-start inline-flex items-center gap-2 px-3 py-2 lg:py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-100">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="flex -space-x-2">
+                                                        <div class="w-5 h-5 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center text-[9px] font-bold text-indigo-700 z-10">{{ strtoupper(substr($item->petugas->first()->nama_petugas, 0, 1)) }}</div>
+                                                        @if($item->petugas->count() > 1)
+                                                            <div class="w-5 h-5 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[9px] font-bold text-slate-600">+{{ $item->petugas->count() - 1 }}</div>
+                                                        @endif
+                                                    </div>
+                                                    <span>{{ $item->petugas->count() }} Orang</span>
+                                                </div>
+                                                <svg class="w-3 h-3 text-slate-400 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                            </button>
+                
+                                            <div x-show="open" x-transition.opacity.duration.200ms class="absolute left-0 lg:left-auto lg:right-0 mt-2 w-full lg:w-64 bg-white rounded-xl shadow-xl shadow-slate-300 border border-slate-200 p-2" style="display: none;">
+                                                <div class="text-[10px] uppercase font-bold text-slate-400 px-2 pb-1.5 mb-1.5 border-b border-slate-100 tracking-wider">Daftar Personel</div>
+                                                <div class="max-h-48 overflow-y-auto custom-scrollbar space-y-1">
+                                                    @foreach($item->petugas as $petugas)
+                                                        <div class="flex flex-col px-2.5 py-2 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+                                                            <span class="text-xs font-bold text-slate-800">{{ $petugas->nama_petugas }}</span>
+                                                            <span class="text-[10px] font-medium text-indigo-600">{{ $petugas->jabatan }}</span>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <span class="inline-flex items-center text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-md border border-slate-200 w-full lg:w-auto">
+                                            Belum ada petugas
+                                        </span>
+                                    @endif
                                 </td>
 
                                 <td class="flex justify-end md:table-cell px-4 py-4 md:px-6 md:py-5 md:text-right align-middle">
@@ -545,9 +579,48 @@
                                     </div>
                                 </div>
                             </div>
-                            
                         </div>
 
+                        <div class="border-t border-slate-100 my-6"></div>
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <label class="block text-sm font-bold text-slate-800">Daftar Petugas Bertugas <span class="text-rose-500">*</span></label>
+                                <button type="button" wire:click="addPetugas" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    Tambah Petugas
+                                </button>
+                            </div>
+                            
+                            @error('petugasList.*.nama_petugas') <span class="text-xs text-rose-500 block mb-2">{{ $message }}</span> @enderror
+                            @error('petugasList.*.jabatan') <span class="text-xs text-rose-500 block mb-2">{{ $message }}</span> @enderror
+
+                            <div class="space-y-3">
+                                @foreach($petugasList as $index => $petugas)
+                                <div class="flex flex-col sm:flex-row gap-3 items-end bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <div class="w-full sm:w-1/2">
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Petugas</label>
+                                        <input type="text" wire:model="petugasList.{{ $index }}.nama_petugas" placeholder="Nama Lengkap" class="px-3 py-2 bg-white border border-slate-200 text-sm rounded-lg w-full focus:ring-2 focus:ring-indigo-500" required>
+                                    </div>
+                                    <div class="w-full sm:w-2/5">
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Jabatan</label>
+                                        <input type="text" wire:model="petugasList.{{ $index }}.jabatan" placeholder="Contoh: Nakhoda, KKM, ABK, dll" class="px-3 py-2 bg-white border border-slate-200 text-sm rounded-lg w-full focus:ring-2 focus:ring-indigo-500" required>
+                                    </div>
+                                    <div class="w-full sm:w-auto">
+                                        <button type="button" wire:click="removePetugas({{ $index }})" class="w-full justify-center inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg text-rose-600 bg-white hover:bg-rose-50 border border-rose-200 transition-colors" title="Hapus Baris">
+                                            <svg class="w-5 h-5 sm:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <span class="sm:hidden ml-2">Hapus Petugas</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                @endforeach
+                                
+                                @if(count($petugasList) === 0)
+                                    <div class="text-center py-6 border-2 border-dashed border-slate-200 rounded-xl">
+                                        <p class="text-sm text-slate-500 font-medium">Belum ada petugas ditambahkan.</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                     </form>
                 </div>
 

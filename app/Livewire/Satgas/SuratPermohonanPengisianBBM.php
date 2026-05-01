@@ -22,16 +22,14 @@ class SuratPermohonanPengisianBBM extends Component
     
     public $penyedia_id, $jenis_penyedia_bbm, $tempat_pengambilan_bbm, $nomor_spbu, $metode_pengiriman, $jenis_bbm, $jumlah_bbm;
     
-    // Properti Khusus "Lainnya"
     public $jenis_penyedia_bbm_lainnya = '';
     public $jenis_bbm_lainnya = '';
 
     public $nama_nakhoda, $id_nakhoda, $nama_pptk, $id_pptk;
 
-    // Property untuk menampung file upload inline di tabel
-    public $upload_files = [];
+    public $petugasList = [];
 
-    // Kontrol Modal
+    public $upload_files = [];
     public $isModalOpen = false;
 
     public $search = '';
@@ -64,6 +62,17 @@ class SuratPermohonanPengisianBBM extends Component
         $this->resetPage();
     }
 
+    public function addPetugas()
+    {
+        $this->petugasList[] = ['nama_petugas' => '', 'jabatan' => ''];
+    }
+
+    public function removePetugas($index)
+    {
+        unset($this->petugasList[$index]);
+        $this->petugasList = array_values($this->petugasList);
+    }
+
     public function loadLaporanSisaList($currentLaporanId = null)
     {
         $queryLaporan = LaporanSisaBbm::with('sounding.kapal', 'user');
@@ -87,7 +96,6 @@ class SuratPermohonanPengisianBBM extends Component
         $this->laporan_sisa_list = $queryLaporan->get();
     }
 
-    // Otomatis berjalan ketika user memilih file di tabel
     public function updatedUploadFiles($value, $key)
     {
         $this->validate([
@@ -96,16 +104,12 @@ class SuratPermohonanPengisianBBM extends Component
 
         $permohonan = SuratPermohonanPengisian::findOrFail($key);
 
-        // Hapus file lama jika ada
         if ($permohonan->file_surat_permohonan && Storage::disk('public')->exists($permohonan->file_surat_permohonan)) {
             Storage::disk('public')->delete($permohonan->file_surat_permohonan);
         }
 
-        // Simpan file baru
         $path = $value->store('uploads/surat_permohonan', 'public');
         $permohonan->update(['file_surat_permohonan' => $path]);
-
-        // Bersihkan memori file sementara
         unset($this->upload_files[$key]);
 
         session()->flash('message', 'Dokumen Surat Permohonan berhasil diupload!');
@@ -116,7 +120,8 @@ class SuratPermohonanPengisianBBM extends Component
         $query = SuratPermohonanPengisian::with([
             'LaporanSisaBbm.sounding.kapal',
             'user',
-            'penyedia' 
+            'penyedia',
+            'petugas' 
         ]);
 
         if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
@@ -126,7 +131,7 @@ class SuratPermohonanPengisianBBM extends Component
         if (!empty($this->search)) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
-                  ->orWhere('nomor_spbu', 'like', '%' . $this->search . '%') // Pencarian berdasarkan nomor SPBU
+                  ->orWhere('nomor_spbu', 'like', '%' . $this->search . '%')
                   ->orWhereHas('penyedia', function($qPenyedia) {
                       $qPenyedia->where('name', 'like', '%' . $this->search . '%');
                   })
@@ -188,6 +193,13 @@ class SuratPermohonanPengisianBBM extends Component
     {
         $this->resetFields();
         $this->loadLaporanSisaList();
+        
+        $this->petugasList = [
+            ['nama_petugas' => '', 'jabatan' => 'Nakhoda'],
+            ['nama_petugas' => '', 'jabatan' => 'KKM'],
+            ['nama_petugas' => '', 'jabatan' => 'ABK']
+        ];
+        
         $this->isModalOpen = true;
     }
 
@@ -238,6 +250,16 @@ class SuratPermohonanPengisianBBM extends Component
             $this->jenis_bbm_lainnya = $permohonan->jenis_bbm;
         }
 
+        // LOAD DATA PETUGAS
+        $petugasRecords = DB::table('petugas_surat_tugas')->where('surat_permohonan_id', $id)->get();
+        $this->petugasList = [];
+        foreach ($petugasRecords as $p) {
+            $this->petugasList[] = ['nama_petugas' => $p->nama_petugas, 'jabatan' => $p->jabatan];
+        }
+        if (empty($this->petugasList)) {
+            $this->petugasList[] = ['nama_petugas' => '', 'jabatan' => ''];
+        }
+
         $this->loadLaporanSisaList($this->laporan_sisa_bbm_id);
 
         $this->isModalOpen = true;
@@ -258,6 +280,11 @@ class SuratPermohonanPengisianBBM extends Component
             'id_nakhoda' => 'nullable|string|max:255',
             'nama_pptk' => 'nullable|string|max:255',
             'id_pptk' => 'nullable|string|max:255',
+            'petugasList.*.nama_petugas' => 'required',
+            'petugasList.*.jabatan' => 'required',
+        ],[
+            'petugasList.*.nama_petugas.required' => 'Nama petugas wajib diisi.',
+            'petugasList.*.jabatan.required' => 'Jabatan petugas wajib diisi.'
         ]);
 
         $laporan = LaporanSisaBbm::find($this->laporan_sisa_bbm_id);
@@ -289,10 +316,35 @@ class SuratPermohonanPengisianBBM extends Component
             $data['user_id'] = auth()->id();
         }
 
-        SuratPermohonanPengisian::updateOrCreate(['id' => $this->permohonan_id], $data);
+        DB::beginTransaction();
+        try {
+            $permohonan = SuratPermohonanPengisian::updateOrCreate(['id' => $this->permohonan_id], $data);
 
-        session()->flash('message', $this->permohonan_id ? 'Data Surat Berhasil Diperbarui.' : 'Data Surat Berhasil Dibuat.');
-        $this->closeModal();
+            // Cek apakah permohonan ini sudah punya Surat Tugas. Jika ya, ambil ID nya.
+            $st_id = $permohonan->suratTugas?->id;
+
+            DB::table('petugas_surat_tugas')->where('surat_permohonan_id', $permohonan->id)->delete();
+            
+            $petugasData = [];
+            foreach ($this->petugasList as $petugas) {
+                $petugasData[] = [
+                    'surat_permohonan_id' => $permohonan->id,
+                    'surat_tugas_pengisian_id' => $st_id, // Masukkan ke surat tugas juga otomatis
+                    'nama_petugas' => $petugas['nama_petugas'],
+                    'jabatan' => $petugas['jabatan'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            DB::table('petugas_surat_tugas')->insert($petugasData);
+
+            DB::commit();
+            session()->flash('message', $this->permohonan_id ? 'Data Surat Berhasil Diperbarui.' : 'Data Surat Berhasil Dibuat.');
+            $this->closeModal();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->flash('error', 'Gagal menyimpan: ' . $e->getMessage());
+        }
     }
 
     public function closeModal()
@@ -306,7 +358,7 @@ class SuratPermohonanPengisianBBM extends Component
             'permohonan_id', 'laporan_sisa_bbm_id', 'nomor_surat', 'tanggal_surat', 'klasifikasi', 
             'penyedia_id', 'jenis_penyedia_bbm', 'jenis_penyedia_bbm_lainnya', 
             'tempat_pengambilan_bbm', 'nomor_spbu', 'metode_pengiriman', 'jenis_bbm', 'jenis_bbm_lainnya', 'jumlah_bbm',
-            'nama_nakhoda', 'id_nakhoda', 'nama_pptk', 'id_pptk'
+            'nama_nakhoda', 'id_nakhoda', 'nama_pptk', 'id_pptk', 'petugasList'
         ]);
         $this->lampiran = '1 (satu) berkas';
     }

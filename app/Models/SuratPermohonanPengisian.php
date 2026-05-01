@@ -50,4 +50,9 @@ class SuratPermohonanPengisian extends Model
     {
         return $this->hasOne(PencatatanHasil::class, 'surat_permohonan_id'); 
     }
+
+    public function petugas()
+    {
+        return $this->hasMany(PetugasSuratTugas::class, 'surat_permohonan_id');
+    }
 }

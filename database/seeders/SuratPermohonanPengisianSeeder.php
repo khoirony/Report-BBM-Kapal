@@ -7,6 +7,7 @@ use App\Models\SuratPermohonanPengisian;
 use App\Models\LaporanSisaBbm;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Faker\Factory as Faker;
 
 class SuratPermohonanPengisianSeeder extends Seeder
 {
@@ -19,7 +20,7 @@ class SuratPermohonanPengisianSeeder extends Seeder
             return;
         }
 
-        // 2. Ambil data User yang memiliki role penyedia
+        // Ambil data User yang memiliki role penyedia
         $rolePenyediaId = DB::table('roles')->where('slug', 'penyedia')->value('id');
         $penyediaList = User::where('role_id', $rolePenyediaId)->get();
 
@@ -32,6 +33,8 @@ class SuratPermohonanPengisianSeeder extends Seeder
             $q->whereIn('slug', ['superadmin', 'admin_ukpd', 'satgas']);
         })->first();
         $defaultUserId = $adminUser ? $adminUser->id : 1;
+        
+        $faker = Faker::create('id_ID');
 
         $dataPermohonan = [
             [
@@ -122,9 +125,31 @@ class SuratPermohonanPengisianSeeder extends Seeder
             $item['ukpd_id']             = $randomLaporan->ukpd_id;
             $item['penyedia_id']         = $randomPenyedia->id; 
             
-            SuratPermohonanPengisian::create($item);
+            $permohonan = SuratPermohonanPengisian::create($item);
+
+            // Buat Data Petugas yang menempel ke Surat Permohonan
+            $dataPetugas = [
+                [
+                    'surat_permohonan_id' => $permohonan->id,
+                    'surat_tugas_pengisian_id' => null, // Belum ada surat tugas
+                    'nama_petugas' => $faker->name('male'),
+                    'jabatan' => 'Nakhoda',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'surat_permohonan_id' => $permohonan->id,
+                    'surat_tugas_pengisian_id' => null, // Belum ada surat tugas
+                    'nama_petugas' => $faker->name('male'),
+                    'jabatan' => 'KKM',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            ];
+            
+            DB::table('petugas_surat_tugas')->insert($dataPetugas);
         }
 
-        $this->command->info('Data Surat Permohonan Pengisian berhasil di-seed!');
+        $this->command->info('Data Surat Permohonan Pengisian (beserta Petugas) berhasil di-seed!');
     }
 }
