@@ -252,7 +252,7 @@
                                         <div class="grid grid-cols-3 gap-2 text-xs bg-white p-2 rounded-lg border border-slate-100 mt-2">
                                             <div>
                                                 <span class="text-[9px] text-slate-400 block uppercase">Armada Kapal</span>
-                                                <span class="font-semibold text-slate-700">{{ $ts->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }}</span>
+                                                <span class="font-semibold text-slate-700">{{ $ts->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }}</span>
                                             </div>
                                             <div>
                                                 <span class="text-[9px] text-slate-400 block uppercase">Jenis BBM</span>

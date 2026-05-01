@@ -131,8 +131,8 @@
                                 <div class="bg-indigo-50/50 border border-indigo-100 rounded-lg p-2 mt-2 w-fit pr-4">
                                     <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider block mb-0.5">Armada Kapal</span>
                                     <div class="flex items-center gap-1.5">
-                                        <span class="font-bold text-indigo-900">{{ $item->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal Terhapus' }}</span>
-                                        <span class="text-[9px] bg-indigo-200/50 text-indigo-700 px-1 rounded font-bold">{{ $item->suratTugas->LaporanSisaBbm->sounding->kapal->ukpd->singkatan ?? '-' }}</span>
+                                        <span class="font-bold text-indigo-900">{{ $item->suratPermohonan->LaporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal Terhapus' }}</span>
+                                        <span class="text-[9px] bg-indigo-200/50 text-indigo-700 px-1 rounded font-bold">{{ $item->suratPermohonan->LaporanSisaBbm->sounding->kapal->ukpd->singkatan ?? '-' }}</span>
                                     </div>
                                 </div>
         
@@ -322,7 +322,7 @@
                                     <option value="{{ $pm->id }}">
                                         {{ $pm?->nomor_surat ?: 'No. Surat Belum Ada' }} | 
                                         {{ \Carbon\Carbon::parse($pm->tanggal_surat)->locale('id')->translatedFormat('l, d/M/Y') }} 
-                                        (Kapal: {{ $pm->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }} | 
+                                        (Kapal: {{ $pm->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }} | 
                                         Isi: {{ floatval($pm->jumlah_bbm) }} L)
                                     </option>
                                 @endforeach

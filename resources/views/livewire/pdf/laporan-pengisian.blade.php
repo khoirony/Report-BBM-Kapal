@@ -9,7 +9,7 @@
 <body style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.3; color: black; margin: 0; padding: 10px 20px;">
     <div style="padding: 0 10px; line-height: 1.5;">
         <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
-            <tr><td style="width: 15%; vertical-align: top;">Lampiran</td><td style="vertical-align: top;">: Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal }}</td></tr>
+            <tr><td style="width: 15%; vertical-align: top;">Lampiran</td><td style="vertical-align: top;">: Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->suratPermohonan->LaporanSisaBbm->sounding->kapal->nama_kapal }}</td></tr>
             <tr><td style="vertical-align: top;">Nomor</td><td style="vertical-align: top;">: {{ $laporan->nomor_ba ?? " " }}</td></tr>
             <tr><td style="vertical-align: top;">Tanggal</td><td style="vertical-align: top;">: {{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : ' ' }}</td></tr>
         </table>
@@ -77,7 +77,7 @@
             <tr>
                 <td style="width: 25px; vertical-align: top; padding-left: 25px">a.</td>
                 <td style="width: 200px; vertical-align: top;">Nama Kapal</td><td style="vertical-align: top;">: 
-                    <span>{{ $laporan->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal }}</span></td>
+                    <span>{{ $laporan->suratPermohonan->LaporanSisaBbm->sounding->kapal->nama_kapal }}</span></td>
             </tr>
             <tr>
                 <td style="vertical-align: top; padding-left: 25px">b.</td>
@@ -135,7 +135,7 @@
 
     <div style="page-break-before: always;"></div>
     <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
-        <tr><td style="width: 15%; vertical-align: top;">Lampiran</td><td style="vertical-align: top;">: Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal }}</td></tr>
+        <tr><td style="width: 15%; vertical-align: top;">Lampiran</td><td style="vertical-align: top;">: Berita Acara Pengisian Bahan Bakar Minyak Kendaraan Dinas Kapal {{ $laporan->suratPermohonan->LaporanSisaBbm->sounding->kapal->nama_kapal }}</td></tr>
         <tr><td style="vertical-align: top;">Nomor</td><td style="vertical-align: top;">: {{ $laporan->nomor_ba ?? " " }}</td></tr>
         <tr><td style="vertical-align: top;">Tanggal</td><td style="vertical-align: top;">: {{ $laporan->tgl_ba ? \Carbon\Carbon::parse($laporan->tgl_ba)->locale('id')->translatedFormat('d F Y') : ' ' }}</td></tr>
     </table>

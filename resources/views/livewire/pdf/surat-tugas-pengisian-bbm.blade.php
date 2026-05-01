@@ -47,12 +47,12 @@
         <ol style="padding-left: 20px; margin: 0;">
             <li style="margin-bottom: 10px; list-style-type: decimal;">
                 Melaksanakan Pengisian BBM untuk melakukan kegiatan Operasional Kapal 
-                {{ $surat->laporanSisaBbm->sounding->kapal->nama_kapal ?? '...............' }} di 
+                {{ $surat?->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal?->nama_kapal ?? '...............' }} di 
                 {{ $surat->lokasi ?? '...............' }};
             </li>
             <li style="margin-bottom: 10px; list-style-type: decimal;">
                 Menambatlabuhkan kembali Kapal 
-                {{ $surat->laporanSisaBbm->sounding->kapal->nama_kapal ?? '...............' }} setelah pengisian BBM ke Pelabuhan Muara Angke dengan ketentuan:
+                {{ $surat?->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal?->nama_kapal ?? '...............' }} setelah pengisian BBM ke Pelabuhan Muara Angke dengan ketentuan:
                 
                 <ol style="list-style-type: decimal; padding-left: 20px; margin-top: 5px;">
                     <li style="margin-bottom: 5px;">

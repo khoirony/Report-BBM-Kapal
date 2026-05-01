@@ -9,8 +9,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Surat Tugas Pengisian BBM</h1>
-                    <p class="text-sm text-gray-500 mt-1 font-medium">Pengelolaan Surat Penugasan Pengisian BBM Kapal.</p>
+                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Surat Perintah Tugas Pengisian BBM</h1>
+                    <p class="text-sm text-gray-500 mt-1 font-medium">Pengelolaan Surat Perintah Penugasan Pengisian BBM Kapal.</p>
                 </div>
             </div>
             

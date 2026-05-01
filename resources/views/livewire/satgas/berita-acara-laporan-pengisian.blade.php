@@ -237,7 +237,7 @@
                                 <div class="grid grid-cols-4 gap-0 text-sm bg-slate-50 lg:bg-transparent rounded-xl lg:rounded-none border border-slate-200/60 lg:border-none overflow-hidden mt-1 lg:mt-0">
                                     <div class="flex flex-col p-2 lg:p-0 lg:pr-2 border-r border-slate-200/60 lg:border-none">
                                         <span class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Awal</span>
-                                        <span class="font-semibold text-slate-700">{{ floatval($item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->bbm_awal ?? 0) }}</span>
+                                        <span class="font-semibold text-slate-700">{{ floatval($item->laporanPengisian?->suratPermohonan?->LaporanSisaBbm?->sounding?->bbm_awal ?? 0) }}</span>
                                     </div>
                                     <div class="flex flex-col p-2 lg:p-0 lg:pr-2 border-r border-slate-200/60 lg:border-none bg-emerald-50/30 lg:bg-transparent">
                                         <span class="text-[9px] text-emerald-500 uppercase font-bold tracking-wider">Isi</span>
@@ -245,11 +245,11 @@
                                     </div>
                                     <div class="flex flex-col p-2 lg:p-0 lg:pr-2 border-r border-slate-200/60 lg:border-none bg-rose-50/30 lg:bg-transparent">
                                         <span class="text-[9px] text-rose-400 uppercase font-bold tracking-wider">Pakai</span>
-                                        <span class="font-bold text-rose-500">-{{ floatval($item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->pemakaian_bbm ?? 0) }}</span>
+                                        <span class="font-bold text-rose-500">-{{ floatval($item->laporanPengisian?->suratPermohonan?->LaporanSisaBbm?->sounding?->pemakaian_bbm ?? 0) }}</span>
                                     </div>
                                     <div class="flex flex-col p-2 lg:p-0 bg-blue-50/50 lg:bg-transparent">
                                         <span class="text-[9px] text-blue-500 uppercase font-bold tracking-wider">Akhir</span>
-                                        <span class="font-extrabold text-blue-600">{{ floatval($item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->bbm_akhir ?? 0) }}</span>
+                                        <span class="font-extrabold text-blue-600">{{ floatval($item->laporanPengisian?->suratPermohonan?->LaporanSisaBbm?->sounding?->bbm_akhir ?? 0) }}</span>
                                     </div>
                                 </div>
         
@@ -257,8 +257,8 @@
                                     <div class="flex items-center gap-1.5">
                                         <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         <span class="text-[10px] text-slate-600 font-medium">Jam: 
-                                            <span class="font-bold">{{ $item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->jam_berangkat ?? '-' }}</span> s.d 
-                                            <span class="font-bold">{{ $item->laporanPengisian?->suratTugas?->LaporanSisaBbm?->sounding?->jam_kembali ?? '-' }}</span> WIB
+                                            <span class="font-bold">{{ $item->laporanPengisian?->suratPermohonan?->LaporanSisaBbm?->sounding?->jam_berangkat ?? '-' }}</span> s.d 
+                                            <span class="font-bold">{{ $item->laporanPengisian?->suratPermohonan?->LaporanSisaBbm?->sounding?->jam_kembali ?? '-' }}</span> WIB
                                         </span>
                                     </div>
                                 </div>
@@ -361,7 +361,7 @@
                             <select wire:model.live="laporan_pengisian_bbm_id" class="px-4 py-3 bg-white border border-slate-200 text-sm rounded-xl block w-full shadow-sm cursor-pointer" required>
                                 <option value="">-- Pilih Laporan --</option>
                                 @foreach($laporan_pengisian_list as $lp)
-                                    <option value="{{ $lp->id }}">Tgl: {{ $lp->tanggal }} | Kapal: {{ $lp->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }}</option>
+                                    <option value="{{ $lp->id }}">Tgl: {{ $lp->tanggal }} | Kapal: {{ $lp->suratPermohonan->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }}</option>
                                 @endforeach
                             </select>
                             <p class="text-[10px] text-indigo-500 mt-2 font-medium">Memilih laporan otomatis memfilter pilihan pejabat & awak kapal sesuai UKPD armada yang bersangkutan.</p>
@@ -372,10 +372,10 @@
                                 $lpSelected = \App\Models\LaporanPengisianBbm::with([
                                     'suratPermohonan', 
                                     'suratTugas.petugas',
-                                    'suratTugas.LaporanSisaBbm.sounding.kapal'
+                                    'suratPermohonan.LaporanSisaBbm.sounding.kapal'
                                 ])->find($laporan_pengisian_bbm_id); 
                                 
-                                $kapalSelected = $lpSelected?->suratTugas?->LaporanSisaBbm?->sounding?->kapal;
+                                $kapalSelected = $lpSelected?->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal;
                             @endphp
 
                             <div class="flex flex-col gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">

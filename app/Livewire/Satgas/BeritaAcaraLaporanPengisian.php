@@ -71,10 +71,10 @@ class BeritaAcaraLaporanPengisian extends Component
     // Trigger saat dropdown Laporan Pengisian dipilih
     public function updatedLaporanPengisianBbmId($value)
     {
-        $lp = LaporanPengisianBbm::with('suratTugas.LaporanSisaBbm.sounding.kapal')->find($value);
+        $lp = LaporanPengisianBbm::with('suratPermohonan.LaporanSisaBbm.sounding.kapal')->find($value);
         if ($lp) {
-            $this->kapal_id = $lp->suratTugas?->LaporanSisaBbm?->sounding?->kapal_id ?? '';
-            $ukpdId = $lp->suratTugas?->LaporanSisaBbm?->sounding?->kapal?->ukpd_id ?? null;
+            $this->kapal_id = $lp->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal_id ?? '';
+            $ukpdId = $lp->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal?->ukpd_id ?? null;
             
             // Filter user sesuai UKPD Kapal
             $this->loadUserSuggestions($ukpdId);
@@ -109,7 +109,7 @@ class BeritaAcaraLaporanPengisian extends Component
             'kapal.ukpd', 
             'laporanPengisian.suratPermohonan', 
             'laporanPengisian.suratTugas.petugas',
-            'laporanPengisian.suratTugas.LaporanSisaBbm.sounding.kapal'
+            'laporanPengisian.suratPermohonan.LaporanSisaBbm.sounding.kapal'
         ]);
 
         if ($this->search) {
@@ -136,7 +136,7 @@ class BeritaAcaraLaporanPengisian extends Component
             'laporans' => $query->paginate(10),
             'kapals' => Kapal::orderBy('nama_kapal', 'asc')->get(),
             'ukpds' => Ukpd::orderBy('nama', 'asc')->get(),
-            'laporan_pengisian_list' => LaporanPengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal'])
+            'laporan_pengisian_list' => LaporanPengisianBbm::with(['suratPermohonan.LaporanSisaBbm.sounding.kapal'])
                 ->whereNotIn('id', $laporanTerpakai) 
                 ->latest()
                 ->get(),
@@ -185,8 +185,8 @@ class BeritaAcaraLaporanPengisian extends Component
         $this->nip_nakhoda = $ba->nip_nakhoda;
 
         // Load UKPD data for edit mode
-        $lp = LaporanPengisianBbm::with('suratTugas.LaporanSisaBbm.sounding.kapal')->find($this->laporan_pengisian_bbm_id);
-        $ukpdId = $lp?->suratTugas?->LaporanSisaBbm?->sounding?->kapal?->ukpd_id ?? null;
+        $lp = LaporanPengisianBbm::with('suratPermohonan.LaporanSisaBbm.sounding.kapal')->find($this->laporan_pengisian_bbm_id);
+        $ukpdId = $lp?->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal?->ukpd_id ?? null;
         $this->loadUserSuggestions($ukpdId);
 
         $this->isOpen = true;

@@ -149,8 +149,8 @@
                                     <div class="flex flex-col gap-1.5 bg-slate-50 p-2.5 rounded-lg border border-slate-100 w-fit">
                                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Armada Tujuan:</span>
                                         <div class="flex items-center gap-2">
-                                            <span class="text-xs font-bold text-indigo-700">{{ $item->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal Terhapus' }}</span>
-                                            <span class="text-[9px] bg-indigo-100/50 text-indigo-600 px-1 rounded font-bold">{{ $item->suratTugas->LaporanSisaBbm->sounding->kapal->ukpd->singkatan ?? '-' }}</span>
+                                            <span class="text-xs font-bold text-indigo-700">{{ $item->LaporanSisaBbm->sounding->kapal->nama_kapal ?? 'Kapal Terhapus' }}</span>
+                                            <span class="text-[9px] bg-indigo-100/50 text-indigo-600 px-1 rounded font-bold">{{ $item->LaporanSisaBbm->sounding->kapal->ukpd->singkatan ?? '-' }}</span>
                                         </div>
                                     </div>
                                 </td>

@@ -58,7 +58,7 @@ class InvoiceManager extends Component
     public function loadTransaksiTersedia()
     {
         if ($this->ukpd_id && $this->periode_awal && $this->periode_akhir) {
-            $this->transaksi_tersedia = SuratPermohonanPengisian::with(['suratTugas.LaporanSisaBbm.sounding.kapal', 'prosesPenyedia'])
+            $this->transaksi_tersedia = SuratPermohonanPengisian::with(['LaporanSisaBbm.sounding.kapal', 'prosesPenyedia'])
                 ->where('penyedia_id', auth()->id())
                 ->where('ukpd_id', $this->ukpd_id)
                 ->whereNull('rekonsiliasi_invoice_id') // Belum ditagihkan

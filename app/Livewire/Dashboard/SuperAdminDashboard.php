@@ -5,7 +5,7 @@ namespace App\Livewire\Dashboard;
 use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Models\PaguAnggaran; // Pastikan model ini sudah di-import
+use App\Models\PaguAnggaran; 
 
 class SuperAdminDashboard extends Component
 {
@@ -94,13 +94,13 @@ class SuperAdminDashboard extends Component
         }
 
         $this->closePaguModal();
-        $this->updateAllData(); // Render ulang grafik agar pagu baru langsung terlihat!
+        $this->updateAllData(); 
     }
 
     public function deletePagu($id)
     {
         PaguAnggaran::find($id)->delete();
-        $this->updateAllData(); // Render ulang grafik
+        $this->updateAllData(); 
     }
 
     private function resetPaguFields()
@@ -147,8 +147,7 @@ class SuperAdminDashboard extends Component
             ->where('rekonsiliasi_invoices.status', '!=', 'rejected')
             ->join('surat_permohonan_pengisians', 'rekonsiliasi_invoices.id', '=', 'surat_permohonan_pengisians.rekonsiliasi_invoice_id')
             ->join('proses_penyedia_bbms', 'surat_permohonan_pengisians.id', '=', 'proses_penyedia_bbms.surat_permohonan_id')
-            ->join('surat_tugas_pengisians', 'surat_permohonan_pengisians.surat_tugas_id', '=', 'surat_tugas_pengisians.id')
-            ->join('laporan_sisa_bbms', 'surat_tugas_pengisians.laporan_sisa_bbm_id', '=', 'laporan_sisa_bbms.id')
+            ->join('laporan_sisa_bbms', 'surat_permohonan_pengisians.laporan_sisa_bbm_id', '=', 'laporan_sisa_bbms.id')
             ->join('soundings', 'laporan_sisa_bbms.sounding_id', '=', 'soundings.id')
             ->join('kapals', 'soundings.kapal_id', '=', 'kapals.id')
             ->selectRaw('kapals.nama_kapal, SUM(proses_penyedia_bbms.total_harga) as total_biaya')
@@ -254,7 +253,7 @@ class SuperAdminDashboard extends Component
         return DB::table('pencatatan_hasils')
             ->join('kapals', 'pencatatan_hasils.kapal_id', '=', 'kapals.id')
             ->join('ukpds', 'kapals.ukpd_id', '=', 'ukpds.id')
-            ->leftJoin('proses_penyedia_bbms', 'pencatatan_hasils.id', '=', 'proses_penyedia_bbms.id') 
+            ->leftJoin('proses_penyedia_bbms', 'pencatatan_hasils.surat_permohonan_id', '=', 'proses_penyedia_bbms.surat_permohonan_id') 
             ->whereBetween('pencatatan_hasils.tanggal_pengisian', [$this->startDate, $this->endDate])
             ->select('ukpds.singkatan as ukpd', 'kapals.nama_kapal', 'pencatatan_hasils.tanggal_pengisian', 'pencatatan_hasils.jumlah_pengisian as liter', 'proses_penyedia_bbms.harga_satuan', 'proses_penyedia_bbms.total_harga')
             ->orderBy('ukpd')->orderBy('nama_kapal')->orderBy('tanggal_pengisian')

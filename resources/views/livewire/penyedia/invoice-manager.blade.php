@@ -304,7 +304,7 @@
                                                     <span class="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">{{ \Carbon\Carbon::parse($ts->tanggal_surat)->format('d/m/Y') }}</span>
                                                 </div>
                                                 <p class="text-xs text-slate-600 mt-1 font-medium">
-                                                    Kapal: <span class="font-bold text-indigo-700">{{ $ts->suratTugas->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }}</span> | 
+                                                    Kapal: <span class="font-bold text-indigo-700">{{ $ts->LaporanSisaBbm->sounding->kapal->nama_kapal ?? '-' }}</span> | 
                                                     Total BBM: <span class="font-bold text-emerald-600">{{ floatval($ts->jumlah_bbm) }} L</span> | 
                                                     <span class="font-bold text-slate-800">Rp {{ number_format($ts->prosesPenyedia->total_harga ?? 0, 0, ',', '.') }}</span>
                                                 </p>

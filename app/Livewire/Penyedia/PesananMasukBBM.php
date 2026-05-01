@@ -48,7 +48,7 @@ class PesananMasukBBM extends Component
 
     public function render()
     {
-        $query = SuratPermohonanPengisian::with(['suratTugas.LaporanSisaBbm.sounding.kapal', 'prosesPenyedia', 'penyedia']);
+        $query = SuratPermohonanPengisian::with(['LaporanSisaBbm.sounding.kapal', 'prosesPenyedia', 'penyedia']);
 
         if (auth()->user()?->role?->slug === 'penyedia') {
             $query->where('penyedia_id', auth()->id());
@@ -60,14 +60,14 @@ class PesananMasukBBM extends Component
         if (!empty($this->search)) {
             $query->where(function($q) {
                 $q->where('nomor_surat', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($subQ) {
+                  ->orWhereHas('LaporanSisaBbm.sounding.kapal', function($subQ) {
                       $subQ->where('nama_kapal', 'like', '%' . $this->search . '%');
                   });
             });
         }
 
         if (!empty($this->filterKapal)) {
-            $query->whereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($q) {
+            $query->whereHas('LaporanSisaBbm.sounding.kapal', function($q) {
                 $q->where('id', $this->filterKapal);
             });
         }

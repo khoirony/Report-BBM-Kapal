@@ -40,7 +40,7 @@ class PdfController extends Controller
             'kapal.ukpd', 
             'laporanPengisian.suratPermohonan', 
             'laporanPengisian.suratTugas.petugas',
-            'laporanPengisian.suratTugas.LaporanSisaBbm.sounding.kapal'
+            'laporanPengisian.LaporanSisaBbm.sounding.kapal'
         ])->findOrFail($id);
 
         // Render view PDF
@@ -61,7 +61,7 @@ class PdfController extends Controller
         $laporan = LaporanPengisianBbm::with([
             'suratPermohonan', 
             'suratTugas.petugas',
-            'suratTugas.LaporanSisaBbm.sounding.kapal'
+            'LaporanSisaBbm.sounding.kapal'
         ])->findOrFail($id);
 
         // Render view PDF
@@ -78,12 +78,12 @@ class PdfController extends Controller
 
     public function previewSuratTugas($id)
     {
-        $surat = SuratTugasPengisian::with(['laporanSisaBbm.sounding.kapal', 'petugas'])->findOrFail($id);
+        $surat = SuratTugasPengisian::with(['suratPermohonan.LaporanSisaBbm.sounding.kapal', 'ukpd', 'petugas'])->findOrFail($id);
 
         $pdf = Pdf::loadView('pdf.surat-tugas-pengisian-bbm', ['surat' => $surat]);
         $pdf->setPaper('A4', 'portrait');
 
-        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $surat->created_at) . '.pdf';
+        $namaFile = 'Surat_Tugas_BBM_' . str_replace(' ', '_', $surat->id) . '.pdf';
 
         return $pdf->stream($namaFile);
     }

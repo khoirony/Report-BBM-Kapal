@@ -80,9 +80,9 @@ class SuratSpj extends Component
     public function tarikKapalPenyedia()
     {
         if ($this->proses_penyedia_bbm_id) {
-            $proses = ProsesPenyediaBbm::with('suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal')->find($this->proses_penyedia_bbm_id);
+            $proses = ProsesPenyediaBbm::with('suratPermohonan.LaporanSisaBbm.sounding.kapal')->find($this->proses_penyedia_bbm_id);
             
-            $kapal = $proses?->suratPermohonan?->suratTugas?->LaporanSisaBbm?->sounding?->kapal;
+            $kapal = $proses?->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal;
             
             if ($kapal) {
                 $this->kapal_id = $kapal->id;

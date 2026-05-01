@@ -51,13 +51,13 @@ class PencatatanHasilPengisian extends Component
     public function updatedSuratPermohonanId($value)
     {
         if ($value) {
-            $permohonan = SuratPermohonanPengisian::with('suratTugas.LaporanSisaBbm.sounding.kapal')->find($value);
+            $permohonan = SuratPermohonanPengisian::with('LaporanSisaBbm.sounding.kapal')->find($value);
             
             if ($permohonan) {
                 $this->tanggal_pengisian = $permohonan->tanggal_surat;
                 
                 // Ambil data kapal dari relasi terdalam
-                $kapal = $permohonan->suratTugas->LaporanSisaBbm->sounding->kapal ?? null;
+                $kapal = $permohonan?->LaporanSisaBbm->sounding->kapal ?? null;
                 if ($kapal) {
                     $this->kapal_id = $kapal->id;
                     $this->nama_kapal_readonly = $kapal->nama_kapal;
@@ -95,7 +95,7 @@ class PencatatanHasilPengisian extends Component
         $this->resetValidation();
         
         // Pastikan menarik relasi secara mendalam untuk kebutuhan form edit
-        $record = PencatatanHasil::with('suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal')->findOrFail($id);
+        $record = PencatatanHasil::with('suratPermohonan.LaporanSisaBbm.sounding.kapal')->findOrFail($id);
         
         $this->edit_id = $record->id;
         $this->surat_permohonan_id = $record->surat_permohonan_id;
@@ -104,7 +104,7 @@ class PencatatanHasilPengisian extends Component
         $this->jumlah_pengisian = floatval($record->jumlah_pengisian);
         
         // Tarik nama kapal dari relasi untuk mengisi visual readonly
-        $kapal = $record->suratPermohonan->suratTugas->LaporanSisaBbm->sounding->kapal ?? null;
+        $kapal = $record?->suratPermohonan?->LaporanSisaBbm?->sounding?->kapal ?? null;
         $this->nama_kapal_readonly = $kapal ? $kapal->nama_kapal : '-';
         
         // Simpan path foto lama untuk preview
@@ -207,7 +207,7 @@ class PencatatanHasilPengisian extends Component
     {
         $user = Auth::user();
         
-        $query = PencatatanHasil::with(['suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal', 'creator'])->latest();
+        $query = PencatatanHasil::with(['suratPermohonan.LaporanSisaBbm.sounding.kapal', 'creator'])->latest();
 
         if ($user->role->slug === 'nakhoda') {
             $query->whereHas('kapal', function($q) use ($user) {
@@ -227,9 +227,9 @@ class PencatatanHasilPengisian extends Component
             $query->whereBetween('tanggal_pengisian', [$this->filter_start_date, $this->filter_end_date]);
         }
 
-        $permohonanQuery = SuratPermohonanPengisian::with('suratTugas.LaporanSisaBbm.sounding.kapal');
+        $permohonanQuery = SuratPermohonanPengisian::with('LaporanSisaBbm.sounding.kapal');
         if ($user->role->slug === 'nakhoda') {
-            $permohonanQuery->whereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($q) use ($user) {
+            $permohonanQuery->whereHas('LaporanSisaBbm.sounding.kapal', function($q) use ($user) {
                 $q->where('nakhoda_id', $user->id);
             });
         }
@@ -243,13 +243,13 @@ class PencatatanHasilPengisian extends Component
         });
 
         if ($user->role->slug === 'nakhoda') {
-            $permohonanQuery->whereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($q) use ($user) {
+            $permohonanQuery->whereHas('LaporanSisaBbm.sounding.kapal', function($q) use ($user) {
                 $q->where('nakhoda_id', $user->id);
             });
         }
         
         if ($this->kapal_id && !empty(request()->query('kapal'))) {
-            $permohonanQuery->whereHas('suratTugas.LaporanSisaBbm.sounding', function($q) {
+            $permohonanQuery->whereHas('LaporanSisaBbm.sounding', function($q) {
                 $q->where('kapal_id', $this->kapal_id);
             });
         }

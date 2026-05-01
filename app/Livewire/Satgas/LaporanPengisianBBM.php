@@ -40,7 +40,7 @@ class LaporanPengisianBBM extends Component
 
     public function mount()
     {
-        $queryPermohonan = SuratPermohonanPengisian::with('suratTugas.LaporanSisaBbm.sounding.kapal')->whereIn('progress', ['on progress', 'done']);
+        $queryPermohonan = SuratPermohonanPengisian::with('LaporanSisaBbm.sounding.kapal')->whereIn('progress', ['on progress', 'done']);
         if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $queryPermohonan->where('ukpd_id', auth()->user()?->ukpd_id);
         }
@@ -73,14 +73,14 @@ class LaporanPengisianBBM extends Component
     public function updatedSuratPermohonanId($val)
     {
         if($val) {
-            $permohonan = SuratPermohonanPengisian::with('suratTugas.LaporanSisaBbm.sounding.kapal')->find($val);
+            $permohonan = SuratPermohonanPengisian::with('LaporanSisaBbm.sounding.kapal')->find($val);
             if($permohonan) {
                 $this->surat_tugas_id = $permohonan->surat_tugas_id;
                 $this->ukpd_id = $permohonan->ukpd_id;
                 $this->lokasi_pengisian = $permohonan->tempat_pengambilan_bbm ?? ($permohonan->suratTugas->lokasi ?? '');
                 $this->jumlah_bbm_pengisian = $permohonan->jumlah_bbm ?? 0;
                 
-                $kapalId = $permohonan->suratTugas->LaporanSisaBbm->sounding->kapal_id ?? null;
+                $kapalId = $permohonan?->LaporanSisaBbm?->sounding?->kapal_id ?? null;
                 if($kapalId) {
                     $this->available_soundings = Sounding::where('kapal_id', $kapalId)->latest()->take(10)->get();
                 }
@@ -121,7 +121,7 @@ class LaporanPengisianBBM extends Component
 
     public function render()
     {
-        $query = PengisianBbm::with(['suratTugas.LaporanSisaBbm.sounding.kapal', 'suratPermohonan', 'soundingAwal', 'soundingAkhir', 'approverNakhoda', 'approverPenyedia']);
+        $query = PengisianBbm::with(['suratPermohonan.LaporanSisaBbm.sounding.kapal', 'suratPermohonan', 'soundingAwal', 'soundingAkhir', 'approverNakhoda', 'approverPenyedia']);
 
         if (auth()->user()?->role?->slug !== 'superadmin' && auth()->user()?->role?->slug !== 'penyedia') {
             $query->where('ukpd_id', auth()->user()?->ukpd_id);
@@ -130,14 +130,14 @@ class LaporanPengisianBBM extends Component
         if (!empty($this->search)) {
             $query->where(function($q) {
                 $q->where('lokasi_pengisian', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('suratTugas.LaporanSisaBbm.sounding.kapal', function($qKapal) {
+                  ->orWhereHas('suratPermohonan.LaporanSisaBbm.sounding.kapal', function($qKapal) {
                       $qKapal->where('nama_kapal', 'like', '%' . $this->search . '%');
                   });
             });
         }
 
         if (!empty($this->filterKapal)) {
-            $query->whereHas('suratTugas.LaporanSisaBbm', function($q) {
+            $query->whereHas('suratPermohonan.LaporanSisaBbm', function($q) {
                 $q->whereHas('sounding', function($s) {
                     $s->where('kapal_id', $this->filterKapal);
                 });

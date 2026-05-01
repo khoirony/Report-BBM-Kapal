@@ -46,7 +46,7 @@ class VerifikasiInvoiceBBM extends Component
         return RekonsiliasiInvoice::with([
             'ukpd', 
             'penyedia', 
-            'suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal',
+            'suratPermohonan.LaporanSisaBbm.sounding.kapal',
             'suratPermohonan.prosesPenyedia'
         ])->find($this->selectedInvoiceId);
     }
@@ -56,7 +56,7 @@ class VerifikasiInvoiceBBM extends Component
         $query = RekonsiliasiInvoice::with([
             'ukpd', 
             'penyedia', 
-            'suratPermohonan.suratTugas.LaporanSisaBbm.sounding.kapal',
+            'suratPermohonan.LaporanSisaBbm.sounding.kapal',
             'suratPermohonan.prosesPenyedia'
         ]);
 
